@@ -1,0 +1,104 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@import "@openng/icons/openng-icons.css";
+
+@theme {
+  /* ==========================================================================
+     1. COLORES SEMÁNTICOS Y DE ACCIÓN (SISTEMA DE DISEÑO)
+     ========================================================================== */
+  
+  /* Primary (Teal Institucional FCS - UNSCH): Identidad, cabeceras, selección */
+  --color-primary-50: #E9F2FC;
+  --color-primary-100: #C1DBF5;
+  --color-primary-200: #9AC4EF;
+  --color-primary-300: #72ADE9;
+  --color-primary-400: #4A96E3;
+  --color-primary-500: #227FDD;
+  --color-primary-600: #1C69B5;
+  --color-primary-700: #16528D; 
+  --color-primary-800: #103B65;
+  --color-primary-900: #0A2540; /* Color primario base */
+  --color-primary-950: #030D16;
+
+  /* Secondary / Action (Emerald Health): Acciones principales de CREAR o CONFIRMAR */
+  --color-secondary-50: #E6FFF6;
+  --color-secondary-100: #B8FFE5;
+  --color-secondary-200: #8AFFD4;
+  --color-secondary-300: #5CFFC3;
+  --color-secondary-400: #2EFFB2;
+  --color-secondary-500: #00FFA2;
+  --color-secondary-600: #00D184;
+  --color-secondary-700: #00A86B; /* Color primario base */
+  --color-secondary-800: #00754A;
+  --color-secondary-900: #00472D; 
+  --color-secondary-950: #001A10;
+
+  /* tertiary */
+  --color-tertiary-50: #F4F2F1;
+  --color-tertiary-100: #E0DBD7;
+  --color-tertiary-200: #CCC5BD;
+  --color-tertiary-300: #B8AEA3;
+  --color-tertiary-400: #A49789;
+  --color-tertiary-500: #90806F;
+  --color-tertiary-600: #7A6C5D; /* Color primario base */
+  --color-tertiary-700: #5C5247; 
+  --color-tertiary-800: #423B33;
+  --color-tertiary-900: #28241F; 
+  --color-tertiary-950: #0E0D0B;
+
+  /* warning */
+  --color-warning-50: #FDFAE8;
+  --color-warning-100: #F8F1BE;
+  --color-warning-200: #F4E995;
+  --color-warning-300: #EFE06B;
+  --color-warning-400: #EAD637; /* Color primario base */
+  --color-warning-500: #E7CF18;
+  --color-warning-600: #BDA914; 
+  --color-warning-700: #948410; 
+  --color-warning-800: #6A5F0B;
+  --color-warning-900: #413A07; 
+  --color-warning-950: #171502;
+
+  /* danger */
+  --color-danger-50: #FDE8E8;
+  --color-danger-100: #F9BEBE;
+  --color-danger-200: #F59494;
+  --color-danger-300: #F16A6A;
+  --color-danger-400: #ED4040; 
+  --color-danger-500: #E91616;
+  --color-danger-600: #BF1212; 
+  --color-danger-700: #950E0E; /* Color primario base */
+  --color-danger-800: #6B0A0A;
+  --color-danger-900: #410606; 
+  --color-danger-950: #170202;
+
+  /* info */
+  --color-info-50: #F1F2F3;
+  --color-info-100: #D3D4D9; /* Color primario base */
+  --color-info-200: #C0C2C8;
+  --color-info-300: #A8AAB3;
+  --color-info-400: #8F929E; 
+  --color-info-500: #777A88;
+  --color-info-600: #616470; 
+  --color-info-700: #4C4E57; 
+  --color-info-800: #37383F;
+  --color-info-900: #212226; 
+  --color-info-950: #0C0C0E;
+
+  --color-primary: #0A2540;
+  --color-secondary: #00A86B;
+  --color-success: #227FDD;
+  --color-tertiary: #7A6C5D;
+  --color-warning: #EAD637; 
+  --color-danger: #950E0E; 
+  --color-info: #D3D4D9;
+  --color-fondo: #F1F3F3;
+  --color-font: #140642;
+}
+
+@layer base {
+  body {
+    @apply bg-fondo text-font antialiased font-sans;
+  }
+}

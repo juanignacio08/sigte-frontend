@@ -1,0 +1,47 @@
+<!-- layout/header/header.component.html -->
+<header class="h-16 bg-white border-b border-info-100/60 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+  <!-- Izquierda: Buscador Global -->
+  <div class="flex items-center gap-4 w-1/3">
+    <button
+      type="button"
+      (click)="sidebarService.toggle()"
+      class="lg:hidden p-2 text-info-600 hover:text-primary hover:bg-base rounded-lg transition-colors"
+      aria-label="Abrir menú de navegación"
+      title="Abrir menú de navegación">
+      ☰
+    </button>
+
+    <div class="relative w-full max-w-xs">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-info-400">
+        🔍
+      </span>
+      <input 
+        type="text" 
+        placeholder="Buscar expediente, tesis, DNI..." 
+        class="w-full pl-9 pr-4 py-1.5 bg-base border border-info-200/80 rounded-lg text-xs text-font placeholder-info-400 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all" />
+    </div>
+  </div>
+
+  <!-- Derecha: Notificaciones y Usuario -->
+  <div class="flex items-center gap-4">
+    <!-- Botón de Alerta SLA / Notificaciones -->
+    <button class="relative p-2 text-info-600 hover:text-primary rounded-lg hover:bg-base transition-colors" title="Alertas de SLA (15 días)">
+      🔔
+      <!-- Badge de notificación activa -->
+      <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-danger rounded-full ring-2 ring-white"></span>
+    </button>
+
+    <div class="h-6 w-px bg-info-100"></div>
+
+    <!-- Perfil de Usuario -->
+    <div class="flex items-center gap-3 cursor-pointer select-none">
+      <div class="w-9 h-9 rounded-full bg-primary-900 text-secondary-300 font-bold text-xs flex items-center justify-center border border-primary-700">
+        {{ usuario.iniciales }}
+      </div>
+      <div class="hidden sm:block text-left">
+        <p class="text-xs font-bold text-font leading-tight">{{ usuario.nombre }}</p>
+        <p class="text-[10px] text-info-600 font-medium">{{ usuario.rol }}</p>
+      </div>
+    </div>
+  </div>
+</header>

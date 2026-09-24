@@ -1,0 +1,85 @@
+<!-- Backdrop/Fondo oscuro solo visible en MÓVIL cuando el sidebar está abierto -->
+@if (sidebarService.isOpen() && isMobile()) {
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden transition-opacity duration-300"
+  (click)="sidebarService.close()">
+</div>
+}
+
+<!-- Sidebar Principal -->
+<aside
+  class="fixed top-0 left-0 z-50 h-screen w-72 bg-primary text-white flex flex-col border-r border-primary-950 shadow-xl transition-transform duration-300 ease-in-out lg:sticky lg:translate-x-0"
+  [class.-translate-x-full]="!sidebarService.isOpen() && isMobile()"
+  [class.translate-x-0]="sidebarService.isOpen() || !isMobile()">
+
+  <!-- Brand Header -->
+  <div class="p-5 border-b border-primary-700 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="p-1 w-20 border border-primary-200 rounded-2xl">
+        <img src="/img/logo_fcsa.png" alt="logo_fcsa">
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-wide text-white leading-tight">FCSA - UNSCH</h1>
+        <p class="text-sm text-primary-200">Gestión de Tesis - SIGTE</p>
+      </div>
+    </div>
+
+    <!-- Botón de Cierre 'X' visible únicamente en pantalla pequeña -->
+    <button (click)="sidebarService.close()"
+      class="lg:hidden p-1.5 text-primary-200 hover:text-white hover:bg-primary-800 rounded-lg transition-colors">
+      <svg lucideX></svg>
+    </button>
+  </div>
+
+  <!-- Menú de Navegación -->
+  <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+    <div class="px-3 pb-2 font-bold text-primary-300 tracking-wider uppercase">
+      Menú Principal
+    </div>
+
+    @for (item of menuItems; track item.route) {
+    <!-- Item con submenú -->
+    @if (item.children) {
+    <div>
+      <button (click)="toggleSubmenu(item)"
+        class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm text-primary-100 hover:bg-primary-800 hover:text-white transition-all  hover:cursor-pointer">
+        <div class="flex items-center gap-3">
+          <i class="pi {{item.icon}}"></i>
+          <span>{{ item.label }}</span>
+        </div>
+        <i class="pi {{item.expanded ? 'pi-chevron-up' : 'pi-chevron-down'}}"></i>
+      </button>
+
+      <!-- Submenú -->
+      @if (item.expanded) {
+      <div class="ml-4 mt-1 space-y-1">
+        @for (child of item.children; track child.label) {
+        <a [routerLink]="child.route" routerLinkActive="bg-primary-700 text-white font-semibold shadow-xs"
+          (click)="closeOnMobile()"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-primary-100 hover:bg-primary-800 hover:text-white hover:cursor-pointer transition-all">
+           <i class="pi {{child.icon}}"></i>
+          <span>{{ child.label }}</span>
+        </a>
+        }
+      </div>
+      }
+    </div>
+
+    } @else {
+    <!-- Item simple -->
+    <a [routerLink]="item.route" routerLinkActive="bg-primary-700 text-white font-semibold shadow-xs"
+      (click)="closeOnMobile()"
+      class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-primary-100 hover:bg-primary-800 hover:text-white transition-all">
+      <!-- <svg [lucideIcon]="item.icon" class="w-5 h-5"></svg> -->
+      <i class="pi {{item.icon}}"></i>
+      <span>{{ item.label }}</span>
+    </a>
+    }
+    }
+  </nav>
+
+  <!-- Footer del Sidebar -->
+  <div class="p-4 border-t border-primary-800/80 bg-primary-950/40 text-sm text-primary-300">
+    <p class="font-medium text-white">Facultad de Ciencias de la Salud</p>
+    <p class="text-xs text-primary-400">Versión 1.0.0 (2026)</p>
+  </div>
+</aside>

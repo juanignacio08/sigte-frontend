@@ -1,0 +1,28 @@
+<span 
+  [ngClass]="[
+    'inline-flex items-center gap-1.5 font-semibold leading-none tracking-tight select-none w-fit',
+    badgeClasses
+  ]">
+
+  <!-- 1. Circulito Indicador (Dot) -->
+  @if (withDot) {
+    <span 
+      [ngClass]="[
+        'rounded-full shrink-0 inline-block',
+        dotSizeClass,
+        effectiveDotClass
+      ]">
+    </span>
+  }
+
+  <!-- 2. Icono opcional -->
+  @if (icon) {
+    <i class="pi {{ icon }}" style="font-size: 1rem;"></i>
+  }
+
+  <!-- 3. Texto del Badge -->
+  <ng-content>
+    {{ defaultText }}
+  </ng-content>
+
+</span>
