@@ -1,0 +1,30 @@
+<div
+    class="flex flex-col items-center justify-center p-8 pb-2 min-h-auto bg-white border border-info rounded-2xl shadow-sm">
+
+    <div class="relative mb-4">
+        <div class="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-25"></div>
+        <div class="relative flex items-center justify-center w-16 h-16 rounded-full bg-red-50 text-red-500">
+            <i class="pi pi-times-circle" style="font-size: 2rem;"></i>
+        </div>
+    </div>
+
+    <h2 class="text-lg font-bold text-gray-800 mb-3 text-center">
+        Sin conexión con el servidor
+    </h2>
+
+    <p class="text-gray-500 text-center max-w-md mb-8 text-sm leading-relaxed">
+        No se pudo establecer comunicación con el backend. Verifica tu conexión a internet o reintenta en unos momentos.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4">
+        <p-button label="Reintentar conexión" icon="pi pi-refresh" size="small" styleClass="p-button-raised p-button-danger"
+            (onClick)="reloadPage()">
+        </p-button>
+    </div>
+
+    <div class="mt-8 py-3 border-t border-gray-100 w-full text-center">
+        <span class="text-xs font-mono text-gray-400 uppercase tracking-widest">
+            Error Code: ERR_CONNECTION_REFUSED | UNSCH - FCSA
+        </span>
+    </div>
+</div>

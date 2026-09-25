@@ -29,6 +29,13 @@
       </div>
     </div>
 
+    @if (controls.operation.loading()) {
+    <!-- Se muestran 5 filas y 4 columnas mientras carga -->
+    <app-table-skeleton [rows]="4" [cols]="5" />
+    } @else if (controls.operation.connectionError()) {
+    <!-- 2. Estado de Error de Conexión (Card con botón de recarga) -->
+    <app-no-connection />
+    } @else {
     <!-- 2. Barra de Estadísticas y Sincronización -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-sm text-slate-600">
       <!-- Contadores de resumen -->
@@ -86,17 +93,16 @@
                 <span class="font-semibold text-slate-900 text-sm">
                   {{ dept.denominacion }}
                 </span>
-                @if (dept.resolucionCreacion) {
                 <span class="text-xs text-info-400 font-normal">
                   {{ dept.abreviatura }}
                 </span>
-                }
               </div>
             </td>
 
             <!-- Escuelas Adscritas (Badge redondeado con icono de tabla) -->
             <td class="py-3 px-4 text-center">
-              <app-badge variant="info" icon="pi-building" [bordered]="true" size="sm">{{ dept.totalEscuelas }} {{ dept.totalEscuelas === 1 ? 'Escuela' : 'Escuelas' }}</app-badge>
+              <app-badge variant="info" icon="pi-building" [bordered]="true" size="sm">{{ dept.totalEscuelas }} {{
+                dept.totalEscuelas === 1 ? 'Escuela' : 'Escuelas' }}</app-badge>
             </td>
 
             <!-- Estado (Píldora Verde/Roja) -->
@@ -117,10 +123,10 @@
                   (onClick)="editar(dept)"></app-button>
                 @if (dept.estado == 1) {
                 <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
-                  (onClick)="editar(dept)"></app-button>
+                  (onClick)="desactivar(dept)"></app-button>
                 } @else() {
                 <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
-                  (onClick)="editar(dept)"></app-button>
+                  (onClick)="activar(dept)"></app-button>
                 }
                 <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
                   (onClick)="eliminar(dept)"></app-button>
@@ -141,6 +147,17 @@
 
       </p-table>
     </div>
+    }
 
   </div>
 </div>
+
+<!-- Componente Modal para Crear/Editar -->
+<app-departamento-add-edit 
+  #departamentoModal 
+  [facultadId]="facultad.id" 
+  (onSuccess)="onGuardadoExitoso()" />
+
+<app-confirm-dialog 
+  #confirmModal 
+  (onConfirm)="ejecutarAccionConfirmada()" />

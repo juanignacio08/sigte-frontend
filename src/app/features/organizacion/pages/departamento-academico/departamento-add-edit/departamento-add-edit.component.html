@@ -1,0 +1,50 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '80%', maxWidth: '500px' }" [draggable]="false"
+    [resizable]="false" [header]="isEdit() ? 'Editar Departamento Académico' : 'Nuevo Departamento Académico'"
+    (onHide)="cerrarModal()">
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="space-y-4 mt-2">
+
+        <!-- Campo: Denominación Oficial -->
+        <div class="flex flex-col gap-1.5">
+            <label for="denominacion" class="text-sm font-semibold text-primary">
+                Denominación Oficial <span class="text-secondary">*</span>
+            </label>
+            <input pInputText id="denominacion" formControlName="denominacion"
+                placeholder="Ej. Departamento Académico de Medicina Humana" [class.ng-invalid]="campoInvalido('denominacion')"
+                [class.ng-dirty]="campoInvalido('denominacion')" />
+
+            @if (campoInvalido('denominacion')) {
+            <small class="text-xs text-danger">
+                La denominación es requerida (min 10 caracteres, max 200 caracteres.).
+            </small>
+            }
+        </div>
+
+        <!-- Campo: Abreviatura -->
+        <div class="flex flex-col gap-1.5">
+            <label for="abreviatura" class="text-sm font-semibold text-primary">
+                Abreviatura <span class="text-secondary">*</span>
+            </label>
+            <input pInputText id="abreviatura" formControlName="abreviatura" placeholder="Ej. DAMH"
+                [class.ng-invalid]="campoInvalido('abreviatura')" [class.ng-dirty]="campoInvalido('abreviatura')" />
+
+            @if (campoInvalido('abreviatura')) {
+            <small class="text-xs text-danger">
+                La abreviatura es requerida (máximo 10 caracteres).
+            </small>
+            }
+        </div>
+
+        <!-- Footer / Acciones del Modal -->
+        <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+            <app-button type="button" action="cancel" (onClick)="cerrarModal()">
+                Cancelar
+            </app-button>
+
+            <app-button type="submit" action="save" [withIcon]="true" [disabled]="form.invalid || loading()" [loading]="loading()">
+                {{ loading() ? 'Guardando...' : 'Guardar' }}
+            </app-button>
+        </div>
+
+    </form>
+</p-dialog>

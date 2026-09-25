@@ -24,7 +24,7 @@ export const routes: Routes = [
                     {
                         path: 'departamentos',
                         loadComponent: () =>
-                            import('./features/organizacion/departamento-academico/departamento-academico.component').then(
+                            import('./features/organizacion/pages/departamento-academico/departamento-academico.component').then(
                                 (m) => m.DepartamentoAcademicoComponent,
                             ),
                     },

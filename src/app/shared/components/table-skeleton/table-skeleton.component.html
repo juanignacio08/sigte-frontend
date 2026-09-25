@@ -1,0 +1,22 @@
+<div
+    class="rounded-lg border border-info p-4 bg-gray-50 w-full animate-pulse">
+
+    <!-- Filas y Columnas de la Tabla -->
+    <div class="space-y-4">
+        <!-- Encabezado de la tabla -->
+        <div class="flex gap-4 pb-6 border-b border-info">
+            @for (col of columnArray(); track $index) {
+            <p-skeleton width="100%" height="1.5rem" />
+            }
+        </div>
+
+        <!-- Cuerpo con filas dinámicas -->
+        @for (row of rowArray(); track $index) {
+        <div class="flex gap-4 items-center">
+            @for (col of columnArray(); track $index) {
+            <p-skeleton width="100%" height="2rem" borderRadius="4px" />
+            }
+        </div>
+        }
+    </div>
+</div>

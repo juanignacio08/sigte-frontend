@@ -1,0 +1,33 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '90%', maxWidth: '440px' }" [draggable]="false"
+    [resizable]="false" [showHeader]="false" (onHide)="cerrar()">
+
+    <div class="p-6 text-center">
+        <!-- Icono Ilustrativo Dinámico -->
+        <div class="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center transition-colors"
+            [ngClass]="[config().iconBgColor, config().iconTextColor]">
+            <i [class]="'pi ' + config().icon" style="font-size: 1.5rem"></i>
+        </div>
+
+        <!-- Título -->
+        <h3 class="text-lg font-bold text-font mb-2">
+            {{ config().title }}
+        </h3>
+
+        <!-- Mensaje / Detalle -->
+        <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+            {{ config().message }}
+        </p>
+
+        <!-- Botones de Acción -->
+        <div class="flex items-center justify-center gap-3">
+            <app-button type="button" variant="outline" (onClick)="cerrar()">
+                Cancelar
+            </app-button>
+
+            <app-button type="button" [action]="actionToButtonType()" [disabled]="loading()" (onClick)="confirmar()">
+                {{ loading() ? 'Procesando...' : config().confirmLabel }}
+            </app-button>
+        </div>
+    </div>
+
+</p-dialog>
