@@ -137,8 +137,8 @@ export class EscuelaAddEditComponent {
     this.rutaRes.set(escuela.plantillaRes || null);
 
     // Si la entidad escuela ya trae rutas/nombres de plantilla guardados:
-    this.fileNameMemo.set(escuela.plantillaMemo ? 'Plantilla_Memorandum_Actual.docx' : null);
-    this.fileNameRes.set(escuela.plantillaRes ? 'Plantilla_Resolucion_Actual.docx' : null);
+    this.fileNameMemo.set(escuela.plantillaMemo ? this.generarFileNamePlantilla(escuela, 'MEMO') : null);
+    this.fileNameRes.set(escuela.plantillaRes ? this.generarFileNamePlantilla(escuela, 'RES') : null);
 
     this.form.patchValue({
       id: this.currentId,
@@ -149,6 +149,18 @@ export class EscuelaAddEditComponent {
     });
 
     this.visible.set(true);
+  }
+
+  generarFileNamePlantilla(escuela: EscuelaProfesional, tipoDoc: 'MEMO' | 'RES'): string {
+    if (tipoDoc === 'MEMO' && escuela.plantillaMemo) {
+      return 'Plantilla_Memorandum_' + escuela.abreviatura + '.docx';
+    }
+
+    if (tipoDoc === 'RES' && escuela.plantillaRes) {
+      return 'Plantilla_Resolucion_' + escuela.abreviatura + '.docx';
+    }
+
+    return 'Plantilla_Actual';
   }
 
   // Método para descargar la plantilla desde el Backend
