@@ -1,4 +1,5 @@
 import { ResponseDTO } from "../base/ResponseDTO.model";
+import { EscuelaProfesional } from "./escuela_profesional.model";
 
 export interface DepartamentoAcademico {
   id: number;
@@ -7,6 +8,7 @@ export interface DepartamentoAcademico {
   denominacion: string;
   estado: number;
   totalEscuelas: number;
+  escuelas: EscuelaProfesional[];
 }
 
 export interface DepartamentoAcademicoRequest {

@@ -12,6 +12,7 @@ import { NoConnectionComponent } from '../../../../shared/components/no-connecti
 import { DepartamentoAddEditComponent } from './departamento-add-edit/departamento-add-edit.component';
 import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { NotificacionService } from '../../../../shared/services/notificacion.service';
+import { Router } from '@angular/router';
 
 @Component({
   imports: [
@@ -57,6 +58,7 @@ export class DepartamentoAcademicoComponent implements OnInit {
 
   private readonly departamentoService = inject(DepartamentoService);
   private readonly notificationService = inject(NotificacionService);
+  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.cargarDepartamentos(this.facultad.id);
@@ -89,10 +91,6 @@ export class DepartamentoAcademicoComponent implements OnInit {
     console.log('Exportar lista');
   }
 
-  verEscuelas(dept: DepartamentoAcademico) {
-    console.log('Ver escuelas adscritas a:', dept.denominacion);
-  }
-
   editar(dept: DepartamentoAcademico) {
     this.modalForm()?.abrirEdicion(dept);
   }
@@ -115,8 +113,8 @@ export class DepartamentoAcademicoComponent implements OnInit {
     this.confirmModal()?.abrir('delete', dept.denominacion);
   }
 
-  verDetalle(dept: DepartamentoAcademico) {
-    console.log('Ver detalle:', dept.id);
+  verEscuelas(dept: DepartamentoAcademico): void {
+    this.router.navigate(['/organizacion/departamentos', dept.id, 'ver-escuelas']);
   }
 
   onGuardadoExitoso() {

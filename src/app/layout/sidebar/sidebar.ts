@@ -48,7 +48,8 @@ export class Sidebar implements OnInit {
           },
           {
             label: "Escuelas Profesionales",
-            icon: "pi-building"
+            icon: "pi-building",
+            route: '/organizacion/escuelas'
           }
         ],
         expanded: false

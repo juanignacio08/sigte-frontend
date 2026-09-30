@@ -1,0 +1,178 @@
+@if (controls.operation.loadingInitial()) {
+espere...
+} @else {
+<app-title-subtitle [title]="title()" [subtitle]="subtitle" [icon]="icon"></app-title-subtitle>
+
+<div class="mt-4 space-y-4">
+
+    <!-- Tarjeta Contenedora Principal -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-6">
+
+        <!-- 1. Encabezado Superior -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-secondary inline-block"></span>
+                    <h1 class="text-lg font-bold text-primary tracking-tight">
+                        Escuelas Profesionales del {{ title() }}
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Acciones Principales -->
+            <div class="flex items-center gap-2">
+                <app-button action="new" [withIcon]="true" (onClick)="crearNuevo()">
+                    Nueva Escuela
+                </app-button>
+                <app-button action="download-xlsx" [onlyIcon]="true" messageTootip="Descargar Excel" variant="outline"
+                    (onClick)="exportar()"></app-button>
+            </div>
+        </div>
+
+        @if (controls.operation.loading()) {
+        <!-- Se muestran 5 filas y 4 columnas mientras carga -->
+        <app-table-skeleton [rows]="4" [cols]="5" />
+        } @else if (controls.operation.connectionError()) {
+        <!-- 2. Estado de Error de Conexión (Card con botón de recarga) -->
+        <app-no-connection />
+        } @else {
+        <!-- 2. Barra de Estadísticas y Sincronización -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-sm text-slate-600">
+            <!-- Contadores de resumen -->
+            <div class="flex items-center gap-5 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                    <span>Total Registrados:</span>
+                    <span class="font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md text-xs">
+                        {{ totalRegistrados() | number:'2.0' }}
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-1.5 text-emerald-700 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Activos: <strong class="font-bold">{{ totalActivos() | number:'2.0' }}</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Tabla PrimeNG Estilizada -->
+        <div class="overflow-hidden border border-slate-200/70 rounded-xl">
+            <p-table [value]="escuelas()" stripedRows [scrollable]="true" scrollHeight="400px"
+                [tableStyle]="{ 'min-width': '50rem' }">
+                <!-- Table Header -->
+                <ng-template pTemplate="header">
+                    <tr class="text-sm font-bold uppercase tracking-wider">
+                        <th class="py-3 px-4 text-left">Nº</th>
+                        <th class="py-3 px-4 text-left">DENOMINACIÓN</th>
+                        <th class="py-3 px-4 text-left">CÓDIGO</th>
+                        <th class="py-3 px-4 text-center">PLANTILLAS</th>
+                        <th class="py-3 px-4 text-center">ESTADO</th>
+                        <th class="py-3 px-4 text-right">ACCIONES</th>
+                    </tr>
+                </ng-template>
+
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-item let-i="rowIndex">
+                    <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors text-sm text-slate-700">
+
+                        <!-- ID / Código -->
+                        <td class="py-3 px-4 font-semibold text-slate-600">
+                            {{i + 1 | number:'2.0'}}
+                        </td>
+
+                        <!-- Denominación Oficial con Subtítulo -->
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col">
+                                <span class="font-semibold text-slate-900 text-sm">
+                                    {{ item.denominacion }}
+                                </span>
+                                <span class="text-xs text-info-400 font-normal">
+                                    {{ item.abreviatura }}
+                                </span>
+                            </div>
+                        </td>
+
+                        <!-- Codigo -->
+                        <td class="py-3 px-4 font-semibold text-slate-600">
+                            {{item.codigo | number:'2.0'}}
+                        </td>
+
+                        <!-- Plantillas -->
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex flex-col gap-3 items-center justify-start md:flex-row">
+                                @if (item.plantillaMemo) {
+                                <app-badge variant="primary" icon="pi-check-circle" size="sm">Memo
+                                    Configurado</app-badge>
+                                } @else {
+                                <app-badge variant="warning" icon="pi-exclamation-triangle" size="sm">Memo
+                                    Pendiente</app-badge>
+                                }
+                                |
+                                @if (item.plantillaRes) {
+                                <app-badge variant="secondary" icon="pi-check-circle" size="sm">Resolución
+                                    Configurado</app-badge>
+                                } @else {
+                                <app-badge variant="danger" icon="pi-exclamation-triangle" size="sm">Resolución
+                                    Pendiente</app-badge>
+                                }
+                            </div>
+                        </td>
+
+                        <!-- Estado (Píldora Verde/Roja) -->
+                        <td class="py-3 px-4 text-center">
+                            @if (item.estado === 1) {
+                            <app-badge variant="active" [withDot]="true" size="sm"></app-badge>
+                            } @else {
+                            <app-badge variant="inactive" [withDot]="true" size="sm"></app-badge>
+                            }
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="py-3 px-4">
+                            <div class="flex items-start justify-start gap-1.5">
+                                <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
+                                    (onClick)="editar(item)"></app-button>
+                                @if (item.estado == 1) {
+                                <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
+                                    (onClick)="desactivar(item)"></app-button>
+                                } @else() {
+                                <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
+                                    (onClick)="activar(item)"></app-button>
+                                }
+                                <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
+                                    (onClick)="eliminar(item)"></app-button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </ng-template>
+
+                <!-- Mensaje de Tabla Vacía -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-400 text-sm">
+                            No se encontraron departamentos académicos para esta facultad.
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+        }
+
+    </div>
+</div>
+
+<app-escuela-add-edit 
+  #modalEscuela 
+  [facultadId]="facultad.id" 
+  [departamentoId]="departamento.id" 
+  [departamentoNombre]="departamento.denominacion"
+  (onSuccess)="onGuardadoExitoso()" />
+
+<app-confirm-dialog 
+  #confirmModal 
+  (onConfirm)="ejecutarAccionConfirmada()" />
+}

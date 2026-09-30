@@ -18,10 +18,20 @@ export class DepartamentoService {
 
     return this.http.get<DepartamentoAcademicoResponseList>(url);
   }
+  
+  /**
+   * Obtiene la lista de departamentos académicos áctivos pertenecientes a una facultad.
+   * @param facultadId ID de la facultad
+   */
+  getActivesByFacultad(facultadId: number): Observable<DepartamentoAcademicoResponseList> {
+    const url = `${this.apiUrl}/listarActivosPorFacultad/${facultadId}`;
+
+    return this.http.get<DepartamentoAcademicoResponseList>(url);
+  }
 
   /** Obtener un departamento por su ID */
-  getById(id: number): Observable<DepartamentoAcademico> {
-    return this.http.get<DepartamentoAcademico>(`${this.apiUrl}/${id}`);
+  getById(id: number): Observable<DepartamentoAcademicoResponse> {
+    return this.http.get<DepartamentoAcademicoResponse>(`${this.apiUrl}/${id}`);
   }
 
   /** Crear un nuevo departamento */

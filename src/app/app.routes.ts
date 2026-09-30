@@ -28,6 +28,20 @@ export const routes: Routes = [
                                 (m) => m.DepartamentoAcademicoComponent,
                             ),
                     },
+                    {
+                        path: 'departamentos/:id/ver-escuelas', 
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/departamento-academico/escuela-profesional-dep/escuela-profesional-dep.component').then(
+                                (m) => m.EscuelaProfesionalDepComponent
+                            )
+                    },
+                    {
+                        path: 'escuelas',
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/escuela-profesional/escuela-profesional.component').then(
+                                (m) => m.EscuelaProfesionalComponent,
+                            ),
+                    },
                 ]
             },
 
