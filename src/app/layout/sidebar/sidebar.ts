@@ -58,6 +58,7 @@ export class Sidebar implements OnInit {
       { label: 'Tesis y Expedientes', icon: 'pi-file', route: '/tesis' },
       { label: 'Comisiones y Jurados', icon: 'pi-slack', route: '/comisiones' },
       { label: 'Trámites y Resoluciones', icon: 'pi-clipboard', route: '/tramites' },
+      { label: 'Configuración', icon: 'pi-cog', route: '/configuracion' },
     ];
   }
 
