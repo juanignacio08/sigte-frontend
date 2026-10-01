@@ -44,7 +44,20 @@ export const routes: Routes = [
                     },
                 ]
             },
-
+            {
+                path: 'configuracion',
+                loadComponent: () =>
+                    import('./features/configuracion/configuracion.component').then(
+                        (m) => m.ConfiguracionComponent,
+                    ),
+            },
+            {
+                path: 'configuracion/tabla-maestra',
+                loadComponent: () =>
+                    import('./features/configuracion/pages/tabla-maestra/tabla-maestra.component').then(
+                        (m) => m.TablaMaestraComponent,
+                    ),
+            },
             //   {
             //     path: '',
             //     redirectTo: 'organizacion/departamentos',
