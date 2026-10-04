@@ -1,0 +1,35 @@
+<div class="bg-white rounded-2xl border border-info-50 p-5 shadow-xs flex flex-col justify-between space-y-3">
+  <!-- Cabecera de la Tarjeta -->
+  <div class="flex items-center justify-between">
+    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">
+      {{ title() }}
+    </span>
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg {{ iconBgColor() }}">
+      <i [class]="icon()"></i>
+    </div>
+  </div>
+
+  <!-- Valor principal y Badge opcional -->
+  <div class="flex items-baseline gap-2.5">
+    <span class="text-3xl font-extrabold text-slate-900 tracking-tight">
+      {{ value() }}
+    </span>
+    @if (badgeText()) {
+      <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ badgeColor() }}">
+        {{ badgeText() }}
+      </span>
+    }
+  </div>
+
+  <!-- Subtítulo o detalle del Footer -->
+  @if (subtitle() || footerText()) {
+    <div class="text-xs text-slate-500 space-y-0.5">
+      @if (subtitle()) {
+        <p class="font-medium text-slate-600">{{ subtitle() }}</p>
+      }
+      @if (footerText()) {
+        <p class="text-slate-400">{{ footerText() }}</p>
+      }
+    </div>
+  }
+</div>
