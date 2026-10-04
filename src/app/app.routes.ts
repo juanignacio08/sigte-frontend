@@ -42,6 +42,13 @@ export const routes: Routes = [
                                 (m) => m.EscuelaProfesionalComponent,
                             ),
                     },
+                    {
+                        path: 'docentes',
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/docentes/docentes.component').then(
+                                (m) => m.DocentesComponent,
+                            ),
+                    },
                 ]
             },
             {
