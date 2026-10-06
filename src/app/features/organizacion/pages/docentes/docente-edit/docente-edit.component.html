@@ -73,8 +73,7 @@
                             </label>
                             <p-select inputId="tipoDocumentoCodigo" [options]="tiposDocumento()"
                                 formControlName="tipoDocumentoCodigo" optionLabel="denomination" optionValue="code"
-                                placeholder="Seleccione..." size="small" class="w-full"
-                                [disabled]="loadingCatalogos()" />
+                                placeholder="Seleccione..." size="small" class="w-full" />
                         </div>
 
                         <!-- Número de Documento -->
@@ -203,7 +202,7 @@
                     <p-select inputId="departamentoAcademicoId" [options]="departamentos()"
                         formControlName="departamentoAcademicoId" (onChange)="onDepartamentoChange($event.value)"
                         optionLabel="denominacion" optionValue="id" placeholder="Seleccione D.A." size="small"
-                        class="w-full" [disabled]="loadingCatalogos()" />
+                        class="w-full" />
                 </div>
 
                 <!-- Escuela Profesional Adscrita -->
@@ -213,7 +212,7 @@
                     </label>
                     <p-select inputId="escuelaId" [options]="escuelasFiltradas()" formControlName="escuelaId"
                         optionLabel="denominacion" optionValue="id" placeholder="Seleccione Escuela" size="small"
-                        class="w-full" [disabled]="loadingCatalogos()" />
+                        class="w-full" />
                 </div>
             </div>
         </div>

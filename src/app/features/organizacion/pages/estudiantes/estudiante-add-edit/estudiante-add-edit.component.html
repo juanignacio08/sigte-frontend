@@ -1,0 +1,156 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '95%', maxWidth: '750px' }" [draggable]="false"
+    [resizable]="false" (onHide)="cerrarModal()" [showHeader]="false"
+    contentStyleClass="p-0 rounded-2xl overflow-hidden">
+
+    <!-- Header Personalizado -->
+    <div class="bg-white px-6 pt-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-lg shrink-0">
+                <i class="pi pi-user-plus"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-xl font-bold text-slate-900 leading-tight">
+                        {{ isEdit() ? 'Editar Registro de Estudiante' : 'Registrar Nuevo Estudiante' }}
+                    </h2>
+                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                        FCSA
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Formulario Oficial de Registro de Estudiantes - FCSA
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="form-scroll p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+
+        <!-- Fila 1: DNI y Nombres -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label for="numeroDocumento" class="text-xs font-semibold text-slate-700">N° Documento (DNI/CE)</label>
+                <input pInputText id="numeroDocumento" formControlName="numeroDocumento" placeholder="72481920"
+                    pSize="small" class="w-full" />
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="nombres" class="text-xs font-semibold text-slate-700">
+                    Nombres <span class="text-red-500">*</span>
+                </label>
+                <input pInputText id="nombres" formControlName="nombres" placeholder="Ana Lucia" pSize="small"
+                    [class.border-red-400]="campoInvalido('nombres')" />
+            </div>
+        </div>
+
+        <!-- Fila 2: Apellidos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label for="primerApellido" class="text-xs font-semibold text-slate-700">
+                    Primer Apellido (Paterno) <span class="text-red-500">*</span>
+                </label>
+                <input pInputText id="primerApellido" formControlName="primerApellido" placeholder="Quispe"
+                    pSize="small" [class.border-red-400]="campoInvalido('primerApellido')" />
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="segundoApellido" class="text-xs font-semibold text-slate-700">
+                    Segundo Apellido (Materno) <span class="text-red-500">*</span>
+                </label>
+                <input pInputText id="segundoApellido" formControlName="segundoApellido" placeholder="Mendoza"
+                    pSize="small" [class.border-red-400]="campoInvalido('segundoApellido')" />
+            </div>
+        </div>
+
+        <!-- Fila 2: Escuela Profesional y Código -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label for="escuelaId" class="text-xs font-semibold text-slate-700">
+                    Escuela Profesional <span class="text-red-500">*</span>
+                </label>
+                <p-select inputId="escuelaId" [options]="escuelas()" formControlName="escuelaId"
+                    optionLabel="denominacion" optionValue="id" placeholder="Seleccionar Escuela" size="small"
+                    class="w-full" />
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label for="codigo" class="text-xs font-semibold text-slate-700">Código Estudiantil</label>
+                <input pInputText id="codigo" formControlName="codigo" placeholder="20250482" pSize="small"
+                    class="w-full" />
+            </div>
+        </div>
+
+        <!-- Fila 5: Correo Institucional y Teléfono -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-slate-700">
+                    Género <span class="text-red-500">*</span>
+                </label>
+                <div class="flex items-center gap-2 pt-0.5">
+                    <label
+                        class="flex-1 flex items-center justify-center gap-2 p-1.5 border border-slate-200 rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700">
+                        <input type="radio" [value]="genderMaleCode" formControlName="generoCodigo"
+                            class="text-indigo-600 focus:ring-indigo-500" />
+                        <span>Masculino</span>
+                    </label>
+                    <label
+                        class="flex-1 flex items-center justify-center gap-2 p-1.5 border border-slate-200 rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700">
+                        <input type="radio" [value]="genderFemaleCode" formControlName="generoCodigo"
+                            class="text-indigo-600 focus:ring-indigo-500" />
+                        <span>Femenino</span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="telefono" class="text-xs font-semibold text-slate-700">Teléfono / WhatsApp Móvil</label>
+                <p-iconfield>
+                    <p-inputicon class="pi pi-phone" />
+                    <input id="telefono" formControlName="telefono" placeholder="+51 966 845 210" pInputText
+                        pSize="small" fluid />
+                </p-iconfield>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+            <div class="flex flex-col gap-1">
+                <label for="correoInstitucional" class="text-xs font-semibold text-slate-700">
+                    Correo Institucional <span class="text-red-500">*</span>
+                </label>
+                <p-iconfield>
+                    <p-inputicon class="pi pi-envelope" />
+                    <input type="email" id="correoInstitucional" formControlName="correoInstitucional" pInputText
+                        pSize="small" placeholder="nombre.apellido.codigo@unsch.edu.pe"
+                        [class.border-red-400]="campoInvalido('correoInstitucional')" fluid />
+                </p-iconfield>
+            </div>
+        </div>
+            
+        <!-- Banner Estado Inicial -->
+        <div
+            class="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3 flex items-center justify-between text-xs text-emerald-800">
+            <div class="flex items-center gap-2">
+                <i class="pi pi-check-circle text-emerald-600 text-base"></i>
+                <div>
+                    <span class="font-bold">Estado Inicial: Activo (Regular)</span>
+                    <p class="text-[11px] text-emerald-700">Habilitado para trámites de proyectos de tesis
+                    </p>
+                </div>
+            </div>
+            <span class="font-semibold text-[11px] bg-emerald-200/70 text-emerald-900 px-2 py-0.5 rounded-md">
+                FCSA
+            </span>
+        </div>
+
+        <!-- Footer / Acciones -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">* Campos obligatorios</span>
+
+            <div class="flex items-center gap-2">
+                <app-button type="button" action="cancel" (onClick)="cerrarModal()">Cancelar</app-button>
+                <app-button type="submit" [disabled]="form.invalid || loading()" action="save" [withIcon]="true"
+                    [loading]="loading()">
+                    <span>{{ isEdit() ? 'Actualizar Estudiante' : 'Guardar Estudiante' }}</span>
+                </app-button>
+            </div>
+        </div>
+
+    </form>
+</p-dialog>

@@ -4,7 +4,6 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 import { Docente, DocenteFiltro, DocenteMetrica } from '../../../../shared/models/personas/docente.model';
 import { DepartamentoAcademico } from '../../../../shared/models/master/departamento_academico.model';
 import { EscuelaProfesional } from '../../../../shared/models/master/escuela_profesional.model';
-import { StatCardComponent } from '../../../../shared/components/stat-card/stat-card.component';
 import { SelectModule } from '@openng/optimus-ui/select';
 import { TableSkeletonComponent } from '../../../../shared/components/table-skeleton/table-skeleton.component';
 import { NoConnectionComponent } from '../../../../shared/components/no-connection/no-connection.component';
@@ -24,11 +23,13 @@ import { DocenteAddEditComponent } from './docente-add-edit/docente-add-edit.com
 import { DocenteEditComponent } from './docente-edit/docente-edit.component';
 import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { NotificacionService } from '../../../../shared/services/notificacion.service';
+import { PanelModule } from '@openng/optimus-ui/panel';
 
 @Component({
   imports: [
     CommonModule,
     FormsModule,
+    PanelModule,
     SelectModule,
     TableModule,
     TitleSubtitleComponent,
@@ -36,7 +37,6 @@ import { NotificacionService } from '../../../../shared/services/notificacion.se
     BadgeComponent,
     TableSkeletonComponent,
     NoConnectionComponent,
-    StatCardComponent,
     DocenteAddEditComponent,
     DocenteEditComponent,
     ConfirmDialogComponent
@@ -58,9 +58,6 @@ export class DocentesComponent implements OnInit {
   tamanoPagina = signal(10);
   totalItems = signal(0);
   totalPaginas = signal(0);
-  totalRegistrados = signal<MetricaTotalPorcentaje>({ numero: 0, porcentaje: 0 });
-  totalActivos = signal<MetricaTotalPorcentaje>({ numero: 0, porcentaje: 0 });
-  totalInactivos = signal<MetricaTotalPorcentaje>({ numero: 0, porcentaje: 0 });
 
   departamentosFiltro = signal<DepartamentoAcademico[]>([]);
   private todasLasEscuelas = signal<EscuelaProfesional[]>([]);
@@ -116,23 +113,8 @@ export class DocentesComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.cargarMetricas(this.facultad.id);
     this.cargarFiltros();
     this.cargarDocentes(this.filtro, this.paginaActual(), this.tamanoPagina());
-  }
-
-  cargarMetricas(facultadId: number): void {
-    this.docenteService.getMetricsByFacultad(facultadId).subscribe({
-      next: (res) => {
-        const metrics: DocenteMetrica = res.data;
-        this.totalRegistrados.set({ numero: metrics.total || 0, porcentaje: metrics.total ? 100.00 : 0.00 });
-        this.totalActivos.set({ numero: metrics.totalActivos || 0, porcentaje: metrics.porcentajeActivos || 0.00 });
-        this.totalInactivos.set({ numero: metrics.totalInactivos || 0, porcentaje: metrics.porcentajeInactivos || 0.00 });
-      },
-      error: (err) => {
-        console.error('Error al cargar las métricas:', err);
-      }
-    });
   }
 
   cargarFiltros(): void {
@@ -180,7 +162,6 @@ export class DocentesComponent implements OnInit {
         this.totalPaginas.set(respuesta.totalPages);
         this.controls.operation.loading.set(false);
         this.controls.filters.loading.set(false);
-        console.log(this.docentes());
 
       },
       error: (err) => {
@@ -248,7 +229,6 @@ export class DocentesComponent implements OnInit {
 
   onGuardadoExitoso() {
     this.cargarDocentes(this.filtro, this.paginaActual(), this.tamanoPagina());
-    this.cargarMetricas(this.facultad.id);
   }
 
   activar(item: Docente): void {

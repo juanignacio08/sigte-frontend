@@ -52,6 +52,25 @@ export const routes: Routes = [
                 ]
             },
             {
+                path: 'personal',
+                children: [
+                    {
+                        path: 'docentes',
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/docentes/docentes.component').then(
+                                (m) => m.DocentesComponent,
+                            ),
+                    },
+                    {
+                        path: 'estudiantes', 
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/estudiantes/estudiantes.component').then(
+                                (m) => m.EstudiantesComponent
+                            )
+                    },
+                ]
+            },
+            {
                 path: 'configuracion',
                 loadComponent: () =>
                     import('./features/configuracion/configuracion.component').then(

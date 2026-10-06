@@ -10,94 +10,84 @@
 
 
 <div class="mt-4 space-y-6">
-
-    <!-- 1. Tarjetas de Métricas (KPIs Reusables) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <app-stat-card title="TOTAL DE DOCENTES" [value]="totalRegistrados().numero" icon="pi pi-users"
-            iconBgColor="bg-indigo-50 text-indigo-600" [badgeText]="totalRegistrados().porcentaje.toFixed(1) + '% del Padrón'"
-            badgeColor="bg-emerald-100 text-emerald-800" [subtitle]="facultad.denominacion">
-        </app-stat-card>
-
-        <app-stat-card title="DOCENTES ACTIVOS" [value]="totalActivos().numero" icon="pi pi-user-plus"
-            iconBgColor="bg-emerald-50 text-emerald-600" [badgeText]="totalActivos().porcentaje.toFixed(1) + '% del Padrón'"
-            badgeColor="bg-emerald-100 text-emerald-800" subtitle="Habilitados para realizar funciones">
-        </app-stat-card>
-
-        <app-stat-card title="DOCENTES INACTIVOS" [value]="totalInactivos().numero" icon="pi pi-user-minus"
-            iconBgColor="bg-slate-100 text-slate-500" [badgeText]="totalInactivos().porcentaje.toFixed(1) + '% del Padrón'"
-            badgeColor="bg-slate-200 text-slate-700" footerText="En licencia, Inactivos,Año sabático, descanso">
-        </app-stat-card>
-    </div>
-
     <!-- 2. Filtros de Búsqueda Académica -->
     <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-6">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <i class="pi pi-filter text-slate-600"></i>
-                <h2 class="text-base font-bold text-primary">Filtros de Búsqueda Académica</h2>
-            </div>
-        </div>
+        <p-panel [toggleable]="true">
+            <ng-template #header>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-filter text-slate-600"></i>
+                    <h2 class="text-base font-bold text-primary">Filtros de Búsqueda Académica</h2>
+                </div>
+            </ng-template>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-            <!-- D.A. Académico -->
-            <div class="flex flex-col gap-1">
-                <label for="filtroDept" class="text-xs font-semibold text-slate-600">D.A. ACADÉMICO</label>
-                <p-select inputId="filtroDept" [options]="departamentosFiltro()" [ngModel]="filtroDepartamento()"
-                    (ngModelChange)="onDepartamentoChange($event)" optionLabel="denominacion" optionValue="id"
-                    placeholder="Todos los D.A." size="small" class="w-full" [disabled]="controls.filters.loading()" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                <!-- D.A. Académico -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroDept" class="text-xs font-semibold text-slate-600">D.A. ACADÉMICO</label>
+                    <p-select inputId="filtroDept" [options]="departamentosFiltro()" [ngModel]="filtroDepartamento()"
+                        (ngModelChange)="onDepartamentoChange($event)" optionLabel="denominacion" optionValue="id"
+                        placeholder="Todos los D.A." size="small" class="w-full"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Escuela Profesional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEsc" class="text-xs font-semibold text-slate-600">ESCUELA PROFESIONAL</label>
+                    <p-select inputId="filtroEsc" [options]="escuelasFiltro()" [ngModel]="filtroEscuela()"
+                        (ngModelChange)="filtroEscuela.set($event)" optionLabel="denominacion" optionValue="id"
+                        placeholder="Todas las Escuelas" size="small" class="w-full"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Estado -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEst" class="text-xs font-semibold text-slate-600">ESTADO </label>
+                    <p-select inputId="filtroEst" [options]="estadosFiltro" [ngModel]="filtroEstado()"
+                        (ngModelChange)="filtroEstado.set($event)" optionLabel="label" optionValue="value"
+                        placeholder="Todos" size="small" class="w-full" [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Género -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroGen" class="text-xs font-semibold text-slate-600">GÉNERO</label>
+                    <p-select inputId="filtroGen" [options]="generosFiltro()" [ngModel]="filtroGenero()"
+                        (ngModelChange)="filtroGenero.set($event)" optionLabel="denomination" optionValue="code"
+                        placeholder="Todos" size="small" class="w-full" [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- N° Documento / DNI -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroDni" class="text-xs font-semibold text-slate-600">N° DOCUMENTO / DNI</label>
+                    <input id="filtroDni" type="text" [ngModel]="filtroNumeroDocumento()"
+                        (ngModelChange)="filtroNumeroDocumento.set($event)" placeholder="Buscar DNI..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Correo Institucional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroMail" class="text-xs font-semibold text-slate-600">CORREO INSTITUCIONAL</label>
+                    <input id="filtroMail" type="text" [ngModel]="filtroCorreo()"
+                        (ngModelChange)="filtroCorreo.set($event)" placeholder="@ejemplo@unsch..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        [disabled]="controls.filters.loading()" />
+                </div>
             </div>
 
-            <!-- Escuela Profesional -->
-            <div class="flex flex-col gap-1">
-                <label for="filtroEsc" class="text-xs font-semibold text-slate-600">ESCUELA PROFESIONAL</label>
-                <p-select inputId="filtroEsc" [options]="escuelasFiltro()" [ngModel]="filtroEscuela()"
-                    (ngModelChange)="filtroEscuela.set($event)" optionLabel="denominacion" optionValue="id"
-                    placeholder="Todas las Escuelas" size="small" class="w-full" [disabled]="controls.filters.loading()"/>
-            </div>
-
-            <!-- Estado -->
-            <div class="flex flex-col gap-1">
-                <label for="filtroEst" class="text-xs font-semibold text-slate-600">ESTADO </label>
-                <p-select inputId="filtroEst" [options]="estadosFiltro" [ngModel]="filtroEstado()"
-                    (ngModelChange)="filtroEstado.set($event)" optionLabel="label" optionValue="value"
-                    placeholder="Todos" size="small" class="w-full" [disabled]="controls.filters.loading()"/>
-            </div>
-
-            <!-- Género -->
-            <div class="flex flex-col gap-1">
-                <label for="filtroGen" class="text-xs font-semibold text-slate-600">GÉNERO</label>
-                <p-select inputId="filtroGen" [options]="generosFiltro()" [ngModel]="filtroGenero()"
-                    (ngModelChange)="filtroGenero.set($event)" optionLabel="denomination" optionValue="code"
-                    placeholder="Todos" size="small" class="w-full" [disabled]="controls.filters.loading()" />
-            </div>
-
-            <!-- N° Documento / DNI -->
-            <div class="flex flex-col gap-1">
-                <label for="filtroDni" class="text-xs font-semibold text-slate-600">N° DOCUMENTO / DNI</label>
-                <input id="filtroDni" type="text" [ngModel]="filtroNumeroDocumento()"
-                    (ngModelChange)="filtroNumeroDocumento.set($event)" placeholder="Buscar DNI..."
-                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500" [disabled]="controls.filters.loading()" />
-            </div>
-
-            <!-- Correo Institucional -->
-            <div class="flex flex-col gap-1">
-                <label for="filtroMail" class="text-xs font-semibold text-slate-600">CORREO INSTITUCIONAL</label>
-                <input id="filtroMail" type="text" [ngModel]="filtroCorreo()" (ngModelChange)="filtroCorreo.set($event)"
-                    placeholder="@ejemplo@unsch..."
-                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500" [disabled]="controls.filters.loading()" />
-            </div>
-        </div>
-
-        <!-- Acciones de Filtro -->
-        <div class="flex items-center justify-end gap-3 pt-2">
-            <app-button type="button" variant="outline" (onClick)="limpiarFiltros()"
-                [disabled]="controls.filters.loading()" size="sm">
-                Limpiar filtros
-            </app-button>
-            <app-button type="button" action="new" [withIcon]="false" size="sm" (onClick)="aplicarFiltros()" [disabled]="controls.filters.loading()">
-                Aplicar Filtros
-            </app-button>
-        </div>
+            <ng-template #footer>
+                <!-- Acciones de Filtro -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <app-button type="button" variant="outline" (onClick)="limpiarFiltros()"
+                        [disabled]="controls.filters.loading()" size="sm">
+                        Limpiar filtros
+                    </app-button>
+                    <app-button type="button" action="new" [withIcon]="false" size="sm" (onClick)="aplicarFiltros()"
+                        [disabled]="controls.filters.loading()">
+                        Aplicar Filtros
+                    </app-button>
+                </div>
+            </ng-template>
+        </p-panel>
     </div>
 
     <!-- Tarjeta Contenedora Principal (Filtros y Tabla) -->
@@ -260,14 +250,15 @@
                 <span class="text-slate-400">· {{ totalItems() }} docentes</span>
             </p>
             <nav class="flex items-center gap-2" aria-label="Paginación de docentes">
-                <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                    (click)="paginaAnterior()"
-                    [disabled]="paginaActual() === 0 || controls.operation.loading()"
+                <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    (click)="paginaAnterior()" [disabled]="paginaActual() === 0 || controls.operation.loading()"
                     aria-label="Ir a la página anterior">
                     <i class="pi pi-chevron-left" aria-hidden="true"></i>
                     Anterior
                 </button>
-                <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                     (click)="paginaSiguiente()"
                     [disabled]="paginaActual() >= totalPaginas() - 1 || controls.operation.loading()"
                     aria-label="Ir a la página siguiente">
@@ -281,16 +272,8 @@
     </div>
 </div>
 
-<app-docente-add-edit 
-  #docenteModal 
-  [facultadId]="facultad.id" 
-  (onSuccess)="onGuardadoExitoso()" />
+<app-docente-add-edit #docenteModal [facultadId]="facultad.id" (onSuccess)="onGuardadoExitoso()" />
 
-<app-docente-edit 
-  #docenteModalEdit 
-  [facultadId]="facultad.id" 
-  (onSuccess)="onGuardadoExitoso()" />
+<app-docente-edit #docenteModalEdit [facultadId]="facultad.id" (onSuccess)="onGuardadoExitoso()" />
 
-  <app-confirm-dialog 
-  #confirmModal 
-  (onConfirm)="ejecutarAccionConfirmada()" />
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />
