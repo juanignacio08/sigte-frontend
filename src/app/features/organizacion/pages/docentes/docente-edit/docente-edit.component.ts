@@ -117,13 +117,21 @@ export class DocenteEditComponent implements OnInit {
 
   cargarCatalogos() {
     this.loadingCatalogos.set(true);
+    this.form.get('tipoDocumentoCodigo')?.disable({ emitEvent: false });
+    this.form.get('departamentoAcademicoId')?.disable({ emitEvent: false });
+    this.form.get('escuelaId')?.disable({ emitEvent: false });
 
     return forkJoin({
       departamentos: this.departamentoService.getActivesByFacultad(this.facultadId()),
       escuelas: this.escuelaService.getActivesByFacultad(this.facultadId()),
       tiposDocumento: this.tablaMaestraService.getItemsActives(TablaMaestraService.documentTypeTableCode)
     }).pipe(
-      finalize(() => this.loadingCatalogos.set(false)) // Se ejecuta siempre (éxito o error)
+      finalize(() => {
+        this.loadingCatalogos.set(false);
+        this.form.get('tipoDocumentoCodigo')?.enable({ emitEvent: false });
+        this.form.get('departamentoAcademicoId')?.enable({ emitEvent: false });
+        this.form.get('escuelaId')?.enable({ emitEvent: false });
+      })
     );
   }
 

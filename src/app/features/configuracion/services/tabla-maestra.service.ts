@@ -9,7 +9,9 @@ export class TablaMaestraService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = `${environment.apiUrl}/maestros`;
 
-    public static readonly documentTypeTableCode = '001'; 
+    public static readonly documentTypeTableCode = '001';
+    public static readonly genderTableCode = '002';
+    
     public static readonly dniCode = '001001';
     public static readonly genderMaleCode = '002001';
     public static readonly genderFemaleCode = '002002';

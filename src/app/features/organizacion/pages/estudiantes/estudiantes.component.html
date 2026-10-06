@@ -1,0 +1,254 @@
+<app-title-subtitle title="Gestión de Estudiantes"
+    subtitle="Administración del padrón estudiantil por facultad y escuela profesional" icon="pi-users">
+    <div class="flex flex-col md:flex-row gap-2 items-end md:items-center justify-end">
+        <app-button action="download-xlsx" [withIcon]="true" size="sm" variant="info">Descargar Excel</app-button>
+        <app-button action="save" [withIcon]="true" size="sm" variant="info">Carga Masiva</app-button>
+        <app-button action="new" [withIcon]="true" size="sm" (onClick)="crearNuevo()">Registrar Estudiante</app-button>
+    </div>
+</app-title-subtitle>
+
+<div class="mt-4 space-y-6">
+
+    <!-- 2. Filtros de Búsqueda y Padrón Estudiantil -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-4">
+        <p-panel [toggleable]="true">
+            <ng-template #header>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-filter text-slate-600"></i>
+                    <h2 class="text-base font-bold text-primary">Filtros de Búsqueda y Padrón Estudiantil</h2>
+                </div>
+            </ng-template>
+
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                <!-- Escuela Profesional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEsc" class="text-xs font-semibold text-slate-600">Escuela Profesional</label>
+                    <p-select inputId="filtroEsc" [options]="escuelasFiltro()" [ngModel]="filtroEscuela()"
+                        (ngModelChange)="filtroEscuela.set($event)" optionLabel="denominacion" optionValue="id"
+                        placeholder="Todas las Escuelas" size="small" class="w-full"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Apellidos y Nombres -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroNom" class="text-xs font-semibold text-slate-600">Apellidos y Nombres</label>
+                    <input id="filtroNom" type="text" [ngModel]="filtroNombre()"
+                        (ngModelChange)="filtroNombre.set($event)" placeholder="Ej. Quispe Morales, Ana..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                </div>
+
+                <!-- Código Estudiantil -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroCod" class="text-xs font-semibold text-slate-600">Código Estudiantil</label>
+                    <input id="filtroCod" type="text" [ngModel]="filtroCodigo()"
+                        (ngModelChange)="filtroCodigo.set($event)" placeholder="Ej. 20210045"
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                </div>
+
+                <!-- N° Documento -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroDoc" class="text-xs font-semibold text-slate-600">N° Documento (DNI/CE)</label>
+                    <input id="filtroDoc" type="text" [ngModel]="filtroDocumento()"
+                        (ngModelChange)="filtroDocumento.set($event)" placeholder="N° DNI / Carné Ext."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                </div>
+
+                <!-- Género -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroGen" class="text-xs font-semibold text-slate-600">Género</label>
+                    <p-select inputId="filtroGen" [options]="generosFiltro()" [ngModel]="filtroGenero()"
+                        (ngModelChange)="filtroGenero.set($event)" optionLabel="denomination" optionValue="code"
+                        placeholder="Todos los géneros" size="small" class="w-full"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                 <!-- Correo Institucional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroMail" class="text-xs font-semibold text-slate-600">CORREO INSTITUCIONAL</label>
+                    <input id="filtroMail" type="text" [ngModel]="filtroCorreo()"
+                        (ngModelChange)="filtroCorreo.set($event)" placeholder="@ejemplo@unsch..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+            </div>
+
+            <ng-template #footer>
+                <!-- Acciones de Filtro -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <app-button type="button" variant="outline" (onClick)="limpiarFiltros()"
+                        [disabled]="controls.filters.loading()" size="sm">
+                        Limpiar filtros
+                    </app-button>
+                    <app-button type="button" action="new" [withIcon]="false" size="sm" (onClick)="aplicarFiltros()"
+                        [disabled]="controls.filters.loading()">
+                        Aplicar Filtros
+                    </app-button>
+                </div>
+            </ng-template>
+        </p-panel>
+
+    </div>
+
+    <!-- 3. Directorio y Tabla de Datos -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-lg font-bold text-slate-800">
+                Directorio de Estudiantes Registrados
+                <span class="text-xs font-normal text-slate-500 ml-1">
+                    (Mostrando {{ estudiantes().length }} de {{ totalItems() }} estudiantes)
+                </span>
+            </h1>
+
+            <!-- Acciones de Registro y Exportación -->
+            <div class="flex items-center gap-2">
+                <app-badge variant="info" [withDot]="true" size="sm">
+                    <span class="text-xs font-semibold">Total: {{ totalItems() }} estudiantes</span>
+                </app-badge>
+            </div>
+        </div>
+
+        @if (controls.operation.loading()) {
+        <app-table-skeleton [rows]="5" [cols]="8" />
+        } @else if (controls.operation.connectionError()) {
+        <app-no-connection />
+        } @else {
+        <div class="overflow-hidden border border-slate-200/70 rounded-xl">
+            <p-table [value]="estudiantes()" stripedRows [scrollable]="true" scrollHeight="420px"
+                [tableStyle]="{ 'min-width': '70rem' }">
+                <ng-template pTemplate="header">
+                    <tr class="text-xs font-bold uppercase tracking-wider text-slate-600 bg-slate-50">
+                        <th scope="col" class="py-3 px-3 text-center" style="width: 4%">#</th>
+                        <th scope="col" class="py-3 px-3 text-left" style="width: 10%">CÓDIGO</th>
+                        <th scope="col" class="py-3 px-3 text-left" style="width: 25%">APELLIDOS Y NOMBRES</th>
+                        <th scope="col" class="py-3 px-3 text-left" style="width: 12%">DOCUMENTO</th>
+                        <th scope="col" class="py-3 px-3 text-left" style="width: 20%">CORREO INSTITUCIONAL</th>
+                        <th scope="col" class="py-3 px-3 text-left" style="width: 15%">ESCUELA PROFESIONAL</th>
+                        <th scope="col" class="py-3 px-3 text-center" style="width: 8%">GÉNERO</th>
+                        <th scope="col" class="py-3 px-3 text-center" style="width: 8%">ESTADO</th>
+                        <th scope="col" class="py-3 px-3 text-right" style="width: 8%">ACCIONES</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-estudiante let-i="rowIndex">
+                    <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors text-xs text-slate-700">
+                        <td class="py-3 px-3 text-center text-slate-400 font-mono">{{ (i + 1 + (paginaActual() *
+                            tamanoPagina())).toString().padStart(2, '0') }}</td>
+
+                        <!-- Código -->
+                        <td class="py-3 px-3">
+                            <span class="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-xs">
+                                {{ estudiante.codigo || 'N/A' }}
+                            </span>
+                        </td>
+
+                        <!-- Nombres y Apellidos con Avatar -->
+                        <td class="py-3 px-3">
+                            <div class="flex items-center gap-2.5">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs shrink-0">
+                                    {{ estudiante.nombres?.charAt(0) }}{{ estudiante.primerApellido?.charAt(0) }}
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-slate-900">
+                                        {{ estudiante.primerApellido }} {{ estudiante.segundoApellido }}, {{
+                                        estudiante.nombres }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Documento -->
+                        <td class="py-3 px-3 font-medium">
+                            <span
+                                class="bg-slate-100 border border-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[11px]">
+                                DNI {{ estudiante.numeroDocumento }}
+                            </span>
+                        </td>
+
+                        <!-- Correo -->
+                        <td class="py-3 px-3 text-slate-600">
+                            <span class="flex items-center gap-1">
+                                <i class="pi pi-envelope text-slate-400 text-[10px]"></i>
+                                {{ estudiante.correoInstitucional }}
+                            </span>
+                        </td>
+
+                        <!-- Escuela Profesional -->
+                        <td class="py-3 px-3">
+                            <span class="inline-flex items-center gap-1.5 font-medium text-slate-800">
+                                {{ estudiante.escuela?.denominacion || 'S/E' }}
+                            </span>
+                        </td>
+
+                        <!-- Género -->
+                        <td class="py-3 px-3 text-center">
+                            <span class="text-[11px] text-slate-600">
+                                {{ estudiante.generoDenominacion || 'S/G' }}
+                            </span>
+                        </td>
+
+                        <!-- Estado -->
+                        <td class="py-3 px-3 text-center">
+                            @if (estudiante.estado === 1) {
+                            <app-badge variant="active" [withDot]="true" size="sm"></app-badge>
+                            } @else {
+                            <app-badge variant="inactive" [withDot]="true" size="sm"></app-badge>
+                            }
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="py-3 px-3">
+                            <div class="flex items-center justify-end gap-1">
+                                <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
+                                    (onClick)="editar(estudiante)"></app-button>
+                                @if (estudiante.estado === 1) {
+                                <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
+                                    (onClick)="desactivar(estudiante)"></app-button>
+                                } @else {
+                                <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
+                                    (onClick)="activar(estudiante)"></app-button>
+                                }
+                                <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
+                                    (onClick)="eliminar(estudiante)"></app-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="9" class="text-center py-8 text-slate-400 text-sm">
+                            No se encontraron estudiantes registrados con los filtros seleccionados.
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-100 pt-3">
+            <p class="text-xs text-slate-600">
+                Página {{ totalPaginas() === 0 ? 0 : paginaActual() + 1 }} de {{ totalPaginas() }}
+                <span class="text-slate-400">· {{ totalItems() }} estudiantes</span>
+            </p>
+            <nav class="flex items-center gap-2">
+                <button type="button"
+                    class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    (click)="paginaAnterior()" [disabled]="paginaActual() === 0 || controls.operation.loading()">
+                    Anterior
+                </button>
+                <button type="button"
+                    class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    (click)="paginaSiguiente()"
+                    [disabled]="paginaActual() >= totalPaginas() - 1 || controls.operation.loading()">
+                    Siguiente
+                </button>
+            </nav>
+        </div>
+        }
+    </div>
+</div>
+
+<app-estudiante-add-edit #estudianteModal [facultadId]="facultad.id" (onSuccess)="onGuardadoExitoso()" />
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />

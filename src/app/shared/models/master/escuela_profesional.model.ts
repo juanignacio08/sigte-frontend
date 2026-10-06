@@ -4,7 +4,7 @@ import { DepartamentoAcademico } from "./departamento_academico.model";
 export interface EscuelaProfesional {
   id: number;
   departamento: DepartamentoAcademico;
-  codigo: string;
+  codigo: number;
   abreviatura: string;
   denominacion: string;
   plantillaMemo: string;
@@ -15,7 +15,7 @@ export interface EscuelaProfesional {
 export interface EscuelaProfesionalRequest {
   id: number;
   departamentoId: number;
-  codigo: string;
+  codigo: number;
   abreviatura: string;
   denominacion: string;
   plantillaMemo?: File;

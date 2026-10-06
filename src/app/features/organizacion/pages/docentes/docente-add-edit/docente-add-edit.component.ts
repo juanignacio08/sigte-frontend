@@ -124,13 +124,21 @@ export class DocenteAddEditComponent implements OnInit {
 
   cargarCatalogos() {
     this.loadingCatalogos.set(true);
+    this.form.get('tipoDocumentoCodigo')?.disable({ emitEvent: false });
+    this.form.get('departamentoAcademicoId')?.disable({ emitEvent: false });
+    this.form.get('escuelaId')?.disable({ emitEvent: false });
 
     return forkJoin({
       departamentos: this.departamentoService.getActivesByFacultad(this.facultadId()),
       escuelas: this.escuelaService.getActivesByFacultad(this.facultadId()),
       tiposDocumento: this.tablaMaestraService.getItemsActives(TablaMaestraService.documentTypeTableCode)
     }).pipe(
-      finalize(() => this.loadingCatalogos.set(false)) // Se ejecuta siempre (éxito o error)
+      finalize(() => {
+        this.loadingCatalogos.set(false);
+        this.form.get('tipoDocumentoCodigo')?.enable({ emitEvent: false });
+        this.form.get('departamentoAcademicoId')?.enable({ emitEvent: false });
+        this.form.get('escuelaId')?.enable({ emitEvent: false });
+      })
     );
   }
 
@@ -151,7 +159,7 @@ export class DocenteAddEditComponent implements OnInit {
         console.error('Error al cargar los catálogos:', err);
       }
     });
-    
+
     this.form.reset({
       tipoDocumentoCodigo: TablaMaestraService.dniCode,
       generoCodigo: this.genderMaleCode,
@@ -196,7 +204,7 @@ export class DocenteAddEditComponent implements OnInit {
           this.currentId = docenteEncontrado.id;
           this.docenteValidoDni.set(true);
           this.setForm(docenteEncontrado);
-          
+
           if (docenteEncontrado.eliminado) {
             this.docenteEsElimiado.set(true);
             this.inhabiltarFormulario();
@@ -210,6 +218,7 @@ export class DocenteAddEditComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al consultar documento:', err);
+        this.resetForm();
         this.consultandoDni.set(false);
         this.docenteValidoDni.set(false);
         if (err.status === 404) {
@@ -252,8 +261,13 @@ export class DocenteAddEditComponent implements OnInit {
   }
 
   resetForm(): void {
+    this.currentId = null;
+    this.isEdit.set(false);
+    const dni = this.form.get("numeroDocumento")?.value;
+
     this.form.reset({
       tipoDocumentoCodigo: TablaMaestraService.dniCode,
+      numeroDocumento: dni,
       generoCodigo: this.genderMaleCode,
     });
     this.docenteValidoDni.set(false);
