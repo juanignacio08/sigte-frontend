@@ -84,6 +84,25 @@ export const routes: Routes = [
                         (m) => m.TablaMaestraComponent,
                     ),
             },
+            {
+                path: 'tesis',
+                children: [
+                    {
+                        path: 'listar',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis/tesis.component').then(
+                                (m) => m.TesisComponent,
+                            ),
+                    },
+                    {
+                        path: 'registrar',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-create/tesis-create.component').then(
+                                (m) => m.TesisCreateComponent,
+                            ),
+                    },
+                ]
+            },
             //   {
             //     path: '',
             //     redirectTo: 'organizacion/departamentos',

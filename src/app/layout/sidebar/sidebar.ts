@@ -71,7 +71,23 @@ export class Sidebar implements OnInit {
         ],
         expanded: false
       },
-      { label: 'Tesis y Expedientes', icon: 'pi-file', route: '/tesis' },
+      { 
+        label: 'Gestión de Tesis', 
+        icon: 'pi-file', 
+        children: [
+          {
+            label: "Registrar Tesis",
+            icon: "pi-address-book",
+            route: '/tesis/registrar',
+          },
+          {
+            label: "Listar Tesis",
+            icon: "pi-address-book",
+            route: '/tesis/listar',
+          },
+        ],
+        expanded: false 
+      },
       { label: 'Comisiones y Jurados', icon: 'pi-slack', route: '/comisiones' },
       { label: 'Trámites y Resoluciones', icon: 'pi-clipboard', route: '/tramites' },
       { label: 'Configuración', icon: 'pi-cog', route: '/configuracion' },
