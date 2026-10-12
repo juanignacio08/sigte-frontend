@@ -101,6 +101,13 @@ export const routes: Routes = [
                                 (m) => m.TesisCreateComponent,
                             ),
                     },
+                    {
+                        path: 'detalle/:id',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-detalle/tesis-detalle.component').then(
+                                (m) => m.TesisDetalleComponent,
+                            ),
+                    },
                 ]
             },
             //   {

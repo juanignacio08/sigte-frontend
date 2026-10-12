@@ -117,7 +117,7 @@ export class TesisComponent implements OnInit {
   }
 
   verDetalle(tesis: Tesis): void {
-    this.router.navigate(['/tesis', tesis.id]);
+    this.router.navigate(['/tesis/detalle/', tesis.id]);
   }
 
   paginaAnterior(): void {
