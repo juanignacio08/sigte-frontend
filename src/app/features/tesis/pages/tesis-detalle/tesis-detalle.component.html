@@ -1,0 +1,224 @@
+<!-- Barra Superior de Navegación y Acciones Globales -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+    <app-button (click)="volver()" variant="info" size="sm">
+        <i class="pi pi-arrow-left"></i>
+        <span>Volver al Directorio de Proyectos</span>
+    </app-button>
+
+    <div class="flex items-center gap-2">
+        <app-button action="download-xlsx" size="sm" variant="outline" (onClick)="generarResolucion()">
+            <i class="pi pi-file-pdf mr-1"></i> Generar Resolución
+        </app-button>
+        <app-button action="search" size="sm" variant="outline" (onClick)="notificarComision()">
+            <i class="pi pi-send mr-1"></i> Notificar a Comisión
+        </app-button>
+        <app-button action="new" size="sm" (onClick)="registrarRevision()">
+            <i class="pi pi-plus mr-1"></i> Registrar Revisión
+        </app-button>
+    </div>
+</div>
+
+@if (loading()) {
+<div class="p-16 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 mt-6">
+    <i class="pi pi-spin pi-spinner text-3xl mb-2"></i>
+    <p class="text-xs">Cargando expediente de tesis...</p>
+</div>
+} @else if (tesis(); as item) {
+
+<!-- Cabecera de Información de la Tesis -->
+<div
+    class="bg-white rounded-2xl border border-sky-100 p-5 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+
+    <div class="space-y-2 flex-1">
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-primary bg-cyan-100 px-2 py-1 rounded-md">
+                EXP: {{ item.expedienteActivo?.numeroExpediente || 'S/E' }}
+            </span>
+        </div>
+
+        <h3 class="font-semibold text-primary text-base transition-colors">
+            {{ item.titulo }}
+        </h3>
+
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1.5 text-info-600">
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                    <i class="pi pi-users font-semibold"></i>
+                    <span class="font-semibold">Autores:</span>
+                    <span>
+                        @for (autor of item.autores; track autor.id; let last = $last) {
+                        {{ autor.estudianteNombres }} {{ autor.estudiantePrimerApellido }}{{ !last ? ', ' : ''
+                        }}
+                        }
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                    <i class="pi pi-building font-semibold"></i>
+
+                    <span class="text-xs">
+                        {{ item.escuelaDenominacion }}
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                    <i class="pi pi-calendar-clock font-semibold"></i>
+                    <span class="font-semibold">Registrado:</span>
+                    <span class="text-xs">
+                        {{ item.fechaRegistro | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado Badge -->
+    <div
+        class="shrink-0 flex md:flex-col items-end justify-between gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+        <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
+            {{ item.estadoDenominacion || 'Proyecto Registrado' }}
+        </span>
+        <span class="text-xs font-semibold text-info-600">
+            Etapa: {{ item.expedienteActivo?.etapaDenominacion || 'Inicial' }}
+        </span>
+    </div>
+
+</div>
+
+<!-- CONTENEDOR UNIFICADO: Tabs + Contenido (Sin espacio intermedio) -->
+<div class="mt-6 rounded-2xl border border-slate-200/80 bg-white overflow-hidden shadow-xs">
+
+    <!-- Header de Navegación de Tabs -->
+    <div class="bg-slate-50/80 border-b border-slate-200 px-2 pt-2">
+        <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event)">
+            <p-tablist class="border-b-0">
+                @for (tab of tabs; track tab.route) {
+                <p-tab [value]="tab.route"
+                    [class]="activeTab() === tab.route 
+                                ? 'bg-primary-400! text-white! font-bold! border-t-2 border-primary-300! border-b-transparent! shadow-xs' 
+                                : 'text-primary-800! hover:text-primary-900! hover:bg-primary-100! border-transparent!'"
+                    class="flex items-center gap-2! text-xs py-2.5 px-4 rounded-t-xl transition-all">
+                    <i [class]="tab.icon"></i>
+                    <span>{{ tab.label }}</span>
+                </p-tab>
+                }
+            </p-tablist>
+        </p-tabs>
+    </div>
+
+    <!-- Área de Contenido Unificado -->
+    <div class="p-6">
+        @if (activeTab() === 'resumen') {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Columna Izquierda: Detalles del Proyecto -->
+            <div class="md:col-span-2 bg-slate-50/50 rounded-2xl border border-slate-200/70 p-5 space-y-4">
+                <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b border-slate-200 pb-2">
+                    Información del Proyecto
+                </h3>
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <span class="text-slate-400 block mb-0.5">Facultad</span>
+                        <strong class="text-slate-800">Ciencias de la Salud</strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-0.5">Escuela Profesional</span>
+                        <strong class="text-slate-800">{{ item.escuelaDenominacion }}</strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-0.5">Fecha de Registro</span>
+                        <strong class="text-slate-800">{{ item.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-0.5">Estado del Expediente</span>
+                        <strong class="text-emerald-700 font-bold">{{ item.expedienteActivo?.etapaDenominacion ||
+                            'PROYECTO DE TESIS' }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Tesistas -->
+            <div class="bg-slate-50/50 rounded-2xl border border-slate-200/70 p-5 space-y-4">
+                <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b border-slate-200 pb-2">
+                    Tesistas Asignados
+                </h3>
+                <div class="space-y-3">
+                    @for (autor of item.autores; track autor.id) {
+                    <div class="bg-white border border-slate-200/80 rounded-xl p-3 flex items-center gap-3 shadow-2xs">
+                        <div
+                            class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                            {{ autor.estudianteNombres.charAt(0) }}
+                        </div>
+                        <div class="flex flex-col text-xs">
+                            <span class="font-bold text-slate-800">{{ autor.estudianteNombres }} {{
+                                autor.estudiantePrimerApellido }} {{
+                                autor.estudianteSegundoApellido }}</span>
+                            <span class="text-slate-500">DNI: {{ autor.estudianteDNI }}</span>
+                            <span class="text-indigo-600 text-[10px] font-medium">{{ autor.estudianteCorreo }}</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        @if (activeTab() === 'expediente') {
+        <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Documentos Oficiales del
+                    Expediente (PDFs)</h3>
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-0.5 rounded-full">4
+                    Activos</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="border border-slate-200 rounded-xl p-4 flex items-center justify-between bg-slate-50/50">
+                    <div class="flex items-center gap-3">
+                        <i class="pi pi-file-pdf text-red-500 text-2xl"></i>
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-800">{{ item.expedienteActivo?.numeroExpediente
+                                }}_Proyecto.pdf</h4>
+                            <p class="text-[10px] text-slate-400">Tamaño: 4.2 MB • Validado con Firma Digital</p>
+                        </div>
+                    </div>
+                    <button
+                        class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 shadow-2xs">
+                        Previsualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+        @if (activeTab() === 'comision') {
+        <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Comisión Revisora Asignada</h3>
+                <app-button action="new" size="sm">+ Asignar Docente</app-button>
+            </div>
+            <p class="text-xs text-slate-500">Gestión de docentes encargados de la revisión metodológica y dictamen del
+                proyecto.</p>
+        </div>
+        }
+
+        @if (activeTab() === 'revisiones') {
+        <div class="space-y-4">
+            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b border-slate-100 pb-3">
+                Historial de Revisiones</h3>
+            <p class="text-xs text-slate-500">Registro de observaciones emitidas por la comisión y respuestas del
+                tesista.</p>
+        </div>
+        }
+
+        @if (activeTab() === 'resoluciones') {
+        <div class="space-y-4">
+            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider border-b border-slate-100 pb-3">Actos
+                Resolutivos de Facultad</h3>
+            <p class="text-xs text-slate-500">Resoluciones de aprobación de proyecto, nombramiento de jurados y
+                sustentación.</p>
+        </div>
+        }
+    </div>
+
+</div>
+
+}

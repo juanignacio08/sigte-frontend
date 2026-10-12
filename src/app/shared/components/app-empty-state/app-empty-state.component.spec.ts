@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StatCardComponent } from './stat-card.component';
+import { AppEmptyStateComponent } from './app-empty-state.component';
 
-describe('StatCardComponent', () => {
-  let component: StatCardComponent;
-  let fixture: ComponentFixture<StatCardComponent>;
+describe('AppEmptyStateComponent', () => {
+  let component: AppEmptyStateComponent;
+  let fixture: ComponentFixture<AppEmptyStateComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StatCardComponent],
+      imports: [AppEmptyStateComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(StatCardComponent);
+    fixture = TestBed.createComponent(AppEmptyStateComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

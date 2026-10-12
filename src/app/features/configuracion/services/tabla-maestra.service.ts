@@ -11,7 +11,9 @@ export class TablaMaestraService {
 
     public static readonly documentTypeTableCode = '001';
     public static readonly genderTableCode = '002';
-    
+    public static readonly stateThesisTableCode = '003';
+    public static readonly stageThesisTableCode = '004';
+
     public static readonly dniCode = '001001';
     public static readonly genderMaleCode = '002001';
     public static readonly genderFemaleCode = '002002';
