@@ -6,9 +6,10 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 import { CommonModule } from '@angular/common';
 import { NotificacionService } from '../../../../shared/services/notificacion.service';
 import { TabsModule } from '@openng/optimus-ui/tabs';
+import { ExpedienteTabComponent } from '../expediente-tab/expediente-tab.component';
 
 @Component({
-  imports: [ButtonComponent, CommonModule, TabsModule],
+  imports: [ButtonComponent, CommonModule, TabsModule, ExpedienteTabComponent],
   selector: 'app-tesis-detalle',
   styleUrl: './tesis-detalle.component.css',
   templateUrl: './tesis-detalle.component.html',

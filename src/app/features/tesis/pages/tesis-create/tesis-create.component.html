@@ -59,7 +59,7 @@
                 <p-autoComplete [ngModel]="busquedaEstudiante()" (ngModelChange)="busquedaEstudiante.set($event)"
                     [suggestions]="sugerenciasEstudiante()" (completeMethod)="buscarEstudiante($event)"
                     (onSelect)="onEstudianteSeleccionado($event)" [minLength]="1" [delay]="500" [dropdown]="false"
-                    [forceSelection]="false" placeholder="Buscar estudiante por DNI, Código o Nombre..."
+                    [forceSelection]="false" placeholder="Buscar estudiante por Nombre o apellidos..."
                     inputStyleClass="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500">
                     <!-- ✅ Plantilla SIMPLE para la lista de sugerencias -->
                     <ng-template let-estudiante pTemplate="item">
