@@ -25,6 +25,9 @@ export class TesisService {
     if (request.numeroRevision) {
       formData.append('numeroRevision', String(request.numeroRevision));
     }
+    if (request.fechaIngreso) {
+      formData.append('fechaIngreso', request.fechaIngreso);
+    }
 
     // Lista de IDs → mismo nombre repetido
     request.estudiantesIds.forEach(id => {

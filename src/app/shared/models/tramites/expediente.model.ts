@@ -19,5 +19,12 @@ export interface Expediente {
   archivos: ExpedienteArchivo[];
 }
 
+export interface ActualizarExpedienteRequest {
+  numeroExpediente: string;
+  etapaCodigo: string;
+  numeroRevision: number;
+  fechaIngreso?: string;
+}
+
 export type ExpedienteResponse = ResponseDTO<Expediente>;
 export type ExpedienteListResponse = ResponseDTO<Expediente[]>;

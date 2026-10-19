@@ -1,0 +1,49 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '90%', maxWidth: '600px' }" [showHeader]="false"
+    (onHide)="cerrar()">
+
+    @if (loading()) {
+    <app-loading-spinner message="Cargando expediente..."></app-loading-spinner>
+    } @else if (expediente(); as detalle) {
+    <div class="space-y-4 px-2 pt-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 class="font-bold text-slate-900 text-base">Detalle del Expediente: {{ detalle.numeroExpediente }}</h3>
+            <span class="text-xs font-bold bg-slate-100 px-2.5 py-1 rounded">Rev. {{ detalle.numRevision }}</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-xs">
+            <div><span class="text-slate-400 block">Etapa:</span><strong>{{ detalle.etapaDenominacion ||
+                    detalle.etapaCodigo }}</strong></div>
+            <div><span class="text-slate-400 block">Fecha:</span><strong>{{ detalle.fechaAsociacion | date:'dd/MM/yyyy'
+                    }}</strong></div>
+        </div>
+
+        <div class="space-y-2 pt-2">
+            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Archivos PDF Adjuntos</h4>
+            <div class="space-y-2 max-h-60 overflow-y-auto">
+                @for (arch of detalle.archivos; track arch.id) {
+                <div
+                    class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-xs gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-file-pdf text-red-500 text-lg"></i>
+                        <div>
+                            <p class="font-bold text-slate-800">{{ arch.nombreArchivo }}</p>
+                            <p class="text-[10px] text-slate-400">{{ (arch.tamanioBytes / 1024 / 1024) | number:'1.1-2'
+                                }} MB</p>
+                        </div>
+                    </div>
+                    <app-button type="button" [action]="'download-pdf'" size="sm" [onlyIcon]="true"
+                        messageTootip="Descargar"
+                        (onClick)="mostrarPdf(arch.archivoUrl)"></app-button>
+                </div>
+                } @empty {
+                <p class="text-xs text-slate-400 text-center py-4">No hay archivos adjuntos en este expediente.</p>
+                }
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+            <app-button type="button" action="cancel" (onClick)="cerrar()">Cerrar</app-button>
+        </div>
+    </div>
+    }
+</p-dialog>
