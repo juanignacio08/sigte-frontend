@@ -17,6 +17,7 @@ import { TableSkeletonComponent } from '../../../../shared/components/table-skel
 import { NoConnectionComponent } from '../../../../shared/components/no-connection/no-connection.component';
 import { VerExpedienteDetalleComponent } from './ver-expediente-detalle/ver-expediente-detalle.component';
 import { ExpedienteAddEditComponent } from './expediente-add-edit/expediente-add-edit.component';
+import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   imports: [
@@ -32,7 +33,8 @@ import { ExpedienteAddEditComponent } from './expediente-add-edit/expediente-add
     TableSkeletonComponent,
     NoConnectionComponent,
     VerExpedienteDetalleComponent,
-    ExpedienteAddEditComponent
+    ExpedienteAddEditComponent,
+    ConfirmDialogComponent
 ],
   selector: 'app-expediente-tab',
   styleUrl: './expediente-tab.component.css',
@@ -40,16 +42,19 @@ import { ExpedienteAddEditComponent } from './expediente-add-edit/expediente-add
 })
 export class ExpedienteTabComponent implements OnInit {
   private readonly expedienteService = inject(TesisExpedienteService);
+  private readonly notificationService = inject(NotificacionService);
 
   tesisId = input.required<string>();
 
   // Referencias a los modales hijos
   modalAddEdit = viewChild<ExpedienteAddEditComponent>('modalAddEdit');
   modalDetail = viewChild<VerExpedienteDetalleComponent>('modalDetail');
+  confirmModal = viewChild<ConfirmDialogComponent>('confirmModal');
 
   controls = {
     loading: signal<boolean>(false),
-    connectionError: signal<boolean>(false)
+    connectionError: signal<boolean>(false),
+    confirmAction: { selectedItem: signal<Expediente | null>(null), selectedAction: signal<ConfirmActionType>('delete') }
   };
 
   expedientes = signal<Expediente[]>([]);
@@ -87,8 +92,62 @@ export class ExpedienteTabComponent implements OnInit {
     this.modalAddEdit()?.abrirEdicion(exp);
   }
 
+  desactivar(expediente: Expediente) {
+    this.controls.confirmAction.selectedItem.set(expediente);
+    this.controls.confirmAction.selectedAction.set('deactive');
+    const mensaje = 'El expediente número ' + expediente.numeroExpediente;
+    this.confirmModal()?.abrir('deactive', mensaje, true);
+  }
+
+  activar(expediente: Expediente) {
+    this.controls.confirmAction.selectedItem.set(expediente);
+    this.controls.confirmAction.selectedAction.set('active');
+    const mensaje = 'El expediente número ' + expediente.numeroExpediente;
+    this.confirmModal()?.abrir('active', mensaje);
+  }
+
+  eliminar(expediente: Expediente) {
+    this.controls.confirmAction.selectedItem.set(expediente);
+    this.controls.confirmAction.selectedAction.set('delete');
+    const mensaje = 'El expediente número ' + expediente.numeroExpediente;
+    this.confirmModal()?.abrir('delete', mensaje);
+  }
+
   verDetalle(id: number): void {
     this.modalDetail()?.abrir(id);
+  }
+
+  ejecutarAccionConfirmada(motivo?: string | void): void {
+    const expediente = this.controls.confirmAction.selectedItem();
+    const action = this.controls.confirmAction.selectedAction();
+
+    if (!expediente) return;
+
+    // Activamos el spinner en el botón de confirmación
+    this.confirmModal()?.loading.set(true);
+
+    let request$;
+    switch (action) {
+      case 'active':
+        request$ = this.expedienteService.activar(expediente.id);
+        break;
+      case 'deactive':        
+        request$ = this.expedienteService.desactivar(expediente.id, motivo?.toString() || '');
+        break;
+      case 'delete':
+        request$ = this.expedienteService.eliminar(expediente.id);
+        break;
+    }
+
+    request$.subscribe({
+      next: (res) => {
+        this.notificationService.showSuccess(res.message);
+        this.confirmModal()?.cerrar();
+        this.onGuardadoExitoso();
+      },
+      error: () => this.confirmModal()?.loading.set(false)
+    });
+
   }
 
   onGuardadoExitoso(): void {

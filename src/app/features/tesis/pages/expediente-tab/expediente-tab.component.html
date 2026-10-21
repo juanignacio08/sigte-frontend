@@ -33,7 +33,7 @@
                     <td class="py-3 px-3">{{ exp.etapaDenominacion || exp.etapaCodigo }}</td>
                     <td class="py-3 px-3 text-center font-mono font-semibold">Rev. {{ exp.numRevision }}</td>
                     <td class="py-3 px-3">{{ exp.fechaAsociacion | date:'dd/MM/yyyy' }}</td>
-                
+
                     <td class="py-3 px-3 text-center">
                         @if (exp.estado === 1) {
                         <app-badge variant="active" [withDot]="true" size="sm"></app-badge>
@@ -47,6 +47,15 @@
                                 (onClick)="verDetalle(exp.id)"></app-button>
                             <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
                                 (onClick)="abrirEdicion(exp)"></app-button>
+                            @if (exp.estado == 1) {
+                            <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
+                                (onClick)="desactivar(exp)"></app-button>
+                            } @else() {
+                            <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
+                                (onClick)="activar(exp)"></app-button>
+                            }
+                            <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
+                                (onClick)="eliminar(exp)"></app-button>
                         </div>
                     </td>
                 </tr>
@@ -54,7 +63,8 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="6" class="text-center py-6 text-slate-400 text-xs">No hay expedientes registrados para esta tesis.</td>
+                    <td colspan="6" class="text-center py-6 text-slate-400 text-xs">No hay expedientes registrados para
+                        esta tesis.</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -63,10 +73,8 @@
 </div>
 
 <!-- Modales separados -->
-<app-expediente-add-edit 
-    #modalAddEdit 
-    [tesisId]="tesisId()" 
-    (onSuccess)="onGuardadoExitoso()" />
+<app-expediente-add-edit #modalAddEdit [tesisId]="tesisId()" (onSuccess)="onGuardadoExitoso()" />
 
-<app-ver-expediente-detalle 
-    #modalDetail />
+<app-ver-expediente-detalle #modalDetail />
+
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada($event)" />
