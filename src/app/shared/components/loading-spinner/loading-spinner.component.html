@@ -1,0 +1,13 @@
+<div class="flex flex-col items-center justify-center p-8 space-y-4 w-full h-full min-h-[200px]">
+    <!-- Spinner grande con animación y color primario -->
+    <div class="relative flex items-center justify-center">
+        <i class="pi pi-spinner pi-spin text-indigo-600" style="font-size: 2.5rem"></i>
+    </div>
+
+    <!-- Mensaje dinámico recibido del padre o por defecto -->
+    @if (message()) {
+    <p class="text-xs md:text-sm font-medium text-slate-600 animate-pulse tracking-wide text-center">
+        {{ message() }}
+    </p>
+    }
+</div>

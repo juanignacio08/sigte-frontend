@@ -20,6 +20,7 @@ import { SelectModule } from '@openng/optimus-ui/select';
 import { InputTextModule } from '@openng/optimus-ui/inputtext';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { KeyFilterModule } from '@openng/optimus-ui/keyfilter';
+import { DatePickerModule } from '@openng/optimus-ui/datepicker';
 
 @Component({
   imports: [
@@ -32,7 +33,8 @@ import { KeyFilterModule } from '@openng/optimus-ui/keyfilter';
     TitleSubtitleComponent,
     ButtonComponent,
     AutoCompleteModule,
-    KeyFilterModule
+    KeyFilterModule,
+    DatePickerModule
   ],
   selector: 'app-tesis-create',
   styleUrl: './tesis-create.component.css',
@@ -89,6 +91,7 @@ export class TesisCreateComponent implements OnInit {
     titulo: ['', [Validators.required, Validators.maxLength(350)]],
     numeroExpediente: ['', [Validators.required, Validators.maxLength(50)]],
     etapaTesisCodigo: ['', Validators.required],
+    fechaIngreso: [null],
     numeroRevision: [1, [Validators.min(1)]]
   });
 
@@ -155,7 +158,7 @@ export class TesisCreateComponent implements OnInit {
     this.agregarAutor(estudiante);
     this.busquedaEstudiante.set('');        // Limpia el input
     this.sugerenciasEstudiante.set([]);     // Oculta el dropdown
-}
+  }
 
   agregarAutor(estudiante: Estudiante): void {
     if (this.autoresSeleccionados().length >= 2) {
@@ -199,12 +202,26 @@ export class TesisCreateComponent implements OnInit {
     const nombres = this.modalEstudianteForm.get('nombres')?.value || '';
     const ape = this.modalEstudianteForm.get('primerApellido')?.value || '';
     const codigoEscuela = this.escuelas().find(e => e.id === idEscuela)?.codigo || '';
-      
-    if (idEscuela && nombres && ape) {
-      const pNombre = nombres.trim().split(' ')[0].toLowerCase();
-      const pApe = ape.trim().toLowerCase();
-      this.modalEstudianteForm.get('correoInstitucional')?.setValue(`${pNombre}.${pApe}.${codigoEscuela}@unsch.edu.pe`, { emitEvent: false });
+
+    if (codigoEscuela && nombres && ape) {
+      const primerNombre = nombres.trim().split(/\s+/)[0];
+      const nombreSanitizado = this.sanitizarTexto(primerNombre);
+      const apellidoSanitizado = this.sanitizarTexto(ape.replace(/\s+/g, ''));
+
+      if (nombreSanitizado && apellidoSanitizado && codigoEscuela) {
+        const correoSugerido = `${nombreSanitizado}.${apellidoSanitizado}.${codigoEscuela}@unsch.edu.pe`;
+        this.modalEstudianteForm.get('correoInstitucional')?.setValue(correoSugerido, { emitEvent: false });
+      }
     }
+  }
+
+  private sanitizarTexto(str: string): string {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/ñ/g, 'n')
+      .replace(/[^a-z0-9]/g, '');
   }
 
   guardarEstudianteRapido(): void {
@@ -270,12 +287,12 @@ export class TesisCreateComponent implements OnInit {
       escuelaId: v.escuelaId,
       titulo: v.titulo,
       numeroExpediente: v.numeroExpediente,
+      fechaIngreso: v.fechaIngreso ? new Date(v.fechaIngreso).toISOString() : undefined,
       etapaTesisCodigo: v.etapaTesisCodigo,
       estudiantesIds: this.autoresSeleccionados().map(a => a.id)
     };
 
     console.log(request);
-    
 
     this.tesisService.guardar(request, this.archivosPDF()).subscribe({
       next: () => {

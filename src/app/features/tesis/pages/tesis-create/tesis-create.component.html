@@ -59,7 +59,7 @@
                 <p-autoComplete [ngModel]="busquedaEstudiante()" (ngModelChange)="busquedaEstudiante.set($event)"
                     [suggestions]="sugerenciasEstudiante()" (completeMethod)="buscarEstudiante($event)"
                     (onSelect)="onEstudianteSeleccionado($event)" [minLength]="1" [delay]="500" [dropdown]="false"
-                    [forceSelection]="false" placeholder="Buscar estudiante por DNI, Código o Nombre..."
+                    [forceSelection]="false" placeholder="Buscar estudiante por Nombre o apellidos..."
                     inputStyleClass="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500">
                     <!-- ✅ Plantilla SIMPLE para la lista de sugerencias -->
                     <ng-template let-estudiante pTemplate="item">
@@ -143,15 +143,21 @@
             </h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="flex flex-col gap-1">
                 <label class="text-sm font-semibold ">N° de Expediente *</label>
                 <input pInputText formControlName="numeroExpediente" placeholder="EXP-2026-0142" pSize="small" />
             </div>
 
             <div class="flex flex-col gap-1">
+                <label class="text-sm font-semibold text-slate-700">Fecha de Registro</label>
+                <p-datepicker formControlName="fechaIngreso" dateFormat="yy-mm-dd" size="small" class="w-full" />
+            </div>
+
+            <div class="flex flex-col gap-1">
                 <label class="text-sm font-semibold" for="numeroRevision">N° de Revision</label>
-                <input pInputText formControlName="numeroRevision" placeholder="1, 2, 3..." pSize="small" pKeyFilter="int" />
+                <input pInputText formControlName="numeroRevision" placeholder="1, 2, 3..." pSize="small"
+                    pKeyFilter="int" />
             </div>
         </div>
     </div>
@@ -201,7 +207,9 @@
     <!-- Botones Finales -->
     <div class="flex items-center justify-end gap-3 pt-4">
         <app-button action="cancel" (onClick)="cancelar()">Cancelar</app-button>
-        <app-button action="save" [loading]="controls.loading()" [disabled]="form.invalid || archivosPDF().length === 0 || autoresSeleccionados().length === 0 || controls.loading()" (onClick)="guardarTesis()">
+        <app-button action="save" [loading]="controls.loading()"
+            [disabled]="form.invalid || archivosPDF().length === 0 || autoresSeleccionados().length === 0 || controls.loading()"
+            (onClick)="guardarTesis()">
             Registrar Proyecto de Tesis
         </app-button>
     </div>
@@ -290,8 +298,9 @@
 
             <div class="flex items-center gap-2">
                 <app-button type="button" action="cancel" (onClick)="cerrarModalEstudiante()">Cancelar</app-button>
-                <app-button type="submit" [disabled]="modalEstudianteForm.invalid || controls.loadingEstudianteRegistro()" action="save" [withIcon]="true"
-                    [loading]="controls.loadingEstudianteRegistro()">
+                <app-button type="submit"
+                    [disabled]="modalEstudianteForm.invalid || controls.loadingEstudianteRegistro()" action="save"
+                    [withIcon]="true" [loading]="controls.loadingEstudianteRegistro()">
                     Guardar Estudiante
                 </app-button>
             </div>

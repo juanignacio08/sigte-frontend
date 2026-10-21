@@ -1,0 +1,80 @@
+<div class="space-y-4">
+    <!-- Encabezado de la Sección -->
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+            <p class="font-bold text-slate-800 text-sm uppercase tracking-wider">Historial de Expedientes y Archivos</p>
+            <p class="text-xs text-slate-500">Gestión de trámites, revisiones y documentos legales adjuntos.</p>
+        </div>
+        <app-button action="new" size="md" [withIcon]="true" (onClick)="abrirNuevo()">Registrar Expediente</app-button>
+    </div>
+
+    <!-- Tabla de Expedientes -->
+    @if (controls.loading()) {
+    <app-table-skeleton [rows]="5" [cols]="6" />
+    } @else if (controls.connectionError()) {
+    <app-no-connection />
+    } @else {
+    <div class="overflow-hidden border border-slate-200/70 rounded-xl">
+        <p-table [value]="expedientes()" stripedRows [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template pTemplate="header">
+                <tr class="text-xs font-bold uppercase tracking-wider text-slate-600 bg-slate-50">
+                    <th class="py-3 px-3">N° Expediente</th>
+                    <th class="py-3 px-3">Etapa de Trámite</th>
+                    <th class="py-3 px-3 text-center">N° Revisión</th>
+                    <th class="py-3 px-3">Fecha de Ingreso</th>
+                    <th class="py-3 px-3 text-center">Estado</th>
+                    <th class="py-3 px-3 text-right">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-exp>
+                <tr class="border-b border-slate-100 text-xs text-slate-700 hover:bg-slate-50/80">
+                    <td class="py-3 px-3 font-bold text-slate-900">{{ exp.numeroExpediente }}</td>
+                    <td class="py-3 px-3">{{ exp.etapaDenominacion || exp.etapaCodigo }}</td>
+                    <td class="py-3 px-3 text-center font-mono font-semibold">Rev. {{ exp.numRevision }}</td>
+                    <td class="py-3 px-3">{{ exp.fechaAsociacion | date:'dd/MM/yyyy' }}</td>
+
+                    <td class="py-3 px-3 text-center">
+                        @if (exp.estado === 1) {
+                        <app-badge variant="active" [withDot]="true" size="sm"></app-badge>
+                        } @else {
+                        <app-badge variant="inactive" [withDot]="true" size="sm"></app-badge>
+                        }
+                    </td>
+                    <td class="py-3 px-3">
+                        <div class="flex items-center justify-end gap-1">
+                            <app-button action="view" [onlyIcon]="true" size="sm" messageTootip="Ver Detalle"
+                                (onClick)="verDetalle(exp.id)"></app-button>
+                            <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
+                                (onClick)="abrirEdicion(exp)"></app-button>
+                            @if (exp.estado == 1) {
+                            <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
+                                (onClick)="desactivar(exp)"></app-button>
+                            } @else() {
+                            <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
+                                (onClick)="activar(exp)"></app-button>
+                            }
+                            <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
+                                (onClick)="eliminar(exp)"></app-button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center py-6 text-slate-400 text-xs">No hay expedientes registrados para
+                        esta tesis.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    }
+</div>
+
+<!-- Modales separados -->
+<app-expediente-add-edit #modalAddEdit [tesisId]="tesisId()" (onSuccess)="onGuardadoExitoso()" />
+
+<app-ver-expediente-detalle #modalDetail />
+
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada($event)" />

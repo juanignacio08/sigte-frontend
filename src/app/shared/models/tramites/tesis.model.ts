@@ -43,6 +43,7 @@ export interface RegistrarTesisRequest {
   estudiantesIds: number[];
   numeroExpediente: string;
   etapaTesisCodigo?: string;
+  fechaIngreso?: string;
   numeroRevision?: number;
 }
 

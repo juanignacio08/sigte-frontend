@@ -6,9 +6,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 import { CommonModule } from '@angular/common';
 import { NotificacionService } from '../../../../shared/services/notificacion.service';
 import { TabsModule } from '@openng/optimus-ui/tabs';
+import { ExpedienteTabComponent } from '../expediente-tab/expediente-tab.component';
+import { NoConnectionComponent } from '../../../../shared/components/no-connection/no-connection.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
-  imports: [ButtonComponent, CommonModule, TabsModule],
+  imports: [ButtonComponent, CommonModule, TabsModule, ExpedienteTabComponent, NoConnectionComponent, LoadingSpinnerComponent],
   selector: 'app-tesis-detalle',
   styleUrl: './tesis-detalle.component.css',
   templateUrl: './tesis-detalle.component.html',
@@ -20,7 +23,11 @@ export class TesisDetalleComponent implements OnInit {
   private readonly notificationService = inject(NotificacionService);
 
   tesis = signal<Tesis | null>(null);
-  loading = signal<boolean>(true);
+  
+  controls = {
+    loading: signal<boolean>(false),
+    connectionError: signal<boolean>(false)
+  };
 
   // Pestaña activa por defecto
   activeTab = signal<string>('resumen');
@@ -42,15 +49,20 @@ export class TesisDetalleComponent implements OnInit {
   }
 
   cargarDetalle(id: string): void {
-    this.loading.set(true);
+    this.controls.loading.set(true);
+    this.controls.connectionError.set(false);
+
     this.tesisService.getById(id).subscribe({
       next: (res) => {
         this.tesis.set(res.data);
-        this.loading.set(false);
+        this.controls.loading.set(false);
       },
-      error: () => {
-        this.loading.set(false);
+      error: (err) => {
         this.notificationService.showError('No se pudo cargar la información de la tesis.');
+        this.controls.loading.set(false);
+        if (err.status === 0) {
+          this.controls.connectionError.set(true);
+        }
       }
     });
   }
