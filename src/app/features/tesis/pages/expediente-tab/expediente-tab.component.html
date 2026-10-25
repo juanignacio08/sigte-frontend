@@ -45,9 +45,9 @@
                         <div class="flex items-center justify-end gap-1">
                             <app-button action="view" [onlyIcon]="true" size="sm" messageTootip="Ver Detalle"
                                 (onClick)="verDetalle(exp.id)"></app-button>
+                            @if (exp.estado == 1) {
                             <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
                                 (onClick)="abrirEdicion(exp)"></app-button>
-                            @if (exp.estado == 1) {
                             <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
                                 (onClick)="desactivar(exp)"></app-button>
                             } @else() {

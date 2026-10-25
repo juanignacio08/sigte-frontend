@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Tesis } from '../../../../shared/models/tramites/tesis.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TesisService } from '../../services/tesis.service';
@@ -9,9 +9,24 @@ import { TabsModule } from '@openng/optimus-ui/tabs';
 import { ExpedienteTabComponent } from '../expediente-tab/expediente-tab.component';
 import { NoConnectionComponent } from '../../../../shared/components/no-connection/no-connection.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
+import { TablaMaestraService } from '../../../configuracion/services/tabla-maestra.service';
+
+interface EtapaStep {
+  codigo: string;
+  label: string;
+  icon: string;
+  descripcion: string;
+}
 
 @Component({
-  imports: [ButtonComponent, CommonModule, TabsModule, ExpedienteTabComponent, NoConnectionComponent, LoadingSpinnerComponent],
+  imports: [
+    ButtonComponent,
+    CommonModule,
+    TabsModule,
+    ExpedienteTabComponent,
+    NoConnectionComponent,
+    LoadingSpinnerComponent
+  ],
   selector: 'app-tesis-detalle',
   styleUrl: './tesis-detalle.component.css',
   templateUrl: './tesis-detalle.component.html',
@@ -22,17 +37,43 @@ export class TesisDetalleComponent implements OnInit {
   private readonly tesisService = inject(TesisService);
   private readonly notificationService = inject(NotificacionService);
 
+  private readonly proyecto = TablaMaestraService.stageThesisProject;
+
   tesis = signal<Tesis | null>(null);
-  
+
   controls = {
     loading: signal<boolean>(false),
     connectionError: signal<boolean>(false)
   };
 
-  // Pestaña activa por defecto
   activeTab = signal<string>('resumen');
+  activeStep = signal<number>(1);
 
-  // Configuración de los tabs con iconos y rutas/valores lógicos
+  readonly etapas: EtapaStep[] = [
+    {
+      codigo: TablaMaestraService.stageThesisProject,
+      label: 'Proyecto',
+      icon: 'pi pi-folder',
+      descripcion: 'Revisión y aprobación del proyecto'
+    },
+    {
+      codigo: TablaMaestraService.stageThesisDraft,
+      label: 'Borrador',
+      icon: 'pi pi-file-edit',
+      descripcion: 'Revisión del borrador de tesis'
+    },
+    {
+      codigo: TablaMaestraService.stageThesisThesisDefense,
+      label: 'Sustentación',
+      icon: 'pi pi-graduation-cap',
+      descripcion: 'Sustentación y acta final'
+    }
+  ];
+
+  readonly etapaActiva = computed(() =>
+    this.etapas[this.activeStep() - 1] ?? this.etapas[0]
+  );
+
   tabs = [
     { route: 'resumen', label: 'Resumen y Autores', icon: 'pi pi-user' },
     { route: 'expediente', label: 'Expediente y Archivos', icon: 'pi pi-folder' },
@@ -43,9 +84,7 @@ export class TesisDetalleComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.cargarDetalle(id);
-    }
+    if (id) this.cargarDetalle(id);
   }
 
   cargarDetalle(id: string): void {
@@ -60,17 +99,19 @@ export class TesisDetalleComponent implements OnInit {
       error: (err) => {
         this.notificationService.showError('No se pudo cargar la información de la tesis.');
         this.controls.loading.set(false);
-        if (err.status === 0) {
-          this.controls.connectionError.set(true);
-        }
+        if (err.status === 0) this.controls.connectionError.set(true);
       }
     });
   }
 
+  setStep(step: number): void {
+    // Aquí puedes validar: no permitir saltar a etapas futuras
+    // ej: if (step > this.maxStepReached()) return;
+    this.activeStep.set(step);
+  }
+
   onTabChange(value: string | number | undefined): void {
-    if (value) {
-      this.activeTab.set(value.toString());
-    }
+    if (value) this.activeTab.set(value.toString());
   }
 
   volver(): void {
@@ -88,5 +129,4 @@ export class TesisDetalleComponent implements OnInit {
   registrarRevision(): void {
     this.notificationService.showSuccess('Abriendo módulo de registro de revisión...');
   }
-
 }

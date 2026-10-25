@@ -45,6 +45,7 @@ export class ExpedienteTabComponent implements OnInit {
   private readonly notificationService = inject(NotificacionService);
 
   tesisId = input.required<string>();
+  stage = input.required<string>();
 
   // Referencias a los modales hijos
   modalAddEdit = viewChild<ExpedienteAddEditComponent>('modalAddEdit');
@@ -69,7 +70,7 @@ export class ExpedienteTabComponent implements OnInit {
     this.controls.loading.set(true);
     this.controls.connectionError.set(false);
 
-    this.expedienteService.listarPorTesis(this.tesisId()).subscribe({
+    this.expedienteService.listarPorTesisYEtapa(this.tesisId(), this.stage()).subscribe({
       next: (res) => {
         this.expedientes.set(res.data || []);
         this.controls.loading.set(false);
