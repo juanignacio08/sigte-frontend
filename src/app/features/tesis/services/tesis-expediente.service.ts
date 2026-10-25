@@ -13,6 +13,10 @@ export class TesisExpedienteService {
         return this.http.get<ExpedienteListResponse>(`${this.apiUrl}/listarPorTesis/${tesisId}`);
     }
 
+    listarPorTesisYEtapa(tesisId: string, etapa: string): Observable<ExpedienteListResponse> {
+        return this.http.get<ExpedienteListResponse>(`${this.apiUrl}/listarPorTesis/${tesisId}/${etapa}`);
+    }
+
     obtenerPorId(id: number): Observable<ExpedienteResponse> {
         return this.http.get<ExpedienteResponse>(`${this.apiUrl}/${id}`);
     }
