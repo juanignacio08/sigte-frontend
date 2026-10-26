@@ -4,21 +4,22 @@ import { EscuelaProfesional } from "../master/escuela_profesional.model";
 
 export interface Docente {
   id: number;
-  codigo: string;
+  codigo?: string;
   escuela: EscuelaProfesional;
   departamento: DepartamentoAcademico;
-  tipoDocumentoCodigo: string;
-  tipoDocumentoDenominacion: string;
-  numeroDocumento: string;
+  tipoDocumentoCodigo?: string;
+  tipoDocumentoDenominacion?: string;
+  numeroDocumento?: string;
   nombres: string;
   primerApellido: string;
   segundoApellido: string;
   correoInstitucional: string;
   generoCodigo: string;
-  generoDenominacion: string;
-  telefono: string;
+  generoDenominacion?: string;
+  telefono?: string;
   estado: number;
   eliminado: boolean;
+  fullName?: string;
 }
 
 export interface DocenteRequest {
@@ -43,6 +44,7 @@ export interface DocenteFiltro {
   generoCodigo?: string;
   numeroDocumento?: string;
   correo?: string;
+  nombre?: string;
 }
 
 export interface DocenteMetrica {

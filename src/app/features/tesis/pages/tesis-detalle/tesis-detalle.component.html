@@ -267,18 +267,7 @@
             }
 
             @if (activeTab() === 'comision') {
-            <div class="space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">
-                        Comisión Revisora — Etapa: <span class="text-primary">{{ etapa | titlecase }}</span>
-                    </h3>
-                    <app-button action="new" size="sm">+ Asignar Docente</app-button>
-                </div>
-                <p class="text-xs text-slate-500">
-                    Gestión de docentes encargados de la revisión metodológica y dictamen
-                    en la etapa <b>{{ etapa }}</b>.
-                </p>
-            </div>
+            <app-comision-tab [tesisId]="item.id" [stage]="etapa"></app-comision-tab>
             }
 
             @if (activeTab() === 'revisiones') {
