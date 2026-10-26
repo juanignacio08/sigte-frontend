@@ -13,6 +13,7 @@ export class TablaMaestraService {
     public static readonly genderTableCode = '002';
     public static readonly stateThesisTableCode = '003';
     public static readonly stageThesisTableCode = '004';
+    public static readonly rolesCommissionTableCode = '005';
 
     public static readonly dniCode = '001001';
     public static readonly genderMaleCode = '002001';
@@ -21,6 +22,11 @@ export class TablaMaestraService {
     public static readonly stageThesisProject = '004001';
     public static readonly stageThesisDraft = '004002';
     public static readonly stageThesisThesisDefense = '004004';
+
+
+    public static readonly rolesCommissionJury = '005002';
+    public static readonly rolesCommissionCoAdvisor = '005003';
+
 
     /**
      * Crea un nuevo maestro (tabla o ítem).

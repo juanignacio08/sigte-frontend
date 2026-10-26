@@ -1,0 +1,87 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '92%', maxWidth: '500px' }" [draggable]="false"
+    [resizable]="false" [header]="modo() === 'agregar'
+        ? 'Agregar miembro a la comisión'
+        : 'Modificar rol del miembro'" (onHide)="cerrarModal()">
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="space-y-4 mt-2">
+
+        <!-- ============ DOCENTE (autocomplete) ============ -->
+        <div class="flex flex-col gap-1.5">
+            @if (modo() === 'agregar') {
+            <label class="text-xs font-semibold text-slate-700">Docente *</label>
+
+            <p-autoComplete formControlName="docente" [suggestions]="docentesSugeridos()"
+                (completeMethod)="buscarDocente($event)" (onSelect)="onDocenteSeleccionado($event)"
+                (onClear)="onDocenteDeseleccionado()" optionLabel="fullName" [minLength]="1" [delay]="500"
+                [dropdown]="false" [forceSelection]="true" [appendTo]="'body'"
+                placeholder="Buscar docente por nombre o apellidos..."
+                inputStyleClass="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <ng-template let-docente pTemplate="item">
+                    <div class="px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer">
+                        <p class="font-semibold text-slate-800">
+                            {{ docente.fullName }}
+                        </p>
+
+                        @if (docente.correoInstitucional) {
+                        <p class="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                            <i class="pi pi-envelope text-[10px]"></i>
+                            {{ docente.correoInstitucional }}
+                        </p>
+                        }
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="empty">
+                    <div class="flex flex-col items-center px-3 py-4 text-xs text-slate-500">
+                        @if (buscando()) {
+                        <i class="pi pi-spin pi-spinner text-lg text-slate-300 mb-1"></i>
+                        <p>Buscando docentes…</p>
+                        } @else {
+                        <i class="pi pi-search text-lg text-slate-300 mb-1"></i>
+                        <p>No se encontraron docentes.</p>
+                        }
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+            }
+
+            @if (docenteSeleccionado(); as doc) {
+            <div class="mt-1 bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 flex items-center gap-2 text-xs">
+                <i class="pi pi-check-circle text-emerald-600 text-base"></i>
+                <div class="min-w-0">
+                    <p class="font-bold text-emerald-800 truncate">
+                        {{ doc.fullName }}
+                    </p>
+                    @if (doc.correoInstitucional) {
+                    <p class="text-[10px] text-emerald-700 truncate">{{ doc.correoInstitucional }}</p>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- ============ ROL ============ -->
+        <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-700">{{ modo() === 'editar' ? 'Rol en el Comité * (Rol Actual: ' + rolActual() + ')'  : 'Rol en el Comité *' }}</label>
+            <p-select [options]="rolesDisponibles()" formControlName="rolCodigo" optionLabel="denomination"
+                optionValue="code" placeholder="Seleccione un rol" size="small" class="w-full" appendTo="body"
+                [scrollHeight]="'260px'" [virtualScroll]="false" [filter]="true" filterBy="denomination"
+                [resetFilterOnHide]="true" />
+        </div>
+
+        <!-- ============ ACCIONES ============ -->
+        <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+            <app-button type="button" action="cancel" (onClick)="cerrarModal()">Cancelar</app-button>
+            <app-button type="submit" action="save" [withIcon]="true" [disabled]="form.invalid || loading()"
+                [loading]="loading()">
+                {{
+                loading()
+                ? 'Guardando…'
+                : modo() === 'agregar'
+                ? 'Agregar'
+                : 'Guardar cambios'
+                }}
+            </app-button>
+        </div>
+    </form>
+</p-dialog>

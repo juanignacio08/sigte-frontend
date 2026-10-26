@@ -10,6 +10,7 @@ import { ExpedienteTabComponent } from '../expediente-tab/expediente-tab.compone
 import { NoConnectionComponent } from '../../../../shared/components/no-connection/no-connection.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { TablaMaestraService } from '../../../configuracion/services/tabla-maestra.service';
+import { ComisionTabComponent } from '../comision-tab/comision-tab.component';
 
 interface EtapaStep {
   codigo: string;
@@ -25,8 +26,9 @@ interface EtapaStep {
     TabsModule,
     ExpedienteTabComponent,
     NoConnectionComponent,
-    LoadingSpinnerComponent
-  ],
+    LoadingSpinnerComponent,
+    ComisionTabComponent
+],
   selector: 'app-tesis-detalle',
   styleUrl: './tesis-detalle.component.css',
   templateUrl: './tesis-detalle.component.html',
