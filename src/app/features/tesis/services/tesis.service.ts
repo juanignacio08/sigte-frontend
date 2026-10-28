@@ -50,6 +50,13 @@ export class TesisService {
   }
 
   /**
+   * Obtiene el detalle completo por UUID
+   */
+  getDetalleById(id: string): Observable<TesisResponse> {
+    return this.http.get<TesisResponse>(`${this.apiUrl}/detalle/${id}`);
+  }
+
+  /**
    * Consulta paginada con filtros
    */
   getByFilters(filtro: TesisFiltro, page: number = 0, size: number = 10): Observable<TesisPaginatedResponse> {

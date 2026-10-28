@@ -29,7 +29,7 @@ export const routes: Routes = [
                             ),
                     },
                     {
-                        path: 'departamentos/:id/ver-escuelas', 
+                        path: 'departamentos/:id/ver-escuelas',
                         loadComponent: () =>
                             import('./features/organizacion/pages/departamento-academico/escuela-profesional-dep/escuela-profesional-dep.component').then(
                                 (m) => m.EscuelaProfesionalDepComponent
@@ -62,7 +62,7 @@ export const routes: Routes = [
                             ),
                     },
                     {
-                        path: 'estudiantes', 
+                        path: 'estudiantes',
                         loadComponent: () =>
                             import('./features/organizacion/pages/estudiantes/estudiantes.component').then(
                                 (m) => m.EstudiantesComponent
@@ -106,6 +106,20 @@ export const routes: Routes = [
                         loadComponent: () =>
                             import('./features/tesis/pages/tesis-detalle/tesis-detalle.component').then(
                                 (m) => m.TesisDetalleComponent,
+                            ),
+                    },
+                    {
+                        path: 'detalle/:tesisId/expediente/:expedienteId',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-detalle/expediente-detalle/expediente-detalle.component').then(
+                                (m) => m.ExpedienteDetalleComponent,
+                            ),
+                    },
+                    {
+                        path: 'detalle/:tesisId/expediente/:expedienteId/comision',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-detalle/expediente-comision/expediente-comision.component').then(
+                                (m) => m.ExpedienteComisionComponent,
                             ),
                     },
                 ]

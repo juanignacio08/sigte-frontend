@@ -18,6 +18,8 @@ import { NoConnectionComponent } from '../../../../shared/components/no-connecti
 import { VerExpedienteDetalleComponent } from './ver-expediente-detalle/ver-expediente-detalle.component';
 import { ExpedienteAddEditComponent } from './expediente-add-edit/expediente-add-edit.component';
 import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { Router } from '@angular/router';
+import { FileService } from '../../../../shared/services/file.service';
 
 @Component({
   imports: [
@@ -35,7 +37,7 @@ import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/co
     VerExpedienteDetalleComponent,
     ExpedienteAddEditComponent,
     ConfirmDialogComponent
-],
+  ],
   selector: 'app-expediente-tab',
   styleUrl: './expediente-tab.component.css',
   templateUrl: './expediente-tab.component.html',
@@ -43,6 +45,8 @@ import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/co
 export class ExpedienteTabComponent implements OnInit {
   private readonly expedienteService = inject(TesisExpedienteService);
   private readonly notificationService = inject(NotificacionService);
+
+  private readonly router = inject(Router);
 
   tesisId = input.required<string>();
   stage = input.required<string>();
@@ -114,8 +118,15 @@ export class ExpedienteTabComponent implements OnInit {
     this.confirmModal()?.abrir('delete', mensaje);
   }
 
-  verDetalle(id: number): void {
-    this.modalDetail()?.abrir(id);
+  verDetalle(expedienteId: number): void {
+    //this.modalDetail()?.abrir(expedienteId);
+    this.router.navigate([
+      '/tesis',
+      'detalle',
+      this.tesisId(),
+      'expediente',
+      expedienteId,
+    ]);
   }
 
   ejecutarAccionConfirmada(motivo?: string | void): void {
@@ -132,7 +143,7 @@ export class ExpedienteTabComponent implements OnInit {
       case 'active':
         request$ = this.expedienteService.activar(expediente.id);
         break;
-      case 'deactive':        
+      case 'deactive':
         request$ = this.expedienteService.desactivar(expediente.id, motivo?.toString() || '');
         break;
       case 'delete':

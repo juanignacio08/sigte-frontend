@@ -28,3 +28,5 @@ export interface ActualizarExpedienteRequest {
 
 export type ExpedienteResponse = ResponseDTO<Expediente>;
 export type ExpedienteListResponse = ResponseDTO<Expediente[]>;
+export type ExpedienteArchivoResponse = ResponseDTO<ExpedienteArchivo>;
+export type ExpedienteArchivoListResponse = ResponseDTO<ExpedienteArchivo[]>;

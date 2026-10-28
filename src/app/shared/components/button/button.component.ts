@@ -19,6 +19,7 @@ export type ButtonAction =
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'warning' | 'info' | 'pdf' | 'word' | 'excel' | 'active' | 'deactive' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
+export type IconDirection = 'left' | 'right'
 
 interface ActionConfig {
   variant: ButtonVariant;
@@ -61,6 +62,7 @@ export class ButtonComponent {
   @Input() withIcon: boolean = false;
   @Input() onlyIcon: boolean = false;
   @Input() messageTootip ?: string;
+  @Input() iconDirection ?: IconDirection = 'left';
 
   @Output() onClick = new EventEmitter<MouseEvent>();
 
