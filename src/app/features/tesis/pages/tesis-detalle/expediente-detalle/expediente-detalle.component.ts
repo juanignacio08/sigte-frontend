@@ -114,7 +114,11 @@ export class ExpedienteDetalleComponent implements OnInit {
     }).subscribe({
       next: ({ tesis, expediente }) => {
         this.tesis.set(tesis.data);
+        localStorage.setItem('tesisSeleccionada', JSON.stringify(tesis.data));
+
         this.expediente.set(expediente.data);
+        localStorage.setItem('expedienteSeleccionado', JSON.stringify(expediente.data));
+
         this.archivos.set(
           expediente.data.archivos.map(archivo => ({ ...archivo }))
         );
@@ -160,6 +164,8 @@ export class ExpedienteDetalleComponent implements OnInit {
         }
         : null
     );
+
+    localStorage.setItem('expedienteSeleccionado', JSON.stringify(this.expediente()));    
   }
 
   mostrarPdf(ruta: string | null): void {

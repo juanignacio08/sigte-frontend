@@ -122,6 +122,13 @@ export const routes: Routes = [
                                 (m) => m.ExpedienteComisionComponent,
                             ),
                     },
+                    {
+                        path: 'detalle/:tesisId/expediente/:expedienteId/memorando',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-detalle/expediente-memorando/expediente-memorando.component').then(
+                                (m) => m.ExpedienteMemorandoComponent,
+                            ),
+                    },
                 ]
             },
             //   {
