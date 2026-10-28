@@ -35,11 +35,14 @@ export class ExpedienteAddEditComponent implements OnInit {
 
   tesisId = input.required<string>();
   onSuccess = output<void>();
+  onExpedienteGuardado = output<Expediente>();
 
   visible = signal<boolean>(false);
   loading = signal<boolean>(false);
   isEdit = signal<boolean>(false);
-  
+  readonly puedeEditarEtapa = signal(true);
+  etapaActual = signal<string | null>(null);
+
   etapas = signal<MasterTable[]>([]);
   archivosNuevos: File[] = [];
   private currentExpedienteId: number | null = null;
@@ -71,20 +74,36 @@ export class ExpedienteAddEditComponent implements OnInit {
 
   abrirEdicion(exp: Expediente): void {
     this.isEdit.set(true);
+    this.puedeEditarEtapa.set(true);
+    this.etapaActual.set(exp.etapaCodigo);
     this.currentExpedienteId = exp.id;
     this.archivosNuevos = [];
-    this.form.patchValue({
+
+    this.form.reset({
       numeroExpediente: exp.numeroExpediente,
       etapaCodigo: exp.etapaCodigo,
       numeroRevision: exp.numRevision,
-      fechaRegistro: exp.fechaAsociacion ? new Date(exp.fechaAsociacion) : null
+      fechaRegistro: exp.fechaAsociacion
+        ? new Date(exp.fechaAsociacion)
+        : null
     });
+
+    this.form.get('etapaCodigo')?.enable();
     this.visible.set(true);
+  }
+
+  abrirEdicionDesdeDetalle(exp: Expediente): void {
+    this.abrirEdicion(exp);
+
+    this.puedeEditarEtapa.set(false);
+    this.etapaActual.set(exp.etapaCodigo);
+    this.form.get('etapaCodigo')?.disable();
   }
 
   cerrarModal(): void {
     this.form.reset();
     this.archivosNuevos = [];
+    this.etapaActual.set(null);
     this.loading.set(false);
     this.visible.set(false);
   }
@@ -129,9 +148,6 @@ export class ExpedienteAddEditComponent implements OnInit {
       }
       this.archivosNuevos.forEach(file => formData.append('archivos', file));
 
-      console.log(formData);
-      
-
       this.expedienteService.registrar(formData).subscribe({
         next: (res) => {
           this.loading.set(false);
@@ -143,9 +159,9 @@ export class ExpedienteAddEditComponent implements OnInit {
       });
     } else {
       // En edición solo enviamos los campos permitidos principales, omitiendo archivos
-      const request : ActualizarExpedienteRequest = {
+      const request: ActualizarExpedienteRequest = {
         numeroExpediente: v.numeroExpediente,
-        etapaCodigo: v.etapaCodigo,
+        etapaCodigo: this.puedeEditarEtapa() ? v.etapaCodigo : this.etapaActual(),
         numeroRevision: v.numeroRevision,
         fechaIngreso: v.fechaRegistro ? new Date(v.fechaRegistro).toISOString() : undefined
       }
@@ -156,6 +172,7 @@ export class ExpedienteAddEditComponent implements OnInit {
             this.loading.set(false);
             this.cerrarModal();
             this.notificationService.showSuccess(res.message || 'Expediente actualizado correctamente');
+            this.onExpedienteGuardado.emit(res.data);
             this.onSuccess.emit();
           },
           error: () => this.loading.set(false)

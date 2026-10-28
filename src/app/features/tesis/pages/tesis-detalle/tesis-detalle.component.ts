@@ -78,10 +78,8 @@ export class TesisDetalleComponent implements OnInit {
 
   tabs = [
     { route: 'resumen', label: 'Resumen y Autores', icon: 'pi pi-user' },
-    { route: 'expediente', label: 'Expediente y Archivos', icon: 'pi pi-folder' },
     { route: 'comision', label: 'Comisión Revisora', icon: 'pi pi-users' },
-    { route: 'revisiones', label: 'Revisiones y Dictámenes', icon: 'pi pi-file-edit' },
-    { route: 'resoluciones', label: 'Resoluciones', icon: 'pi pi-verified' }
+    { route: 'expediente', label: 'Expediente y Archivos', icon: 'pi pi-folder' },
   ];
 
   ngOnInit(): void {
@@ -93,7 +91,7 @@ export class TesisDetalleComponent implements OnInit {
     this.controls.loading.set(true);
     this.controls.connectionError.set(false);
 
-    this.tesisService.getById(id).subscribe({
+    this.tesisService.getDetalleById(id).subscribe({
       next: (res) => {
         this.tesis.set(res.data);
         this.controls.loading.set(false);

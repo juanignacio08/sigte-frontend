@@ -1,0 +1,241 @@
+@if (connectionError()) {
+<app-no-connection />
+} @else if (loading()) {
+<app-loading-spinner message="Cargando expediente..." />
+} @else if (tesis(); as tesisData) {
+@if (expediente(); as detalle) {
+<div class="space-y-5 pb-6">
+    <!-- CABECERA -->
+    <header class="flex flex-col gap-4 rounded-2xl bg-white p-5 mb-5 shadow-sm
+                           sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-2 flex-1">
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-primary bg-cyan-100 px-2 py-1 rounded-md">
+                    EXP: {{ detalle.numeroExpediente || 'S/E' }}
+                </span>
+            </div>
+            <h3 class="font-semibold text-primary text-base transition-colors">{{ tesisData.titulo }}</h3>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1.5 text-info-600">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5">
+                        <i class="pi pi-users font-semibold"></i>
+                        <span class="font-semibold">Autores:</span>
+                        <span>
+                            @for (autor of tesisData.autores; track autor.id; let last = $last) {
+                            {{ autor.estudianteNombres }} {{ autor.estudiantePrimerApellido }}{{ !last ? ', ' : ''
+                            }}
+                            }
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i class="pi pi-building font-semibold"></i>
+                        <span class="text-xs">{{ tesisData.escuelaDenominacion }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i class="pi pi-calendar-clock font-semibold"></i>
+                        <span class="font-semibold">Registrado:</span>
+                        <span class="text-xs">{{ tesisData.fechaRegistro | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="shrink-0 flex md:flex-col items-end justify-between gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+            <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
+                {{ tesisData.estadoDenominacion || 'Proyecto Registrado' }}
+            </span>
+            <span class="text-xs font-semibold text-info-600">
+                {{ detalle.etapaDenominacion || 'Inicial' }}
+            </span>
+        </div>
+    </header>
+
+    <!-- PROGRESO DEL TRÁMITE -->
+    <app-expediente-stepper [pasoActual]="2" />
+
+    <!-- DATOS GENERALES -->
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <!-- Encabezado -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+                <p class="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                    <i class="pi pi-users text-indigo-500"></i>
+                    Comité de Tesis
+                </p>
+                <p class="text-xs text-slate-500 mt-1">
+                    Miembros que conforman el jurado evaluador de la etapa actual.
+                </p>
+            </div>
+
+            <app-button action="new" size="md" [withIcon]="true" [disabled]="loadingOperation() || !comision()"
+                (onClick)="abrirAgregarMiembro()">
+                Agregar miembro
+            </app-button>
+        </div>
+
+        @if (loadingOperation()) {
+        <app-table-skeleton [rows]="3" [cols]="4" />
+        } @else if (connectionErrorOperation()) {
+        <app-no-connection />
+        } @else {
+        <!-- Resumen del comité -->
+        <div class="flex items-center justify-between gap-3 mt-4">
+
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+                <i class="pi pi-list text-indigo-500"></i>
+
+                <span>
+                    <strong class="text-slate-700">
+                        {{ miembros().length }}
+                    </strong>
+                    {{ miembros().length === 1 ? 'miembro registrado' : 'miembros registrados' }}
+                </span>
+            </div>
+
+            <span class="text-[11px] text-slate-400">
+                <i class="pi pi-sort-amount-down mr-1"></i>
+                Orden jerárquico
+            </span>
+        </div>
+        
+        <p-table [value]="miembros()" stripedRows [tableStyle]="{ 'min-width': '38rem' }">
+
+            <!-- Cabecera -->
+            <ng-template pTemplate="header">
+                <tr class="text-xs font-bold uppercase tracking-wider">
+
+                    <th class="py-3 px-4 text-center w-16">
+                        N.º
+                    </th>
+
+                    <th class="py-3 px-4 text-left">
+                        Docente
+                    </th>
+
+                    <th class="py-3 px-4 text-left">
+                        Rol en el comité
+                    </th>
+
+                    <th class="py-3 px-4 text-center w-28">
+                        Acciones
+                    </th>
+
+                </tr>
+            </ng-template>
+
+            <!-- Filas -->
+            <ng-template pTemplate="body" let-miembro let-i="rowIndex">
+
+                <tr class="border-b border-slate-100 hover:bg-slate-50/80
+                               transition-colors text-sm text-slate-700">
+
+                    <!-- Número -->
+                    <td class="py-3 px-4 text-center">
+                        <span class="text-xs font-semibold text-slate-400">
+                            {{ (i + 1) | number:'2.0' }}
+                        </span>
+                    </td>
+
+                    <!-- Docente -->
+                    <td class="py-3 px-4">
+
+                        <div class="flex items-center gap-3">
+
+                            <!-- Avatar compacto -->
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center
+                                           text-white text-xs font-bold shrink-0 shadow-sm"
+                                [class]="getAvatarClass(miembro.rolDenominacion)">
+
+                                {{ getInitials(miembro.docenteNombre) }}
+
+                            </div>
+
+                            <!-- Información -->
+                            <div class="min-w-0 flex flex-col">
+
+                                <span class="font-semibold text-slate-800 text-sm">
+                                    {{ miembro.docenteNombre || 'Docente sin nombre' }}
+                                </span>
+
+                                <span class="text-xs text-slate-400 mt-0.5">
+                                    @if (miembro.correoInstitucional) {
+                                    <i class="pi pi-envelope text-[10px] mr-1"></i>
+                                    {{ miembro.correoInstitucional }}
+                                    } @else {
+                                    Correo no registrado
+                                    }
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <!-- Rol -->
+                    <td class="py-3 px-4">
+
+                        <span class="inline-flex items-center gap-1.5 text-[10px]
+                                       font-bold uppercase tracking-wide px-2.5 py-1.5
+                                       rounded-lg border" [class]="getRolBadgeClass(miembro.rolDenominacion)">
+
+                            <i class="pi pi-users text-[10px]">
+                            </i>
+
+                            {{ miembro.rolDenominacion || 'Sin rol asignado' }}
+
+                        </span>
+
+                    </td>
+
+                    <!-- Acciones -->
+                    <td class="py-3 px-4">
+
+                        <div class="flex items-center justify-center gap-1">
+
+                            <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Cambiar rol"
+                                (onClick)="abrirCambiarRol(miembro)">
+                            </app-button>
+
+                            <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar miembro"
+                                (onClick)="eliminarMiembro(miembro)">
+                            </app-button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </ng-template>
+
+            <!-- Tabla vacía -->
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center py-8 text-slate-400 text-sm">
+                        No hay miembros registrados en el comité.
+                    </td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+        }
+
+    </section>
+
+    <!-- ACCIONES DEL EXPEDIENTE -->
+    <div
+        class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4">
+        <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
+        <app-button icon="pi-arrow-right" iconDirection="right"
+            (onClick)="continuarSiguientePaso()">Siguiente</app-button>
+    </div>
+</div>
+}
+}
+
+<!-- Modal para agregar miembros -->
+<app-agregar-miembro-comision #modalAgregarMiembro [miembrosActuales]="miembros()" (onSuccess)="onGuardadoExitoso()" />
+
+<!-- Modal de confirmación -->
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada($event)" />

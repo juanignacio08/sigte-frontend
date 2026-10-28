@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
 import { Observable } from 'rxjs';
-import { ActualizarExpedienteRequest, ExpedienteListResponse, ExpedienteResponse } from '../../../shared/models/tramites/expediente.model';
+import { ActualizarExpedienteRequest, ExpedienteArchivoListResponse, ExpedienteArchivoResponse, ExpedienteListResponse, ExpedienteResponse } from '../../../shared/models/tramites/expediente.model';
 
 @Service()
 export class TesisExpedienteService {
@@ -40,6 +40,18 @@ export class TesisExpedienteService {
 
     eliminar(id: number): Observable<ExpedienteResponse> {
         return this.http.delete<ExpedienteResponse>(`${this.apiUrl}/${id}`);
+    }
+
+    obtenerArchivosPorExpediente(expedienteId: number): Observable<ExpedienteArchivoListResponse> {
+        return this.http.get<ExpedienteArchivoListResponse>(`${this.apiUrl}/listarArchivosPorExpediente/${expedienteId}`);
+    }
+
+    registrarArchivo(formData: FormData): Observable<ExpedienteArchivoResponse> {
+        return this.http.post<ExpedienteArchivoResponse>(`${this.apiUrl}/agregarArchivo`, formData);
+    }
+
+    eliminarArchivo(id: number): Observable<ExpedienteArchivoResponse> {
+        return this.http.delete<ExpedienteArchivoResponse>(`${this.apiUrl}/eliminarArchivo/${id}`);
     }
 
 }
