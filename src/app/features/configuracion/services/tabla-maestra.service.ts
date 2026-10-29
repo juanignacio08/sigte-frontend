@@ -27,6 +27,12 @@ export class TablaMaestraService {
     public static readonly rolesCommissionJury = '005002';
     public static readonly rolesCommissionCoAdvisor = '005003';
 
+    public static readonly stateFileInRegister = '007001';
+    public static readonly stateFileMemorandumGenerated = '007002';
+    public static readonly stateFileMemorandumSent = '007003';
+    public static readonly stateFileDictamenApproved = '007004';
+    public static readonly stateFileDictamenObservation = '007005';
+    public static readonly stateFileApproved = '007006';
 
     /**
      * Crea un nuevo maestro (tabla o ítem).

@@ -118,14 +118,23 @@ export class ExpedienteTabComponent implements OnInit {
     this.confirmModal()?.abrir('delete', mensaje);
   }
 
-  verDetalle(expedienteId: number): void {
-    //this.modalDetail()?.abrir(expedienteId);
+  verDetalle(expediente: Expediente): void {
+    const tesisId = this.tesisId();
+    const paso = expediente.ultimoPaso ?? 1;
+
+    const segmentosPorPaso: Record<number, string[]> = {
+      1: [],
+      2: ['comision'],
+      3: ['memorando'],
+      4: ['envio'],
+      5: ['dictamen'],
+      6: ['resolucion'],
+    };
+
     this.router.navigate([
-      '/tesis',
-      'detalle',
-      this.tesisId(),
-      'expediente',
-      expedienteId,
+      '/tesis', 'detalle', tesisId,
+      'expediente', expediente.id,
+      ...(segmentosPorPaso[paso] ?? []),
     ]);
   }
 

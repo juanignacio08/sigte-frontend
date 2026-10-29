@@ -1,61 +1,7 @@
-@if (connectionError()) {
-<app-no-connection />
-} @else if (loading()) {
-<app-loading-spinner message="Cargando expediente..." />
-} @else if (tesis(); as tesisData) {
-@if (expediente(); as detalle) {
 <div class="space-y-5 pb-6">
-    <!-- CABECERA -->
-    <header class="flex flex-col gap-4 rounded-2xl bg-white p-5 mb-5 shadow-sm
-                           sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-2 flex-1">
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-primary bg-cyan-100 px-2 py-1 rounded-md">
-                    EXP: {{ detalle.numeroExpediente || 'S/E' }}
-                </span>
-            </div>
-            <h3 class="font-semibold text-primary text-base transition-colors">{{ tesisData.titulo }}</h3>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-1.5 text-info-600">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <div class="flex items-center gap-1.5">
-                        <i class="pi pi-users font-semibold"></i>
-                        <span class="font-semibold">Autores:</span>
-                        <span>
-                            @for (autor of tesisData.autores; track autor.id; let last = $last) {
-                            {{ autor.estudianteNombres }} {{ autor.estudiantePrimerApellido }}{{ !last ? ', ' : ''
-                            }}
-                            }
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <i class="pi pi-building font-semibold"></i>
-                        <span class="text-xs">{{ tesisData.escuelaDenominacion }}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <i class="pi pi-calendar-clock font-semibold"></i>
-                        <span class="font-semibold">Registrado:</span>
-                        <span class="text-xs">{{ tesisData.fechaRegistro | date:'dd/MM/yyyy' }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-            class="shrink-0 flex md:flex-col items-end justify-between gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
-            <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
-                {{ tesisData.estadoDenominacion || 'Proyecto Registrado' }}
-            </span>
-            <span class="text-xs font-semibold text-info-600">
-                {{ detalle.etapaDenominacion || 'Inicial' }}
-            </span>
-        </div>
-    </header>
-
-    <!-- PROGRESO DEL TRÁMITE -->
-    <app-expediente-stepper [pasoActual]="3" />
-
     <!-- DATOS GENERALES -->
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
-    hola
+        hola
     </section>
 
     <!-- ACCIONES DEL EXPEDIENTE -->
@@ -66,5 +12,3 @@
             (onClick)="continuarSiguientePaso()">Siguiente</app-button>
     </div>
 </div>
-}
-}

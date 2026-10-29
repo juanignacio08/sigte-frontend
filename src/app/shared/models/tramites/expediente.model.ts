@@ -15,6 +15,10 @@ export interface Expediente {
   etapaDenominacion: string;
   numRevision: number;
   fechaAsociacion: string;
+  estadoCodigo: string;
+  estadoDenominacion: string;
+  ultimoPaso: number;
+  comisionId: number;
   estado: number; // 1: Activo, 0: Inactivo
   archivos: ExpedienteArchivo[];
 }

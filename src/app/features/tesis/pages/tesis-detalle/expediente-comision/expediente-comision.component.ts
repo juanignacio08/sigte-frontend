@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NotificacionService } from '../../../../../shared/services/notificacion.service';
 import { TesisService } from '../../../services/tesis.service';
 import { Comision, ComisionMiembro } from '../../../../../shared/models/tramites/comision.model';
@@ -17,19 +17,19 @@ import { TableModule } from '@openng/optimus-ui/table';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { AgregarMiembroComisionComponent } from '../../comision-tab/agregar-miembro-comision/agregar-miembro-comision.component';
 import { TableSkeletonComponent } from '../../../../../shared/components/table-skeleton/table-skeleton.component';
+import { TablaMaestraService } from '../../../../configuracion/services/tabla-maestra.service';
+import { ExpedienteWizardStore } from '../expediente-wizard.store';
 
 @Component({
   imports: [
     CommonModule,
     NoConnectionComponent,
-    LoadingSpinnerComponent,
-    ExpedienteStepperComponent,
     TableModule,
     ButtonComponent,
     AgregarMiembroComisionComponent,
     ConfirmDialogComponent,
     TableSkeletonComponent
-],
+  ],
   selector: 'app-expediente-comision',
   styleUrl: './expediente-comision.component.css',
   templateUrl: './expediente-comision.component.html',
@@ -40,105 +40,32 @@ export class ExpedienteComisionComponent implements OnInit {
   modalAgregarMiembro = viewChild<AgregarMiembroComisionComponent>('modalAgregarMiembro');
   confirmModal = viewChild<ConfirmDialogComponent>('confirmModal');
 
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  private readonly tesisService = inject(TesisService);
   private readonly expedienteService = inject(TesisExpedienteService);
   private readonly comisionService = inject(TesisComisionService);
   private readonly notificationService = inject(NotificacionService);
 
-  readonly loading = signal(false);
-  readonly connectionError = signal(false);
+  // ✅ Store compartido — el wizard padre ya cargó tesis y expediente
+  protected readonly store = inject(ExpedienteWizardStore);
+  readonly tesis = this.store.tesis;
+  readonly expediente = this.store.expediente;
+  readonly tesisId = this.store.tesisId;        // string | null
+  readonly expedienteId = this.store.expedienteId;  // number | null
+
   readonly loadingOperation = signal(false);
   readonly connectionErrorOperation = signal(false);
   // Confirm Action
   confirmAction = { selectedItem: signal<ComisionMiembro | null>(null), selectedAction: signal<ConfirmActionType>('delete') }
 
-  readonly tesis = signal<Tesis | null>(null);
-  readonly expediente = signal<Expediente | null>(null);
   comision = signal<Comision | null>(null);
   miembros = signal<ComisionMiembro[]>([]);
 
-  readonly tesisId = signal<string | null>(
-    this.route.snapshot.paramMap.get('tesisId')
-  );
-
-  readonly expedienteId = signal<number | null>(
-    this.obtenerExpedienteId()
-  );
-
-  private obtenerExpedienteId(): number | null {
-    const id = this.route.snapshot.paramMap.get('expedienteId');
-
-    if (!id || !/^[1-9]\d*$/.test(id)) {
-      return null;
-    }
-
-    const parsedId = Number(id);
-
-    return Number.isSafeInteger(parsedId) ? parsedId : null;
-  }
-
   ngOnInit(): void {
-    const tesisId = this.tesisId();
-    const expedienteId = this.expedienteId();
-
-    if (!tesisId || !expedienteId) {
-      this.notificationService.showError(
-        'Los parámetros de la ruta no son válidos.'
-      );
-      return;
-    }
-
-    this.cargarDatos(tesisId, expedienteId);
-  }
-
-  private cargarDatos(tesisId: string, expedienteId: number): void {
-    this.loading.set(true);
-    this.connectionError.set(false);
-
-    const tesisGuardada = localStorage.getItem('tesisSeleccionada');
-    const expedienteGuardado = localStorage.getItem('expedienteSeleccionado');
-
-    if (tesisGuardada && expedienteGuardado) {
-      const tsi: Tesis = JSON.parse(tesisGuardada);
-      const exp: Expediente = JSON.parse(expedienteGuardado);
-
-      this.tesis.set(tsi);
-      this.expediente.set(exp);
-      this.loading.set(false)
-
-      this.cargarComision(tsi.id, exp.etapaCodigo);
-    } else {
-      forkJoin({
-        tesis: this.tesisService.getById(tesisId),
-        expediente: this.expedienteService.obtenerPorId(expedienteId),
-      }).subscribe({
-        next: ({ tesis, expediente }) => {
-          this.tesis.set(tesis.data);
-          localStorage.setItem('tesisSeleccionada', JSON.stringify(tesis.data));
-
-          this.expediente.set(expediente.data);
-          localStorage.setItem('expedienteSeleccionado', JSON.stringify(expediente.data));
-
-          this.loading.set(false);
-
-          this.cargarComision(tesis.data.id, expediente.data.etapaCodigo);
-        },
-        error: (err) => {
-          this.loading.set(false);
-
-          if (err.status === 0) {
-            this.connectionError.set(true);
-            return;
-          }
-
-          this.notificationService.showError(
-            'No se pudo cargar la información del expediente.'
-          );
-        },
-      });
+    const idTesis = this.tesisId();
+    const exp = this.expediente();
+    if (idTesis && exp) {
+      this.cargarComision(idTesis, exp.etapaCodigo);
     }
   }
 
@@ -227,6 +154,33 @@ export class ExpedienteComisionComponent implements OnInit {
     if (tesisId && stage) {
       this.cargarComision(tesisId, stage);
     }
+
+    this.actualizarPasoYEstado();
+  }
+
+  actualizarPasoYEstado() {
+    const id = this.expedienteId();
+    const estado = TablaMaestraService.stateFileInRegister;
+
+    if (id) {
+      this.expedienteService.actualizarPasoYEstado(id, 2, estado).subscribe({
+        next: () => {
+          console.log('paso actualizado');
+          this.actualizarExpediente(2, estado);
+        }
+      })
+    }
+  }
+
+  actualizarExpediente(paso: number, estado: string): void {
+    const actual = this.expediente();
+    if (!actual) return;
+
+    this.store.actualizarExpediente({
+      ...actual,
+      ultimoPaso:       paso,
+      estadoCodigo:     estado
+    });
   }
 
   volverAtras(): void {

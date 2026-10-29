@@ -54,4 +54,14 @@ export class TesisExpedienteService {
         return this.http.delete<ExpedienteArchivoResponse>(`${this.apiUrl}/eliminarArchivo/${id}`);
     }
 
+    actualizarPasoYEstado(id: number, paso: number, estado: string): Observable<ExpedienteResponse> {
+        const url = `${this.apiUrl}/actualizarPasoYEstado`;
+        const params = new HttpParams()
+            .set('id', id)
+            .set('paso', paso)
+            .set('estado', estado);
+
+        return this.http.put<ExpedienteResponse>(url, null, { params });
+    }
+
 }

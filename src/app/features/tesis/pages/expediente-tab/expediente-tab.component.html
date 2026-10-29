@@ -44,7 +44,7 @@
                     <td class="py-3 px-3">
                         <div class="flex items-center justify-end gap-1">
                             <app-button action="view" [onlyIcon]="true" size="sm" messageTootip="Ver Detalle"
-                                (onClick)="verDetalle(exp.id)"></app-button>
+                                (onClick)="verDetalle(exp)"></app-button>
                             @if (exp.estado == 1) {
                             <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
                                 (onClick)="abrirEdicion(exp)"></app-button>

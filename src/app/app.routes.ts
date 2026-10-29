@@ -1,5 +1,9 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
+import { ExpedienteWizardComponent } from './features/tesis/pages/tesis-detalle/expediente-wizard/expediente-wizard.component';
+import { ExpedienteDetalleComponent } from './features/tesis/pages/tesis-detalle/expediente-detalle/expediente-detalle.component';
+import { ExpedienteComisionComponent } from './features/tesis/pages/tesis-detalle/expediente-comision/expediente-comision.component';
+import { ExpedienteMemorandoComponent } from './features/tesis/pages/tesis-detalle/expediente-memorando/expediente-memorando.component';
 
 export const routes: Routes = [
     {
@@ -110,24 +114,15 @@ export const routes: Routes = [
                     },
                     {
                         path: 'detalle/:tesisId/expediente/:expedienteId',
-                        loadComponent: () =>
-                            import('./features/tesis/pages/tesis-detalle/expediente-detalle/expediente-detalle.component').then(
-                                (m) => m.ExpedienteDetalleComponent,
-                            ),
-                    },
-                    {
-                        path: 'detalle/:tesisId/expediente/:expedienteId/comision',
-                        loadComponent: () =>
-                            import('./features/tesis/pages/tesis-detalle/expediente-comision/expediente-comision.component').then(
-                                (m) => m.ExpedienteComisionComponent,
-                            ),
-                    },
-                    {
-                        path: 'detalle/:tesisId/expediente/:expedienteId/memorando',
-                        loadComponent: () =>
-                            import('./features/tesis/pages/tesis-detalle/expediente-memorando/expediente-memorando.component').then(
-                                (m) => m.ExpedienteMemorandoComponent,
-                            ),
+                        component: ExpedienteWizardComponent,
+                        children: [
+                            { path: '', component: ExpedienteDetalleComponent, pathMatch: 'full' },
+                            { path: 'comision', component: ExpedienteComisionComponent },
+                            { path: 'memorando', component: ExpedienteMemorandoComponent },
+                            // { path: 'envio', component: ExpedienteEnvioComponent },     // cuando exista
+                            // { path: 'dictamen', component: ExpedienteDictamenComponent },  // cuando exista
+                            // { path: 'resolucion', component: ExpedienteResolucionComponent },// cuando exista
+                        ],
                     },
                 ]
             },

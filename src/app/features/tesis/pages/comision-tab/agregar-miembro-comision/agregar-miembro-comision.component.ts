@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TesisComisionService } from '../../../services/tesis-comision.service';
 import { TablaMaestraService } from '../../../../configuracion/services/tabla-maestra.service';
@@ -29,6 +29,7 @@ type ModoModal = 'agregar' | 'editar';
     ButtonComponent,
   ],
   selector: 'app-agregar-miembro-comision',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './agregar-miembro-comision.component.css',
   templateUrl: './agregar-miembro-comision.component.html',
 })
