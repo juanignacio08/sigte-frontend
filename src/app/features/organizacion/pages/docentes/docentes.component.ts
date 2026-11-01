@@ -269,6 +269,9 @@ export class DocentesComponent implements OnInit {
       case 'delete':
         request$ = this.docenteService.eliminar(item.id);
         break;
+      default:
+        request$ = this.docenteService.activar(item.id);
+        break;
     }
 
     request$.subscribe({

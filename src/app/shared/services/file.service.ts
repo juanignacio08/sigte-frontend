@@ -15,6 +15,13 @@ export class FileService {
         });
     }
 
+    descargarWord(ruta: string): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/descargarWord`, {
+            params: { ruta },
+            responseType: 'blob'
+        });
+    }
+
     descargarPdf(ruta: string): Observable<Blob> {
         return this.http.get(`${this.apiUrl}/descargarPdf`, {
             params: { ruta },

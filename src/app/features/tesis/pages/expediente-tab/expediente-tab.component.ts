@@ -158,6 +158,9 @@ export class ExpedienteTabComponent implements OnInit {
       case 'delete':
         request$ = this.expedienteService.eliminar(expediente.id);
         break;
+      default:
+        request$ = this.expedienteService.activar(expediente.id);
+        break;
     }
 
     request$.subscribe({

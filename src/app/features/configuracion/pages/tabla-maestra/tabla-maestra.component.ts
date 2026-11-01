@@ -172,6 +172,9 @@ export class TablaMaestraComponent {
       case 'delete':
         request$ = this.tablaMaestraService.delete(item.code);
         break;
+      default:
+        request$ = this.tablaMaestraService.activate(item.code);
+        break;
     }
 
     request$.subscribe({

@@ -141,6 +141,9 @@ export class DepartamentoAcademicoComponent implements OnInit {
       case 'delete':
         request$ = this.departamentoService.delete(dept.id);
         break;
+      default:
+        request$ = this.departamentoService.active(dept.id);
+        break;
     }
 
     request$.subscribe({

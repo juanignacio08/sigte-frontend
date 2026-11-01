@@ -230,6 +230,9 @@ export class EstudiantesComponent implements OnInit {
       case 'delete':
         request$ = this.estudianteService.eliminar(item.id);
         break;
+      default:
+        request$ = this.estudianteService.activar(item.id);
+        break;
     }
 
     request$.subscribe({
