@@ -101,6 +101,9 @@ export class EscuelaProfesionalComponent implements OnInit {
       case 'delete':
         request$ = this.escuelaService.delete(escuela.id);
         break;
+      default:
+        request$ = this.escuelaService.active(escuela.id);
+        break;
     }
 
     request$.subscribe({

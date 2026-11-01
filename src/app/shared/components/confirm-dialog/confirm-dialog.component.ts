@@ -5,13 +5,13 @@ import { ButtonAction, ButtonComponent } from '../button/button.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from '@openng/optimus-ui/inputtext';
 
-export type ConfirmActionType = 'active' | 'deactive' | 'delete';
+export type ConfirmActionType = 'active' | 'deactive' | 'delete' | 'volverAGenerarMemo';
 
 interface ConfirmDialogConfig {
   title: string;
   message: string;
   confirmLabel: string;
-  confirmSeverity: 'success' | 'warn' | 'danger';
+  confirmSeverity: 'success' | 'warn' | 'danger' | 'info';
   icon: string;
   iconBgColor: string;
   iconTextColor: string;
@@ -141,6 +141,17 @@ export class ConfirmDialogComponent {
           icon: 'pi-trash',
           iconBgColor: 'bg-danger-100',
           iconTextColor: 'text-danger-700'
+        };
+
+      case 'volverAGenerarMemo':
+        return {
+          title: '¿Volver a Generar Memorando?',
+          message: `¿Está seguro de volver a generar el memorando "${itemName}"?`,
+          confirmLabel: 'Sí, Volver a Generar',
+          confirmSeverity: 'info',
+          icon: 'pi-refresh',
+          iconBgColor: 'bg-info-100',
+          iconTextColor: 'text-info-700'
         };
     }
   }
