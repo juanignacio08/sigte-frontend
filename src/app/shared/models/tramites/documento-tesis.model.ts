@@ -27,5 +27,14 @@ export interface GenerarMemoRequest {
   anio: number;
 }
 
+export interface RegistrarDictamenRequest {
+  expedienteId: number;
+  resultadoCodigo: string;
+  observaciones?: string;
+  fechaEmision?: string;
+  archivoPdf?: File;
+  archivoWord?: File;
+}
+
 export type DocumentoTesisResponse = ResponseDTO<DocumentoTesis>;
 export type DocumentoTesisListResponse = ResponseDTO<DocumentoTesis[]>;

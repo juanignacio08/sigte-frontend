@@ -1,3 +1,7 @@
+<app-global-loading
+  [visible]="generandoMemo()"
+  message="Generando memorando..." />
+
 <!-- MODAL GENERAR MEMORANDO -->
 <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '92%', maxWidth: '500px' }" [draggable]="false"
     [resizable]="false" header="Generar memorando" (onHide)="cerrarModal()">

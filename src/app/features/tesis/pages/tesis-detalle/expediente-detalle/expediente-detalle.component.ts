@@ -241,6 +241,7 @@ export class ExpedienteDetalleComponent implements OnInit {
     this.expedienteService.eliminarArchivo(archivo.id).subscribe({
       next: (res) => {
         this.notificationService.showSuccess(res.message || 'Archivo eliminado del expediente.');
+        this.confirmModal()?.loading.set(false);
         this.confirmModal()?.cerrar();
         this.reloadDocuments();
       },
