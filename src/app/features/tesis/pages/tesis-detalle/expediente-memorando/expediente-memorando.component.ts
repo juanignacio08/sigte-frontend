@@ -12,6 +12,7 @@ import { ConfirmActionType, ConfirmDialogComponent } from '../../../../../shared
 import { TableSkeletonComponent } from '../../../../../shared/components/table-skeleton/table-skeleton.component';
 import { GenerarMemoModalComponent } from './generar-memo-modal/generar-memo-modal.component';
 import { FileService } from '../../../../../shared/services/file.service';
+import { GlobalLoadingComponent } from '../../../../../shared/components/global-loading/global-loading.component';
 
 @Component({
   imports: [
@@ -21,8 +22,9 @@ import { FileService } from '../../../../../shared/services/file.service';
     NoConnectionComponent,
     GenerarMemoModalComponent,
     DividerModule,
-    ConfirmDialogComponent
-  ],
+    ConfirmDialogComponent,
+    GlobalLoadingComponent
+],
   selector: 'app-expediente-memorando',
   styleUrl: './expediente-memorando.component.css',
   templateUrl: './expediente-memorando.component.html',
@@ -46,6 +48,7 @@ export class ExpedienteMemorandoComponent implements OnInit {
 
   readonly loadingOperation = signal(false);
   readonly connectionErrorOperation = signal(false);
+  readonly loadingGlobal = signal(false);
 
   confirmAction = { selectedItem: signal<DocumentoTesis | null>(null), selectedAction: signal<ConfirmActionType>('delete') }
   documento = signal<DocumentoTesis | null>(null);
@@ -158,27 +161,31 @@ export class ExpedienteMemorandoComponent implements OnInit {
 
     // Activamos el spinner en el botón de confirmación
     this.confirmModal()?.loading.set(true);
-
+    this.loadingGlobal.set(true);
     let request$;
     switch (action) {
       case 'volverAGenerarMemo':
         request$ = this.documentoTesisService.volverAGenerarMemo(memo.id);
         break;
       case 'delete':
-        request$ = this.documentoTesisService.eliminar(memo.id);
+        request$ = this.documentoTesisService.eliminarMemo(memo.id);
         break;
       default:
-        request$ = this.documentoTesisService.eliminar(memo.id);
+        request$ = this.documentoTesisService.eliminarMemo(memo.id);
         break;
     }
 
     request$.subscribe({
       next: (res) => {
         this.notificationService.showSuccess(res.message);
+        this.loadingGlobal.set(false);
         this.confirmModal()?.cerrar();
         this.onMemoGenerado();
       },
-      error: () => this.confirmModal()?.loading.set(false)
+      error: () => {
+        this.confirmModal()?.loading.set(false);
+        this.loadingGlobal.set(false);
+      }
     });
 
   }
@@ -223,7 +230,7 @@ export class ExpedienteMemorandoComponent implements OnInit {
       this.tesisId(),
       'expediente',
       this.expedienteId(),
-      'memorando'
+      'envio'
     ]);
   }
 }

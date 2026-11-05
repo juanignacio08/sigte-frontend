@@ -6,12 +6,14 @@ import { NotificacionService } from '../../../../../../shared/services/notificac
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GenerarMemoRequest } from '../../../../../../shared/models/tramites/documento-tesis.model';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { GlobalLoadingComponent } from '../../../../../../shared/components/global-loading/global-loading.component';
 
 @Component({
   imports: [
     DialogModule,
     ReactiveFormsModule,
-    ButtonComponent
+    ButtonComponent,
+    GlobalLoadingComponent
 ],
   selector: 'app-generar-memo-modal',
   styleUrl: './generar-memo-modal.component.css',

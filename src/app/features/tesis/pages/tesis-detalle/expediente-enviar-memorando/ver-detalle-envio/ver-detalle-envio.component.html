@@ -1,0 +1,160 @@
+<!-- ====================================== -->
+<!-- MODAL: DETALLE DEL ENVÍO               -->
+<!-- ====================================== -->
+
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '92%', maxWidth: '500px' }" [draggable]="false"
+    [resizable]="false" header="Correo Enviado" (onHide)="cerrarModal()">
+
+  @if (envioSeleccionado(); as envio) {
+
+    <div class="space-y-5">
+      <!-- ESTADO Y FECHA -->
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-50 p-3">
+        <div>
+          <p class="text-[10px] font-medium uppercase tracking-wide text-slate-500">
+            Estado del envío
+          </p>
+          <span
+            class="mt-1 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold"
+            [ngClass]="obtenerClaseEstado(envio.estado)">
+            <i [class]="obtenerIconoEstado(envio.estado)"></i>
+            {{ envio.estado }}
+          </span>
+        </div>
+
+        <div class="text-right">
+          <p class="text-[10px] font-medium uppercase tracking-wide text-slate-500">
+            Fecha de envío
+          </p>
+          <p class="mt-1 text-xs font-semibold text-slate-800">
+            {{ envio.fechaEnvio | date:'dd/MM/yyyy' }}
+          </p>
+          <p class="text-[10px] text-slate-500">
+            {{ envio.fechaEnvio | date:'HH:mm:ss' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- ASUNTO -->
+      <div>
+        <h3 class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-700">
+          Asunto del correo
+        </h3>
+
+        <div class="rounded-lg border border-slate-200 bg-white p-3">
+          <p class="text-sm leading-6 text-slate-800">
+            {{ envio.asunto }}
+          </p>
+        </div>
+      </div>
+
+      <!-- DESTINATARIOS -->
+      <div>
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wide text-slate-700">
+            Destinatarios
+          </h3>
+          <span class="text-[10px] font-semibold text-slate-500">
+            {{ envio.destinatarios.length }} destinatarios
+          </span>
+        </div>
+
+        <div class="max-h-56 space-y-2 overflow-y-auto">
+          @for (destinatario of envio.destinatarios; track destinatario.email) {
+            <div class="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-2.5">
+              <div
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold"
+                [ngClass]="obtenerColorAvatar(destinatario.nombre)">
+                {{ obtenerIniciales(destinatario.nombre) }}
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-xs font-bold text-slate-800">
+                  {{ destinatario.nombre }}
+                </p>
+                <p class="truncate text-[10px] text-slate-500">
+                  {{ destinatario.email }}
+                </p>
+              </div>
+
+              <span
+                class="shrink-0 rounded-md px-2 py-1 text-[9px] font-bold"
+                [ngClass]="obtenerClaseRol(destinatario.rol)">
+                {{ destinatario.rol }}
+              </span>
+            </div>
+          }
+
+          @if (envio.destinatarios.length === 0) {
+            <p class="py-4 text-center text-xs text-slate-500">
+              No hay destinatarios registrados.
+            </p>
+          }
+        </div>
+      </div>
+
+
+      <!-- ARCHIVOS ADJUNTOS -->
+      <div>
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wide text-slate-700">
+            Archivos adjuntos
+          </h3>
+          <span class="text-[10px] font-semibold text-slate-500">
+            {{ envio.adjuntos.length }} archivos
+          </span>
+        </div>
+
+        <div class="space-y-2">
+          @for (archivo of envio.adjuntos; track archivo.nombreArchivo) {
+            <div class="flex min-w-0 items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-2.5">
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                [ngClass]="obtenerClaseArchivo(archivo.nombreArchivo)">
+                <i [class]="obtenerIconoArchivo(archivo.nombreArchivo)"
+                   class="text-lg"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p
+                  class="truncate text-xs font-bold text-slate-800"
+                  [title]="archivo.nombreArchivo">
+                  {{ archivo.nombreArchivo }}
+                </p>
+                <p class="text-[10px] text-slate-500">
+                  {{ formatearBytes(archivo.tamanioBytes) }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                title="Descargar archivo"
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-900 text-white transition hover:bg-blue-950"
+                (click)="descargarArchivo(archivo)">
+                <i class="pi pi-download text-xs"></i>
+              </button>
+            </div>
+          }
+
+          @if (envio.adjuntos.length === 0) {
+            <p class="py-4 text-center text-xs text-slate-500">
+              No hay archivos adjuntos.
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+  }
+
+  <ng-template pTemplate="footer">
+
+    <button
+      type="button"
+      class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+      (click)="cerrarModal()">
+      Cerrar
+    </button>
+
+  </ng-template>
+
+</p-dialog>
