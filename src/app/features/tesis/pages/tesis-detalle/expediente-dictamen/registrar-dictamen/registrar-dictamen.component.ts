@@ -20,6 +20,7 @@ export class RegistrarDictamenComponent {
   private readonly notificationService = inject(NotificacionService);
 
   expedienteId = input.required<number>();
+  tituloTesis = input.required<string>();
 
   onSuccess = output<void>();
 
@@ -32,6 +33,8 @@ export class RegistrarDictamenComponent {
 
   readonly archivoSeleccionado = signal<File | null>(null);
   readonly errorArchivo = signal('');
+
+  readonly tituloDictaminado = signal('');
 
   readonly resultadoOpciones = [
     {
@@ -51,9 +54,24 @@ export class RegistrarDictamenComponent {
   ];
 
   abrirModal(): void {
+    this.resultadoCodigo.set('008001');
+    this.tituloDictaminado.set(this.tituloTesis());
+
+    this.observaciones.set('');
+    this.fechaEmision.set('');
+
     this.archivoSeleccionado.set(null);
     this.errorArchivo.set('');
+
     this.visible.set(true);
+  }
+
+  seleccionarResultado(codigo: string): void {
+    this.resultadoCodigo.set(codigo);
+
+    if (codigo === '008001' && !this.tituloDictaminado().trim()) {
+      this.tituloDictaminado.set(this.tituloTesis());
+    }
   }
 
   cerrarModal(): void {
@@ -117,7 +135,14 @@ export class RegistrarDictamenComponent {
   guardar(): void {
     const archivo = this.archivoSeleccionado();
 
-    this.guardando.set(true);
+    const aprobado = this.resultadoCodigo() === '008001';
+
+    if (aprobado && !this.tituloDictaminado().trim()) {
+      this.notificationService.showError(
+        'Debe ingresar el título dictaminado.'
+      );
+      return;
+    }
 
     let archivoPdf: File | undefined = undefined;
     let archivoWord: File | undefined = undefined;
@@ -135,11 +160,16 @@ export class RegistrarDictamenComponent {
     const request: RegistrarDictamenRequest = {
       expedienteId: this.expedienteId(),
       resultadoCodigo: this.resultadoCodigo(),
+      tituloDictaminado: aprobado
+        ? this.tituloDictaminado().trim()
+        : undefined,
       observaciones: this.observaciones().trim() || undefined,
       fechaEmision: this.fechaEmision() || undefined,
       archivoPdf,
       archivoWord
     };
+
+    this.guardando.set(true);
 
     this.documentoTesisService.registrarDictamen(request).subscribe({
       next: (res) => {

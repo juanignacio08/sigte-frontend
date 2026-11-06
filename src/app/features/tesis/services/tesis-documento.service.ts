@@ -54,6 +54,9 @@ export class TesisDocumentoService {
     const formData = new FormData();
     formData.append('expedienteId', request.expedienteId.toString());
     formData.append('resultadoCodigo', request.resultadoCodigo);
+    if (request.tituloDictaminado) {
+      formData.append('tituloDictaminado', request.tituloDictaminado);
+    }
     if (request.observaciones) {
       formData.append('observaciones', request.observaciones);
     }

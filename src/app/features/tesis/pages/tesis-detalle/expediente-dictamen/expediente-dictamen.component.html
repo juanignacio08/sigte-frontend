@@ -187,7 +187,7 @@
 
 </div>
 
-<app-registrar-dictamen #modalDictamen [expedienteId]="expedienteId()!" (onSuccess)="onDictamenRegistrado()">
+<app-registrar-dictamen #modalDictamen [expedienteId]="expedienteId()!" [tituloTesis]="tesis()?.titulo!" (onSuccess)="onDictamenRegistrado()">
 </app-registrar-dictamen>
 
 <app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />

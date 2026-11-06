@@ -30,6 +30,7 @@ export interface GenerarMemoRequest {
 export interface RegistrarDictamenRequest {
   expedienteId: number;
   resultadoCodigo: string;
+  tituloDictaminado?: string;
   observaciones?: string;
   fechaEmision?: string;
   archivoPdf?: File;
