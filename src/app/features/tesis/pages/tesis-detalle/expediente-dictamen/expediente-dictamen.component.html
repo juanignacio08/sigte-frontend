@@ -1,0 +1,193 @@
+<div class="space-y-5 pb-6">
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        @if (loadingOperation()) {
+        <app-table-skeleton [rows]="3" [cols]="4" />
+        } @else if (connectionErrorOperation()) {
+        <app-no-connection />
+        } @else if (!tieneDictamen()) {
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="px-5 py-10 text-center">
+                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-xl bg-indigo-100 text-blue-900">
+                    <i class="pi pi-file-check" style="font-size: 2.5rem;"></i>
+                </div>
+                <span class="mt-4 inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-bold text-blue-900">
+                    Trámite pendiente de calificación
+                </span>
+                <h2 class="mt-2 text-lg font-bold text-slate-900">
+                    Aún no se ha registrado el dictamen
+                </h2>
+                <p class="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                    La comisión debe emitir su dictamen y remitirlo por mesa de
+                    partes o correo institucional. Descargue el documento y
+                    regístrelo aquí para continuar con el acto resolutivo.
+                </p>
+                <div class="mt-8 flex flex-wrap justify-center gap-3">
+                    <app-button type="button" action="new" size="lg" icon="pi-file-arrow-up"
+                        (onClick)="abrirRegistro()">
+                        Registrar dictamen oficial
+                    </app-button>
+
+                    <app-button type="button" action="view" size="lg" icon="pi-envelope"
+                        (onClick)="reiterarNotificacion()">
+                        Reiterar notificación
+                    </app-button>
+                </div>
+            </div>
+
+            <!-- PLAZO REGLAMENTARIO -->
+            <div class="mx-3 mb-3 flex items-start gap-3 rounded-lg bg-indigo-100 p-4">
+                <i class="pi pi-info-circle mt-0.5 text-blue-700" style="font-size: 1.5rem;"></i>
+                <div>
+                    <p class="text-sm font-bold text-slate-800">
+                        Plazo reglamentario vigente
+                    </p>
+                    <p class="text-sm leading-5 text-slate-600">
+                        El plazo reglamentario se contabiliza desde la notificación del
+                        Memorando correspondiente.
+                    </p>
+                </div>
+            </div>
+        </div>
+        } @else if (dictamen(); as doc) {
+        <div class="space-y-4">
+            <!-- CABECERA DEL DICTAMEN -->
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-indigo-50 p-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-lg"
+                        [ngClass]="doc.resultadoCodigo === '008001' ? 'bg-emerald-600 text-white': 'bg-red-600 text-white'">
+                        <i [class]="obtenerIconoResultado(doc.resultadoCodigo)" style="font-size: 2rem;"></i>
+                    </div>
+
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="rounded-md px-3 py-1 text-sm font-bold"
+                                [ngClass]="obtenerClaseResultado(doc.resultadoCodigo)">
+                                {{ doc.resultadoDenominacion }}
+                            </span>
+                        </div>
+
+                        <p class="mt-1 text-sm text-slate-500">
+                            Dictamen registrado en el expediente
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFORMACIÓN GENERAL -->
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="rounded-lg bg-indigo-50 p-4">
+                    <p class="text-sm font-semibold uppercase text-slate-500">
+                        Resultado del dictamen
+                    </p>
+                    <p class="mt-2 text-sm font-bold text-slate-900">
+                        {{ doc.resultadoDenominacion }}
+                    </p>
+                </div>
+
+                <div class="rounded-lg bg-indigo-50 p-4">
+                    <p class="text-sm font-semibold uppercase text-slate-500">
+                        Fecha de emisión
+                    </p>
+                    <p class="mt-2 text-sm font-bold text-slate-900">
+                        {{ doc.fechaEmision ? (doc.fechaEmision | date:'dd/MM/yyyy') : 'No registrada' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- OBSERVACIONES -->
+            <div>
+                <h3 class="mb-2 flex items-center gap-2 font-bold text-slate-900">
+                    <i class="pi pi-comment text-blue-900"></i>
+                    Observaciones
+                </h3>
+                <div class="min-h-16 rounded-lg bg-indigo-50 p-4 text-sm leading-6 text-slate-700">
+                    @if (doc.observaciones) {
+                    {{ doc.observaciones }}
+                    } @else {
+                    <span class="italic text-slate-400">
+                        No se registraron observaciones.
+                    </span>
+                    }
+                </div>
+            </div>
+
+            <!-- ARCHIVO -->
+            <div>
+                <h3 class="mb-2 text-sm font-bold text-slate-900">
+                    Archivo del dictamen registrado
+                </h3>
+                @if (archivoDictamen(); as archivo) {
+                <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-indigo-50 p-3">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <div
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600">
+                            <i [class]="archivo.extension === 'PDF' ? 'pi pi-file-pdf' : 'pi pi-file-word'"
+                                style="font-size: 2rem;">
+                            </i>
+                        </div>
+
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-bold text-slate-800" [title]="archivo.nombre">
+                                {{ archivo.nombre }}
+                            </p>
+                            <p class="text-xs text-slate-500">
+                                {{ archivo.extension }} · {{ formatearBytes(archivo.tamanio) }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex shrink-0 flex-wrap gap-2">
+                        @if (doc.archivoPdfUrl) {
+                        <app-button type="button" action="download-doc" icon="pi-download"
+                            (onClick)="descargarArchivo(archivo.url)">
+                            Descargar Pdf
+                        </app-button>
+                        }@else if (doc.archivoWordUrl) {
+                        <app-button type="button" action="download-doc" icon="pi-download"
+                            (onClick)="descargarArchivoWord(archivo.url)">
+                            Descargar Word
+                        </app-button>
+                        }
+                    </div>
+                </div>
+
+                } @else {
+                <div class="rounded-lg border border-dashed border-slate-300 p-5 text-center">
+                    <i class="pi pi-file text-slate-400" style="font-size: 2rem;"></i>
+                    <p class="mt-2 text-sm text-slate-500">
+                        No se encontró un archivo asociado al dictamen.
+                    </p>
+                </div>
+                }
+            </div>
+
+            <!-- REEMPLAZO -->
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-indigo-50 p-4">
+                <div class="flex items-center gap-2 text-sm text-slate-600">
+                    <i class="pi pi-lock"></i>
+                    <span>
+                        Para editar o cambiar el dictamen necesita eliminar el dictamen registrado.
+                    </span>
+                </div>
+
+                <app-button type="button" action="delete" (onClick)="eliminarDictamen()" [withIcon]="true">
+                    Eliminar dictamen
+                </app-button>
+            </div>
+        </div>
+        }
+    </section>
+
+    <div
+        class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4">
+        <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
+        <app-button icon="pi-arrow-right" iconDirection="right"
+            (onClick)="continuarSiguientePaso()">Siguiente</app-button>
+    </div>
+
+</div>
+
+<app-registrar-dictamen #modalDictamen [expedienteId]="expedienteId()!" (onSuccess)="onDictamenRegistrado()">
+</app-registrar-dictamen>
+
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />

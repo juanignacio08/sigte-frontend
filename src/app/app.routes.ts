@@ -5,6 +5,7 @@ import { ExpedienteDetalleComponent } from './features/tesis/pages/tesis-detalle
 import { ExpedienteComisionComponent } from './features/tesis/pages/tesis-detalle/expediente-comision/expediente-comision.component';
 import { ExpedienteMemorandoComponent } from './features/tesis/pages/tesis-detalle/expediente-memorando/expediente-memorando.component';
 import { ExpedienteEnviarMemorandoComponent } from './features/tesis/pages/tesis-detalle/expediente-enviar-memorando/expediente-enviar-memorando.component';
+import { ExpedienteDictamenComponent } from './features/tesis/pages/tesis-detalle/expediente-dictamen/expediente-dictamen.component';
 
 export const routes: Routes = [
     {
@@ -121,7 +122,7 @@ export const routes: Routes = [
                             { path: 'comision', component: ExpedienteComisionComponent },
                             { path: 'memorando', component: ExpedienteMemorandoComponent },
                             { path: 'envio', component: ExpedienteEnviarMemorandoComponent },
-                            // { path: 'dictamen', component: ExpedienteDictamenComponent },  // cuando exista
+                            { path: 'dictamen', component: ExpedienteDictamenComponent },
                             // { path: 'resolucion', component: ExpedienteResolucionComponent },// cuando exista
                         ],
                     },
