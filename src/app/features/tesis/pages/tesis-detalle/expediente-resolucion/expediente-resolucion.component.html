@@ -332,7 +332,7 @@
         </div>
     </aside>
 
-    <app-enviar-resolucion #modalEnvioRes (onSuccess)="cargarHistorial()"></app-enviar-resolucion>
+    <app-enviar-resolucion #modalEnvioRes (onSuccess)="cargarHistorial(documentoId())"></app-enviar-resolucion>
 
     <app-ver-detalle-envio #modalDetalleEnvio></app-ver-detalle-envio>
     <app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />
@@ -343,5 +343,5 @@
 <div
     class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4 mt-4">
     <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
-    <app-button icon="pi-arrow-right" iconDirection="right" (onClick)="continuarSiguientePaso()">Siguiente</app-button>
+    <app-button icon="pi-save" variant="primary" (onClick)="finalizar()">Finalizar Tramite</app-button>
 </div>

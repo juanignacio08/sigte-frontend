@@ -62,22 +62,26 @@ export class ExpedienteResolucionComponent implements OnInit {
   documento = signal<DocumentoTesis | null>(null);
   readonly historial = signal<EnvioCorreo[]>([]);
 
+  readonly documentoId = signal<number | null>(null);
+
   ngOnInit(): void {
     const idTesis = this.tesisId();
     const exp = this.expediente();
     if (idTesis && exp) {
       this.cargarResolucionProyecto(exp.id);
-      this.cargarHistorial();
     }
   }
 
   cargarResolucionProyecto(expedienteId: number) {
     this.loadingOperation.set(true);
     this.connectionErrorOperation.set(false);
+    this.cargandoHistorial.set(true);
 
     this.documentoTesisService.obtenerResolucionProyecto(expedienteId).subscribe({
       next: (response) => {
         this.documento.set(response.data);
+        this.documentoId.set(response.data.id);
+        this.cargarHistorial(this.documentoId());
         this.loadingOperation.set(false);
       },
       error: (err) => {
@@ -208,14 +212,14 @@ export class ExpedienteResolucionComponent implements OnInit {
     this.modalEnvioRes()?.abrir(this.documento()?.id);
   }
 
-  cargarHistorial(): void {
-    if (!this.expedienteId()) {
+  cargarHistorial(documentoId: number | undefined | null): void {
+    if (!documentoId) {
       return;
     }
     this.cargandoHistorial.set(true);
 
     this.documentoTesisService
-      .listarEnviosPorExpediente(this.expedienteId()!)
+      .listarEnviosPorDocumento(documentoId)
       .subscribe({
         next: (res) => {
           this.historial.set(res.data ?? []);
@@ -285,14 +289,12 @@ export class ExpedienteResolucionComponent implements OnInit {
     }
   }
 
-  continuarSiguientePaso(): void {
+  finalizar(): void {
+    this.notificationService.showSuccess('Tramite finalizado correctamente!')
     this.router.navigate([
       '/tesis',
       'detalle',
-      this.tesisId(),
-      'expediente',
-      this.expedienteId(),
-      'resolucion'
+      this.tesisId()
     ]);
   }
 

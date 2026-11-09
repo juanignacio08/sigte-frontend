@@ -144,11 +144,11 @@ export class TesisDocumentoService {
     );
   }
 
-  listarEnviosPorExpediente(
-    expedienteId: number
+  listarEnviosPorDocumento(
+    documentoId: number
   ): Observable<EnvioCorreoListResponse> {
     return this.http.get<EnvioCorreoListResponse>(
-      `${this.apiUrlEnvioCorreos}/historial/${expedienteId}`
+      `${this.apiUrlEnvioCorreos}/historial/${documentoId}`
     );
   }
 }

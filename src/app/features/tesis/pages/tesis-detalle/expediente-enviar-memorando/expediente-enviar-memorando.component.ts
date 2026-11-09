@@ -78,17 +78,18 @@ export class ExpedienteEnviarMemorandoComponent implements OnInit {
     const exp = this.expediente();
     if (idTesis && exp) {
       this.cargarContenido(exp.id);
-      this.cargarHistorial(exp.id);
     }
   }
 
   cargarContenido(expedienteId: number) {
     this.loadingOperation.set(true);
     this.connectionErrorOperation.set(false);
+    this.cargandoHistorial.set(true);
 
     this.documentoTesisService.obtenerContenidoEnviar(expedienteId).subscribe({
       next: (response) => {
         this.contenido.set(response.data);
+        this.cargarHistorial(response.data.documentoId);
         this.loadingOperation.set(false);
       },
       error: (err) => {
@@ -105,11 +106,11 @@ export class ExpedienteEnviarMemorandoComponent implements OnInit {
     });
   }
 
-  cargarHistorial(expedienteId: number): void {
+  cargarHistorial(documentoId: number): void {
     this.cargandoHistorial.set(true);
 
     this.documentoTesisService
-      .listarEnviosPorExpediente(expedienteId)
+      .listarEnviosPorDocumento(documentoId)
       .subscribe({
         next: (res) => {
           this.historial.set(res.data ?? []);
@@ -161,7 +162,7 @@ export class ExpedienteEnviarMemorandoComponent implements OnInit {
         this.notificationService.showSuccess(res.message || 'Se envio correctamente el expediente a los interesados.');
         this.confirmModal()?.cerrar();
         this.enviando.set(false);
-        this.cargarHistorial(this.expedienteId()!);
+        this.cargarHistorial(contenido.documentoId);
       },
       error: (err) => {
         this.confirmModal()?.loading.set(false),
