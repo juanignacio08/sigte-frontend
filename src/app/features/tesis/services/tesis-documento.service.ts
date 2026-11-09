@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
 import { Observable } from 'rxjs';
-import { DocumentoTesisListResponse, DocumentoTesisResponse, GenerarMemoRequest, RegistrarDictamenRequest } from '../../../shared/models/tramites/documento-tesis.model';
+import { DocumentoTesisListResponse, DocumentoTesisResponse, GenerarMemoRequest, GenerarResolucionProyectoRequest, RegistrarDictamenRequest } from '../../../shared/models/tramites/documento-tesis.model';
 import { ContenidoEmailResponse, EnvioCorreo, EnvioCorreoListResponse } from '../../../shared/models/tramites/contenido-email';
 import { ResponseDTO } from '../../../shared/models/base/ResponseDTO.model';
 
@@ -49,6 +49,33 @@ export class TesisDocumentoService {
       `${this.apiUrl}/memo/${documentoId}`
     );
   }
+
+  obtenerResolucionProyecto(expedienteId: number): Observable<DocumentoTesisResponse> {
+    return this.http.get<DocumentoTesisResponse>(
+      `${this.apiUrl}/resolucion-aprobacion-proyecto/expediente/${expedienteId}`
+    );
+  }
+
+  generarResolucionProyecto(request: GenerarResolucionProyectoRequest): Observable<DocumentoTesisResponse> {
+    return this.http.post<DocumentoTesisResponse>(
+      `${this.apiUrl}/resolucion-aprobacion-proyecto`,
+      request
+    );
+  }
+
+  volverAGenerarResolucionProyecto(id: number): Observable<DocumentoTesisResponse> {
+    return this.http.put<DocumentoTesisResponse>(
+      `${this.apiUrl}/resolucion-aprobacion-proyecto/${id}/regenerar`,
+      null
+    );
+  }
+
+  eliminarResolucion(documentoId: number): Observable<DocumentoTesisResponse> {
+    return this.http.delete<DocumentoTesisResponse>(
+      `${this.apiUrl}/resolucion-aprobacion-proyecto/${documentoId}`
+    );
+  }
+
 
   registrarDictamen(request: RegistrarDictamenRequest): Observable<DocumentoTesisResponse> {
     const formData = new FormData();
@@ -99,6 +126,21 @@ export class TesisDocumentoService {
   ): Observable<ContenidoEmailResponse> {
     return this.http.get<ContenidoEmailResponse>(
       `${this.apiUrl}/contenidoEnviarMemo/${expedienteId}`
+    );
+  }
+
+  obtenerContenidoResolucionEnviar(
+    documentoId: number
+  ): Observable<ContenidoEmailResponse> {
+    return this.http.get<ContenidoEmailResponse>(
+      `${this.apiUrl}/contenidoEnviarResolucion/${documentoId}`
+    );
+  }
+
+  enviarResolucionProyecto(documentoId: number): Observable<DocumentoTesisResponse> {
+    return this.http.post<DocumentoTesisResponse>(
+      `${this.apiUrl}/${documentoId}/enviarResolucionProyecto`,
+      null
     );
   }
 
