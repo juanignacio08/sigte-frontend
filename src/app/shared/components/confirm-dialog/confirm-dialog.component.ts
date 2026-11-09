@@ -5,7 +5,7 @@ import { ButtonAction, ButtonComponent } from '../button/button.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from '@openng/optimus-ui/inputtext';
 
-export type ConfirmActionType = 'active' | 'deactive' | 'delete' | 'volverAGenerarMemo' | 'enviarMemo';
+export type ConfirmActionType = 'active' | 'deactive' | 'delete' | 'volverAGenerarMemo' | 'enviarMemo' | 'volverAGenerarResolucion';
 
 interface ConfirmDialogConfig {
   title: string;
@@ -153,6 +153,17 @@ export class ConfirmDialogComponent {
           iconBgColor: 'bg-info-100',
           iconTextColor: 'text-info-700'
         };
+
+      case 'volverAGenerarResolucion':
+        return {
+          title: '¿Volver a Generar Resolución?',
+          message: `¿Está seguro de volver a generar la resolución "${itemName}"?`,
+          confirmLabel: 'Sí, Volver a Generar',
+          confirmSeverity: 'info',
+          icon: 'pi-refresh',
+          iconBgColor: 'bg-info-100',
+          iconTextColor: 'text-info-700'
+        }
 
       case 'enviarMemo':
         return {

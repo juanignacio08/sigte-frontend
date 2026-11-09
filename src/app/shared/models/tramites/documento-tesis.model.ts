@@ -27,6 +27,12 @@ export interface GenerarMemoRequest {
   anio: number;
 }
 
+export interface GenerarResolucionProyectoRequest {
+  expedienteId: number;
+  numeroResolucion: number;
+  anioResolucion: number;
+}
+
 export interface RegistrarDictamenRequest {
   expedienteId: number;
   resultadoCodigo: string;
