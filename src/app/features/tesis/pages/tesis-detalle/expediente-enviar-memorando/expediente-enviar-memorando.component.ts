@@ -281,14 +281,16 @@ export class ExpedienteEnviarMemorandoComponent implements OnInit {
   }
 
   continuarSiguientePaso(): void {
-    this.router.navigate([
-      '/tesis',
-      'detalle',
-      this.tesisId(),
-      'expediente',
-      this.expedienteId(),
-      'dictamen'
-    ]);
+    if (this.historial().length > 0) {
+      this.router.navigate([
+        '/tesis',
+        'detalle',
+        this.tesisId(),
+        'expediente',
+        this.expedienteId(),
+        'dictamen'
+      ]);
+    }
   }
 
 }

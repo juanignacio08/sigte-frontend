@@ -23,9 +23,10 @@ export class TablaMaestraService {
     public static readonly stageThesisDraft = '004002';
     public static readonly stageThesisThesisDefense = '004004';
 
-
+    public static readonly rolesCommissionPresident = '005001';
     public static readonly rolesCommissionJury = '005002';
     public static readonly rolesCommissionCoAdvisor = '005003';
+    public static readonly rolesCommissionAdvisor = '005004';
 
     public static readonly stateFileInRegister = '007001';
     public static readonly stateFileMemorandumGenerated = '007002';
@@ -33,6 +34,9 @@ export class TablaMaestraService {
     public static readonly stateFileDictamenApproved = '007004';
     public static readonly stateFileDictamenObservation = '007005';
     public static readonly stateFileApproved = '007006';
+
+    public static readonly resultDocumenApproved = '008001';
+    public static readonly resultDocumenObservation = '008002';
 
     /**
      * Crea un nuevo maestro (tabla o ítem).

@@ -181,13 +181,18 @@
     <div
         class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4">
         <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
+        @if (dictamen() && dictamen()?.resultadoCodigo === dictamenAprobado) {
         <app-button icon="pi-arrow-right" iconDirection="right"
             (onClick)="continuarSiguientePaso()">Siguiente</app-button>
+        } @else if (dictamen()) {
+        <app-button icon="pi-save" variant="primary" (onClick)="finalizar()">Finalizar Tramite</app-button>
+        }
     </div>
 
 </div>
 
-<app-registrar-dictamen #modalDictamen [expedienteId]="expedienteId()!" [tituloTesis]="tesis()?.titulo!" (onSuccess)="onDictamenRegistrado()">
+<app-registrar-dictamen #modalDictamen [expedienteId]="expedienteId()!" [tituloTesis]="tesis()?.titulo!"
+    (onSuccess)="onDictamenRegistrado()">
 </app-registrar-dictamen>
 
 <app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />

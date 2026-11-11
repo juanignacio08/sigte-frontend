@@ -76,14 +76,14 @@ export class Sidebar implements OnInit {
         icon: 'pi-file', 
         children: [
           {
-            label: "Registrar Tesis",
-            icon: "pi-address-book",
-            route: '/tesis/registrar',
-          },
-          {
             label: "Listar Tesis",
             icon: "pi-address-book",
             route: '/tesis/listar',
+          },
+          {
+            label: "Registrar Tesis",
+            icon: "pi-address-book",
+            route: '/tesis/registrar',
           },
         ],
         expanded: false 

@@ -29,7 +29,7 @@ import { VerDetalleEnvioComponent } from '../expediente-enviar-memorando/ver-det
     GenerarResolucionProyectoComponent,
     EnviarResolucionComponent,
     VerDetalleEnvioComponent
-],
+  ],
   selector: 'app-expediente-resolucion',
   styleUrl: './expediente-resolucion.component.css',
   templateUrl: './expediente-resolucion.component.html',
@@ -290,12 +290,18 @@ export class ExpedienteResolucionComponent implements OnInit {
   }
 
   finalizar(): void {
-    this.notificationService.showSuccess('Tramite finalizado correctamente!')
-    this.router.navigate([
-      '/tesis',
-      'detalle',
-      this.tesisId()
-    ]);
+    if (this.documento()) {
+      if (this.historial().length === 0) {
+        this.notificationService.showWarn('Para finalizar el tramite debe de enviar la resolución a los interesados!');
+      } else {
+        this.notificationService.showSuccess('Tramite finalizado correctamente!')
+        this.router.navigate([
+          '/tesis',
+          'detalle',
+          this.tesisId()
+        ]);
+      }
+    }
   }
 
 }

@@ -11,6 +11,7 @@ import { NoConnectionComponent } from '../../../../../shared/components/no-conne
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { CommonModule } from '@angular/common';
 import { RegistrarDictamenComponent } from './registrar-dictamen/registrar-dictamen.component';
+import { TablaMaestraService } from '../../../../configuracion/services/tabla-maestra.service';
 
 @Component({
   imports: [CommonModule, TableSkeletonComponent, NoConnectionComponent, ButtonComponent, RegistrarDictamenComponent, ConfirmDialogComponent],
@@ -46,6 +47,7 @@ export class ExpedienteDictamenComponent implements OnInit {
   readonly dictamen = signal<DocumentoTesis | null>(null);
 
   readonly tieneDictamen = computed(() => this.dictamen() !== null);
+  readonly dictamenAprobado = TablaMaestraService.resultDocumenApproved;
 
   readonly archivoDictamen = computed(() => {
     const dictamen = this.dictamen();
@@ -110,7 +112,7 @@ export class ExpedienteDictamenComponent implements OnInit {
 
   abrirRegistro(): void {
     console.log("Sss");
-    
+
     this.modalDictamen()?.abrirModal();
   }
 
@@ -125,7 +127,7 @@ export class ExpedienteDictamenComponent implements OnInit {
     const dictamen = this.confirmAction.selectedItem();
     const action = this.confirmAction.selectedAction();
 
-    if (this.expedienteId() == null) {return};
+    if (this.expedienteId() == null) { return };
     if (!dictamen) return;
 
     // Activamos el spinner en el botón de confirmación
@@ -241,14 +243,27 @@ export class ExpedienteDictamenComponent implements OnInit {
   }
 
   continuarSiguientePaso(): void {
-    this.router.navigate([
-      '/tesis',
-      'detalle',
-      this.tesisId(),
-      'expediente',
-      this.expedienteId(),
-      'resolucion'
-    ]);
+    if (this.dictamen() && this.dictamen()?.resultadoCodigo === this.dictamenAprobado) {
+      this.router.navigate([
+        '/tesis',
+        'detalle',
+        this.tesisId(),
+        'expediente',
+        this.expedienteId(),
+        'resolucion'
+      ]);
+    }
+  }
+
+  finalizar(): void {
+    if (this.dictamen() && this.dictamen()?.resultadoCodigo === TablaMaestraService.resultDocumenObservation) {
+      this.notificationService.showSuccess('Tramite finalizado correctamente!')
+      this.router.navigate([
+        '/tesis',
+        'detalle',
+        this.tesisId()
+      ]);
+    }
   }
 
 }
