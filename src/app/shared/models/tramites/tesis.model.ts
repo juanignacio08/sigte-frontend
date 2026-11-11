@@ -1,4 +1,5 @@
 import { PaginatedResponseDTO, ResponseDTO } from "../base/ResponseDTO.model";
+import { Expediente } from "./expediente.model";
 
 export interface TesisAutor {
   id: number;
@@ -13,17 +14,6 @@ export interface TesisAutor {
   estado: number;
 }
 
-export interface ExpedienteTesis {
-  id: number;
-  tesisId: string;
-  numeroExpediente: string;
-  etapaCodigo: string;
-  etapaDenominacion: string;
-  numRevision: number;
-  fechaAsociacion: string;
-  estado: number;
-}
-
 export interface Tesis {
   id: string; // UUID
   escuelaId: number;
@@ -34,7 +24,7 @@ export interface Tesis {
   estadoDenominacion: string;
   fechaRegistro: string;
   autores: TesisAutor[];
-  expedienteActivo: ExpedienteTesis;
+  expedienteActivo: Expediente;
 }
 
 export interface RegistrarTesisRequest {

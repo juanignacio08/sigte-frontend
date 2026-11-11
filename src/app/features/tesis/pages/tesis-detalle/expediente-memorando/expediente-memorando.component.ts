@@ -24,7 +24,7 @@ import { GlobalLoadingComponent } from '../../../../../shared/components/global-
     DividerModule,
     ConfirmDialogComponent,
     GlobalLoadingComponent
-],
+  ],
   selector: 'app-expediente-memorando',
   styleUrl: './expediente-memorando.component.css',
   templateUrl: './expediente-memorando.component.html',
@@ -197,7 +197,7 @@ export class ExpedienteMemorandoComponent implements OnInit {
 
     const numeroCorrelacional = memo.numeroCorrelativo;
     const anio = memo.anioCorrelativo;
-    
+
     return `MM N° ${numeroCorrelacional}-${anio}-UNSCH-FCSA-D`;
   }
 
@@ -224,13 +224,15 @@ export class ExpedienteMemorandoComponent implements OnInit {
   }
 
   continuarSiguientePaso(): void {
-    this.router.navigate([
-      '/tesis',
-      'detalle',
-      this.tesisId(),
-      'expediente',
-      this.expedienteId(),
-      'envio'
-    ]);
+    if (this.documento()) {
+      this.router.navigate([
+        '/tesis',
+        'detalle',
+        this.tesisId(),
+        'expediente',
+        this.expedienteId(),
+        'envio'
+      ]);
+    }
   }
 }

@@ -1,6 +1,4 @@
-<app-global-loading
-  [visible]="loadingGlobal()"
-  message="Cargando..." />
+<app-global-loading [visible]="loadingGlobal()" message="Cargando..." />
 
 <div class="space-y-5 pb-6">
     <!-- DATOS GENERALES -->
@@ -199,7 +197,8 @@
 
         <!-- ACCIONES -->
         <div class="mt-10 flex flex-col gap-2 sm:flex-row">
-            <app-button action="view" icon="pi-refresh" (onClick)="volverAGenerarMemo()" >Volver a generar el memorando</app-button>
+            <app-button action="view" icon="pi-refresh" (onClick)="volverAGenerarMemo()">Volver a generar el
+                memorando</app-button>
             <app-button action="delete" icon="pi-ban" (onClick)="eliminar()">Anular memorando</app-button>
         </div>
         }
@@ -208,8 +207,10 @@
     <div
         class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4">
         <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
+        @if (documento()) {
         <app-button icon="pi-arrow-right" iconDirection="right"
             (onClick)="continuarSiguientePaso()">Siguiente</app-button>
+        }
     </div>
 
     @if (tesisId() && expedienteId()) {

@@ -343,5 +343,7 @@
 <div
     class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4 mt-4">
     <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
+    @if (documento()) {
     <app-button icon="pi-save" variant="primary" (onClick)="finalizar()">Finalizar Tramite</app-button>
+    }
 </div>
