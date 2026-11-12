@@ -50,6 +50,13 @@ export const routes: Routes = [
                             ),
                     },
                     {
+                        path: 'escuelas/:escuelaId/plantillas',
+                        loadComponent: () => 
+                            import('./features/organizacion/pages/escuela-profesional/escuela-plantillas/escuela-plantillas.component').then(
+                                (m) => m.EscuelaPlantillasComponent,     
+                            ),
+                    },
+                    {
                         path: 'docentes',
                         loadComponent: () =>
                             import('./features/organizacion/pages/docentes/docentes.component').then(

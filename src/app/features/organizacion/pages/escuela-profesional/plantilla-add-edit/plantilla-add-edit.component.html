@@ -1,0 +1,163 @@
+<p-dialog [(visible)]="visible" [modal]="true" [draggable]="false" [resizable]="false" [closable]="!guardando()"
+    [closeOnEscape]="!guardando()" [style]="{ width: '92%', maxWidth: '550px' }" (onHide)="cerrarModal()">
+
+    <ng-template pTemplate="header">
+        <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 text-blue-900">
+                <i class="pi pi-file-edit" style="font-size: 1.5rem;">
+                </i>
+            </div>
+
+            <div>
+                <h2 class="text-lg font-bold text-blue-950">
+                    {{ modoEdicion() ? 'Editar plantilla' : 'Nueva plantilla documental' }}
+                </h2>
+
+                <p class="text-xs text-slate-500">
+                    Configuración de formatos oficiales de la escuela.
+                </p>
+            </div>
+        </div>
+    </ng-template>
+
+    <div class="space-y-5">
+        <!-- TIPO DE DOCUMENTO -->
+        <div>
+            <label class="mb-2 block text-sm font-bold text-slate-800">
+                Tipo de documento
+                @if (!modoEdicion()) {
+                <span class="text-red-500">*</span>
+                }
+            </label>
+
+            @if (modoEdicion()) {
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p class="text-sm font-semibold text-slate-800">
+                    {{ plantillaSeleccionada()?.tipoDocumentoDenominacion }}
+                </p>
+                <p class="mt-1 text-xs text-slate-500">
+                    El tipo de documento no puede modificarse.
+                </p>
+            </div>
+            } @else {
+            <p-select [options]="tiposDocumento()" [ngModel]="tipoDocumentoCodigo()" (ngModelChange)="tipoDocumentoCodigo.set($event)" 
+                optionLabel="denominacion" optionValue="codigo" placeholder="Seleccione un tipo de documento"
+                class="w-full">
+            </p-select>
+            }
+        </div>
+
+        <!-- PLAZO -->
+        <div>
+            <label class="mb-2 block text-sm font-bold text-slate-800">
+                Plazo de atención
+                <span class="text-slate-400 font-normal">(opcional)</span>
+            </label>
+
+            <div class="grid grid-cols-[1fr_130px] gap-2">
+                <input type="number" min="1" [ngModel]="plazo()"
+                    (ngModelChange)="plazo.set($event === null || $event === '' ? null : +$event)" placeholder="Ej. 10"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100">
+
+                <select [ngModel]="unidadPlazo()" (ngModelChange)="unidadPlazo.set($event)"
+                    class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-900">
+                    <option value="DIAS">Días</option>
+                    <option value="MESES">Meses</option>
+                </select>
+            </div>
+
+            <p class="mt-1 text-xs text-slate-500">
+                Deja el campo vacío si la plantilla no tiene un plazo definido.
+            </p>
+        </div>
+
+        <!-- ARCHIVO DOCX -->
+        <div>
+            <div class="mb-2 flex items-center justify-between">
+                <label class="text-sm font-bold text-slate-800">
+                    Archivo de plantilla DOCX
+                    @if (!modoEdicion()) {
+                    <span class="text-red-500">*</span>
+                    } @else {
+                    <span class="text-slate-400 font-normal">(opcional)</span>
+                    }
+                </label>
+
+                <span class="text-xs text-slate-500">
+                    Máximo 10 MB
+                </span>
+            </div>
+
+            <input #archivoInput type="file" accept=".docx" class="hidden" (change)="seleccionarArchivo($event)">
+            <div class="rounded-lg border-2 border-dashed p-5 text-center transition" [ngClass]="archivoSeleccionado()
+          ? 'border-emerald-300 bg-emerald-50'
+          : 'border-indigo-200 bg-indigo-50/70'">
+                @if (archivoSeleccionado(); as archivo) {
+                <div class="flex items-center gap-3 rounded-lg bg-white p-3 text-left shadow-sm">
+                    <div
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+                        <i class="pi pi-file-word text-xl"></i>
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-bold text-slate-800">
+                            {{ archivo.name }}
+                        </p>
+                        <p class="text-xs text-slate-500">
+                            {{ formatearBytes(archivo.size) }}
+                        </p>
+                    </div>
+
+                    <button type="button" title="Quitar archivo"
+                        class="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                        (click)="quitarArchivo(archivoInput)">
+                        <i class="pi pi-trash"></i>
+                    </button>
+
+                    <i class="pi pi-check-circle text-emerald-600"></i>
+                </div>
+                } @else {
+                <i class="pi pi-file-arrow-up text-blue-900 text-4xl"></i>
+
+                <p class="mt-3 text-sm font-bold text-slate-800">
+                    Selecciona tu plantilla DOCX
+                </p>
+
+                <p class="mb-4 mt-1 text-xs text-slate-500">
+                    Formato .DOCX únicamente.
+                </p>
+
+                <div class="flex justify-center">
+                    <app-button type="button" action="view" icon="pi-folder-open" (onClick)="archivoInput.click()">
+                        Seleccionar archivo
+                    </app-button>
+                </div>
+                }
+            </div>
+
+            @if (errorArchivo()) {
+            <p class="mt-2 text-xs font-medium text-red-600">
+                <i class="pi pi-exclamation-circle mr-1"></i>
+                {{ errorArchivo() }}
+            </p>
+            }
+
+            @if (modoEdicion() && !archivoSeleccionado()) {
+            <p class="mt-2 text-xs text-slate-500">
+                Si no seleccionas otro archivo, se conservará la plantilla actual.
+            </p>
+            }
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex w-full items-center justify-between gap-3">
+            <app-button type="button" action="cancel" [disabled]="guardando()" (onClick)="cerrarModal()">
+            </app-button>
+
+            <app-button type="button" action="save" [disabled]="guardando()" [loading]="guardando()"
+                (onClick)="guardar()">
+            </app-button>
+        </div>
+    </ng-template>
+</p-dialog>
