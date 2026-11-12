@@ -100,6 +100,9 @@ export class TesisDetalleComponent implements OnInit {
     this.tesisService.getDetalleById(id).subscribe({
       next: (res) => {
         this.tesis.set(res.data);
+        if (this.tesis()?.expedienteActivo.etapaCodigo === TablaMaestraService.stageThesisDraft) {
+          this.activeStep.set(2);          
+        }
         this.controls.loading.set(false);
       },
       error: (err) => {
