@@ -28,6 +28,11 @@ export class TablaMaestraService {
     public static readonly rolesCommissionCoAdvisor = '005003';
     public static readonly rolesCommissionAdvisor = '005004';
 
+    public static readonly documentTypeProjectMemorandum = '006001';
+    public static readonly documentTypeDraftMemorandum = '006002';
+    public static readonly documentTypeProjectResolution = '006005';
+    public static readonly documentTypeDraftResolution = '006006';
+
     public static readonly stateFileInRegister = '007001';
     public static readonly stateFileMemorandumGenerated = '007002';
     public static readonly stateFileMemorandumSent = '007003';

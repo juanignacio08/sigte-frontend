@@ -7,8 +7,6 @@ export interface EscuelaProfesional {
   codigo: number;
   abreviatura: string;
   denominacion: string;
-  plantillaMemo: string;
-  plantillaRes: string;
   estado: number;
 }
 
@@ -18,8 +16,6 @@ export interface EscuelaProfesionalRequest {
   codigo: number;
   abreviatura: string;
   denominacion: string;
-  plantillaMemo?: File;
-  plantillaRes?: File;
 }
 
 export type EscuelaResponse = ResponseDTO<EscuelaProfesional>;
