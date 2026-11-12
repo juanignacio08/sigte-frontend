@@ -244,14 +244,26 @@ export class ExpedienteDictamenComponent implements OnInit {
 
   continuarSiguientePaso(): void {
     if (this.dictamen() && this.dictamen()?.resultadoCodigo === this.dictamenAprobado) {
-      this.router.navigate([
-        '/tesis',
-        'detalle',
-        this.tesisId(),
-        'expediente',
-        this.expedienteId(),
-        'resolucion'
-      ]);
+      if (TablaMaestraService.stageThesisDraft === this.expediente()?.etapaCodigo) {
+        this.router.navigate([
+          '/tesis',
+          'detalle',
+          this.tesisId(),
+          'expediente',
+          this.expedienteId(),
+          'fecha-sustentacion'
+        ]);
+      } else {
+        this.router.navigate([
+          '/tesis',
+          'detalle',
+          this.tesisId(),
+          'expediente',
+          this.expedienteId(),
+          'resolucion'
+        ]);
+      }
+
     }
   }
 

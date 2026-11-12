@@ -20,7 +20,7 @@ import { NoConnectionComponent } from '../../../../../shared/components/no-conne
     ExpedienteAddEditComponent,
     ConfirmDialogComponent,
     NoConnectionComponent
-],
+  ],
   templateUrl: './expediente-detalle.component.html',
 })
 export class ExpedienteDetalleComponent implements OnInit {
@@ -30,25 +30,25 @@ export class ExpedienteDetalleComponent implements OnInit {
 
   private readonly router = inject(Router);
 
-  private readonly expedienteService  = inject(TesisExpedienteService);
-  private readonly fileService        = inject(FileService);
+  private readonly expedienteService = inject(TesisExpedienteService);
+  private readonly fileService = inject(FileService);
   private readonly notificationService = inject(NotificacionService);
 
   // ✅ Store compartido — el wizard padre ya cargó tesis y expediente
   protected readonly store = inject(ExpedienteWizardStore);
-  readonly tesis       = this.store.tesis;
-  readonly expediente  = this.store.expediente;
-  readonly tesisId     = this.store.tesisId;        // string | null
+  readonly tesis = this.store.tesis;
+  readonly expediente = this.store.expediente;
+  readonly tesisId = this.store.tesisId;        // string | null
   readonly expedienteId = this.store.expedienteId;  // number | null
 
   // ✅ Estado local del step
-  readonly archivos           = signal<ExpedienteArchivo[]>([]);
+  readonly archivos = signal<ExpedienteArchivo[]>([]);
   readonly archivosPendientes = signal<File[]>([]);
-  readonly loadingOperation   = signal(false);
-  readonly connectionError    = signal(false);
+  readonly loadingOperation = signal(false);
+  readonly connectionError = signal(false);
 
   readonly confirmAction = {
-    selectedItem:   signal<ExpedienteArchivo | null>(null),
+    selectedItem: signal<ExpedienteArchivo | null>(null),
     selectedAction: signal<ConfirmActionType>('delete'),
   };
 
@@ -77,11 +77,14 @@ export class ExpedienteDetalleComponent implements OnInit {
 
     this.loadingOperation.set(true);
     this.expedienteService.obtenerArchivosPorExpediente(expId).subscribe({
-      next:  (res) => {
+      next: (res) => {
         this.archivos.set(res.data)
         this.loadingOperation.set(false);
       },
-      error: () => this.connectionError.set(true),
+      error: () => {
+        this.loadingOperation.set(false);
+        this.connectionError.set(true);
+      },
     });
   }
 
@@ -102,10 +105,10 @@ export class ExpedienteDetalleComponent implements OnInit {
     this.store.actualizarExpediente({
       ...actual,
       numeroExpediente: actualizado.numeroExpediente,
-      numRevision:      actualizado.numRevision,
-      fechaAsociacion:  actualizado.fechaAsociacion,
-      ultimoPaso:       actualizado.ultimoPaso,
-      estadoCodigo:     actualizado.estadoCodigo
+      numRevision: actualizado.numRevision,
+      fechaAsociacion: actualizado.fechaAsociacion,
+      ultimoPaso: actualizado.ultimoPaso,
+      estadoCodigo: actualizado.estadoCodigo
     });
   }
 

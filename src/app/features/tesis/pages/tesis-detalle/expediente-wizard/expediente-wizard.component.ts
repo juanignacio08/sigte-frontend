@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NoConnectionComponent } from '../../../../../shared/components/no-connection/no-connection.component';
 import { LoadingSpinnerComponent } from '../../../../../shared/components/loading-spinner/loading-spinner.component';
@@ -7,6 +7,7 @@ import { ExpedienteStepperComponent } from '../../../components/expediente-stepp
 import { ExpedienteWizardStore } from '../expediente-wizard.store';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
+import { TablaMaestraService } from '../../../../configuracion/services/tabla-maestra.service';
 
 @Component({
   imports: [
@@ -29,15 +30,7 @@ export class ExpedienteWizardComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  // Steps en orden (para calcular actual/siguiente/anterior)
-  private readonly steps = [
-    { key: 'datos', label: 'Datos', index: 1 },
-    { key: 'comision', label: 'Comisión', index: 2 },
-    { key: 'memorando', label: 'Memorando', index: 3 },
-    { key: 'envio', label: 'Envío', index: 4 },
-    { key: 'dictamen', label: 'Dictamen', index: 5 },
-    { key: 'resolucion', label: 'Resolución', index: 6 },
-  ];
+  readonly etapaActual = this.store.etapaCodigo;
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -55,7 +48,12 @@ export class ExpedienteWizardComponent implements OnInit {
     if (url.endsWith('/memorando')) return 3;
     if (url.endsWith('/envio')) return 4;
     if (url.endsWith('/dictamen')) return 5;
-    if (url.endsWith('/resolucion')) return 6;
+    if (url.endsWith('/fecha-sustentacion')) return 6;
+    if (url.endsWith('/comision-sustentacion')) return 7;
+    if (url.endsWith('/resolucion')) {
+      return this.etapaActual() === TablaMaestraService.stageThesisDraft ? 8 : 6;
+    }
+
     return 1;
   });
 

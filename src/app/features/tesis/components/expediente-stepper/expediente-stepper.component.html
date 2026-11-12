@@ -1,51 +1,100 @@
-<div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm mb-5">
+<div class="rounded-2xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm mb-5">
 
-    <div class="relative">
+    <!-- ================================== -->
+    <!-- VERSIÓN MÓVIL -->
+    <!-- ================================== -->
+    <div class="sm:hidden">
 
-        <!-- Línea de progreso -->
-        <div class="absolute left-[8.33%] right-[8.33%] top-5 h-0.5 bg-slate-200">
-            <div class="h-full bg-blue-600 transition-all duration-300" [style.width.%]="porcentaje()">
-            </div>
-        </div>
-
-        <div class="relative grid grid-cols-6 gap-1">
-
-            @for (paso of pasos; track $index; let i = $index) {
-            <div class="flex min-w-0 flex-col items-center text-center">
-
-                <div class="z-10 flex h-10 w-10 items-center justify-center rounded-xl border transition-colors"
-                    [class.border-blue-700]="i + 1 === pasoActual()" [class.bg-blue-800]="i + 1 === pasoActual()"
-                    [class.text-white]="i + 1 === pasoActual()" [class.border-emerald-200]="i + 1 < pasoActual()"
-                    [class.bg-emerald-50]="i + 1 < pasoActual()" [class.text-emerald-700]="i + 1 < pasoActual()"
-                    [class.border-slate-100]="i + 1 > pasoActual()" [class.bg-slate-50]="i + 1 > pasoActual()"
-                    [class.text-slate-400]="i + 1 > pasoActual()">
-
-                    @if (i + 1 < pasoActual()) { <i class="pi pi-check text-sm"></i>
-                        } @else if (i + 1 === pasoActual()) {
-                        <i class="pi pi-file-edit text-sm"></i>
-                        } @else {
-                        <i class="pi pi-lock text-sm"></i>
-                        }
-
-                </div>
-
-                <span class="mt-2 text-xs font-semibold leading-tight" [class.text-blue-800]="i + 1 === pasoActual()"
-                    [class.text-slate-500]="i + 1 !== pasoActual()">
-
-                    {{ i + 1 }}. {{ paso.titulo }}
-
+        <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Paso {{ pasoActual() }} de {{ pasos().length }}
                 </span>
 
-                <span class="mt-1 text-[10px]" [class.text-blue-700]="i + 1 === pasoActual()"
-                    [class.text-slate-400]="i + 1 !== pasoActual()">
+                <h3 class="mt-1 truncate text-base font-bold text-blue-950">
+                    {{ pasos()[pasoActual() - 1]?.titulo }}
+                </h3>
 
-                    {{ i + 1 === pasoActual() ? 'En proceso' :
-                    i + 1 < pasoActual() ? 'Completado' : paso.descripcion }} </span>
+                <p class="mt-0.5 text-xs text-slate-500">
+                    {{ pasos()[pasoActual() - 1]?.descripcion }}
+                </p>
+            </div>
+
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-900">
+                <i class="pi pi-file-edit text-xl"></i>
+            </div>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+            <div class="h-full rounded-full bg-blue-700 transition-all duration-500" [style.width.%]="porcentaje()">
+            </div>
+        </div>
+
+        <div class="mt-2 flex justify-between text-[10px] font-medium text-slate-400">
+            <span>Inicio</span>
+            <span>{{ porcentaje() | number:'1.0-0' }}% completado</span>
+            <span>Final</span>
+        </div>
+
+    </div>
+
+
+    <!-- ================================== -->
+    <!-- VERSIÓN ESCRITORIO -->
+    <!-- ================================== -->
+    <div class="hidden sm:block">
+
+        <div class="relative">
+
+            <!-- Línea de progreso -->
+            <div class="absolute left-[8.33%] right-[8.33%] top-5 h-0.5 bg-slate-200">
+                <div class="h-full bg-blue-600 transition-all duration-300" [style.width.%]="porcentaje()">
+                </div>
+            </div>
+
+            <div class="relative grid gap-1"
+                [style.grid-template-columns]="'repeat(' + pasos().length + ', minmax(0, 1fr))'">
+
+                @for (paso of pasos(); track $index; let i = $index) {
+
+                <div class="flex min-w-0 flex-col items-center text-center">
+
+                    <div class="z-10 flex h-10 w-10 items-center justify-center rounded-xl border transition-colors"
+                        [class.border-blue-700]="i + 1 === pasoActual()" [class.bg-blue-800]="i + 1 === pasoActual()"
+                        [class.text-white]="i + 1 === pasoActual()" [class.border-emerald-200]="i + 1 < pasoActual()"
+                        [class.bg-emerald-50]="i + 1 < pasoActual()" [class.text-emerald-700]="i + 1 < pasoActual()"
+                        [class.border-slate-100]="i + 1 > pasoActual()" [class.bg-slate-50]="i + 1 > pasoActual()"
+                        [class.text-slate-400]="i + 1 > pasoActual()">
+
+                        @if (i + 1 < pasoActual()) { <i class="pi pi-check text-sm"></i>
+                            } @else if (i + 1 === pasoActual()) {
+                            <i class="pi pi-file-edit text-sm"></i>
+                            } @else {
+                            <i class="pi pi-lock text-sm"></i>
+                            }
+
+                    </div>
+
+                    <span class="mt-2 text-xs font-semibold leading-tight"
+                        [class.text-blue-800]="i + 1 === pasoActual()" [class.text-slate-500]="i + 1 !== pasoActual()">
+
+                        {{ i + 1 }}. {{ paso.titulo }}
+
+                    </span>
+
+                    <span class="mt-1 text-[10px]" [class.text-blue-700]="i + 1 === pasoActual()"
+                        [class.text-slate-400]="i + 1 !== pasoActual()">
+
+                        {{ i + 1 === pasoActual() ? 'En proceso' :
+                        i + 1 < pasoActual() ? 'Completado' : paso.descripcion }} </span>
+
+                </div>
+                }
 
             </div>
-            }
-
         </div>
+
     </div>
 
 </div>
