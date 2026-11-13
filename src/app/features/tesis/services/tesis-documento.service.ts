@@ -4,7 +4,6 @@ import { environment } from '../../../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { DocumentoTesisListResponse, DocumentoTesisResponse, GenerarMemoRequest, GenerarResolucionProyectoRequest, RegistrarDictamenRequest } from '../../../shared/models/tramites/documento-tesis.model';
 import { ContenidoEmailResponse, EnvioCorreo, EnvioCorreoListResponse } from '../../../shared/models/tramites/contenido-email';
-import { ResponseDTO } from '../../../shared/models/base/ResponseDTO.model';
 
 @Service()
 export class TesisDocumentoService {

@@ -1,9 +1,7 @@
 <app-title-subtitle title="Gestión de Estudiantes"
     subtitle="Administración del padrón estudiantil por facultad y escuela profesional" icon="pi-users">
     <div class="flex flex-col md:flex-row gap-2 items-end md:items-center justify-end">
-        <app-button action="download-xlsx" [withIcon]="true" size="sm" variant="info">Descargar Excel</app-button>
-        <app-button action="save" [withIcon]="true" size="sm" variant="info">Carga Masiva</app-button>
-        <app-button action="new" [withIcon]="true" size="sm" (onClick)="crearNuevo()">Registrar Estudiante</app-button>
+        <app-button action="new" [withIcon]="true" size="lg" (onClick)="crearNuevo()">Registrar Estudiante</app-button>
     </div>
 </app-title-subtitle>
 

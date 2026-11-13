@@ -19,7 +19,6 @@ import { VerExpedienteDetalleComponent } from './ver-expediente-detalle/ver-expe
 import { ExpedienteAddEditComponent } from './expediente-add-edit/expediente-add-edit.component';
 import { ConfirmActionType, ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
-import { FileService } from '../../../../shared/services/file.service';
 
 @Component({
   imports: [

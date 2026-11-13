@@ -214,6 +214,8 @@ export class DocentesComponent implements OnInit {
   }
 
   paginaSiguiente(): void {
+    console.log(this.paginaActual());
+    
     this.cambiarPagina(this.paginaActual() + 1);
   }
   

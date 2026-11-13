@@ -88,9 +88,9 @@ export class Sidebar implements OnInit {
         ],
         expanded: false 
       },
-      { label: 'Comisiones y Jurados', icon: 'pi-slack', route: '/comisiones' },
-      { label: 'Trámites y Resoluciones', icon: 'pi-clipboard', route: '/tramites' },
-      { label: 'Configuración', icon: 'pi-cog', route: '/configuracion' },
+      // { label: 'Comisiones y Jurados', icon: 'pi-slack', route: '/comisiones' },
+      // { label: 'Trámites y Resoluciones', icon: 'pi-clipboard', route: '/tramites' },
+      // { label: 'Configuración', icon: 'pi-cog', route: '/configuracion' },
     ];
   }
 

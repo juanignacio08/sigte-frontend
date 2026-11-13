@@ -8,7 +8,7 @@ export interface DepartamentoAcademico {
   denominacion: string;
   estado: number;
   totalEscuelas: number;
-  escuelas: EscuelaProfesional[];
+  escuelas?: EscuelaProfesional[];
 }
 
 export interface DepartamentoAcademicoRequest {
