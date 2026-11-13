@@ -25,40 +25,79 @@ Para facilitar la revisión del proyecto sin necesidad de levantar un servidor b
 
 ---
 
-## 💻 Cómo probar el flujo COMPLETO (Frontend + Backend)
+## 💻 Guía de Instalación y Ejecución
 
-Si quieres ver el sistema funcionando al 100% con base de datos, sigue estos pasos:
+Sigue estos pasos para poner en marcha tanto el backend como el frontend en tu entorno local.
 
-### 1. Clonar y configurar el Backend (Spring Boot)
-1. Clona el repositorio del backend: 
+### 1. Configuración y Ejecución del Backend (Spring Boot)
+
+1. **Clonar el repositorio del backend:**
    ```bash
    git clone https://github.com/juanignacio08/sigte-backend.git
+   ```
+2. Crea en ***PostgreSQL*** una base de datos con el nombre **bd_sigte**. (solo una base de datos sencilla).
+```sql
+CREATE DATABASE bd_sigte;
+```
 
-2. Entra a la carpeta y busca el archivo application.yaml.example.
-3. Renómbralo a application.yaml y configura tus credenciales locales de PostgreSql.
-4. Ejecuta el proyecto desde tu IDE o consola. (El backend correrá por defecto en http://localhost:8080).
+3. Cambia a la rama ***dev*** del proyecto desde un editor de codigo como **IntelliJ IDEA**. **(IMPORTANTE!!)**
+
+4. Entra a la carpeta **resource** (*./src/main/resources*) y busca el archivo **application.yaml.example**
+
+5. Renómbralo a **application.yaml** y configura tus credenciales locales de PostgreSql (DB_USERNAME, DB_PASSWORD, MAIL_USERNAME y MAIL_PASSWORD). **modifica únicamente estos 4 campos** con tus datos:
+
+* `spring.datasource.username`: Usuario de tu base de datos PostgreSQL (ej. `postgres`).
+* **`spring.datasource.password`** 🔴 **(Crucial):** Contraseña de acceso a tu base de datos.
+* `spring.mail.username`: Tu dirección de correo electrónico para el envío de notificaciones.
+* **`spring.mail.password`** 🔴 **(Crucial):** **Contraseña de aplicación** de tu correo.
+
+> **Nota importante sobre el correo:** Si usas Gmail u otro proveedor con verificación en dos pasos, **no** coloques tu contraseña habitual. Debes generar una **contraseña de aplicación** de 16 caracteres desde la configuración de seguridad de tu cuenta y pegarla aquí.
+
+5. Ejecuta el proyecto desde tu IDE (*ir a ./src/main/java/unsch/fcsa/sigte/* encontraras el archivo **SigteApplication.java** habrelo y ejecutalo) o consola. (El backend correrá por defecto en http://localhost:8080).
+
+6. Si ejecuto correctamente prueba desde postman o el navegador la siguiente url: http://localhost:8080/sigte/api/v1/departamentos/listarPorFacultad/1  deberia de devolver algo como esto.
+
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "facultadId": 1,
+            "abreviatura": "DAENF",
+            "denominacion": "Departamento Académico de Enfermería",
+            "estado": 1,
+            "totalEscuelas": 1
+        }
+    ],
+    "message": "Lista de departamentos académicos",
+    "status": "success",
+    "code": "200"
+}
+```
 
 ### 2. Clonar y configurar el Frontend (Angular)
-1. Clona este repositorio y cámbiate a la rama dev:
+1. Clona este repositoriO:
    ```bash
    git clone https://github.com/juanignacio08/sigte-frontend.git
-   cd sigte-frontend
-   git checkout dev
+    ```
+    
+2. Cámbiate a la rama **dev** (IMPORTANTE!!), te recomiendo que lo hagas desde visual studio code.
 
-2. Instala las dependencias:
+3. Instala las dependencias:
    ```bash
    npm install
-
-3. Importante: Abre el archivo src/environments/environment.ts y asegúrate de que useMock esté en false:
+    ```
+3. Importante: Abre el archivo src/environments/environment.ts y environment.development.ts y asegúrate de que useMock esté en false (si es que existe, si no hay no hacer nada):
 ```ts
 export const environment = {
   production: false,
   useMock: false, // <--- Desactiva los mocks para usar el backend real
   apiUrl: 'http://localhost:8080/sigte/api/v1'
 };
+```
 
 4. Inicia el servidor:
 ```bash
 npm start
-
+```
 5. Abre http://localhost:4200 en tu navegador.
