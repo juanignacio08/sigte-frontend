@@ -3,6 +3,6 @@ export const environment = {
   apiUrl: 'https://sigte-api.unsch.edu.pe/api/v1', // URL del servidor de producción
   debugMode: false,
   appName: 'Sistema de Gestión de Tesis',
-  useMock: false
+  useMock: true
 
 };
