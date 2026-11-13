@@ -61,7 +61,7 @@ export class EscuelaProfesionalDepComponent implements OnInit {
     this.departamentoService.getById(id).subscribe({
       next: (res) => {
         this.departamento = res.data;
-        this.escuelas.set(this.departamento.escuelas);
+        this.escuelas.set(this.departamento.escuelas || []);
         this.title.set(this.departamento.denominacion);
         this.controls.operation.loading.set(false);
         this.controls.operation.loadingInitial.set(false);
@@ -130,6 +130,9 @@ export class EscuelaProfesionalDepComponent implements OnInit {
         break;
       case 'delete':
         request$ = this.escuelaService.delete(escuela.id);
+        break;
+      default:
+        request$ = this.escuelaService.active(escuela.id);
         break;
     }
 

@@ -1,0 +1,224 @@
+<app-global-loading [visible]="loadingGlobal()" message="Cargando..." />
+
+<div class="space-y-5 pb-6">
+    <!-- DATOS GENERALES -->
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+
+        @if (loadingOperation()) {
+        <app-table-skeleton [rows]="3" [cols]="4" />
+        } @else if (connectionErrorOperation()) {
+        <app-no-connection />
+        } @else if (documento() === null) {
+        <!-- ESTADO VACÍO -->
+        <div class="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
+                <i class="pi pi-file-edit" style="font-size: 2rem;"></i>
+            </div>
+
+            <h3 class="mt-4 font-bold text-slate-800">
+                Todavía no hay memorandos generados
+            </h3>
+
+            <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
+                Genera el memorando correspondiente a este expediente para continuar con el trámite.
+            </p>
+
+            <div class="flex justify-center mt-5">
+                <app-button type="button" size="lg" [action]="'new'" (click)="generarMemorandoModal()"
+                    [icon]="'pi-file-plus'" [withIcon]="true">
+                    Generar memorando
+                </app-button>
+            </div>
+        </div>
+        } @else {
+        <div class="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex min-w-0 items-center gap-3">
+                <div
+                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700">
+                    <i class="pi pi-file-word" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-medium uppercase tracking-wider text-slate-500">
+                        Memorando Multiple Generado
+                    </p>
+
+                    <h3 class="break-words text-sm font-bold text-blue-900">
+                        {{ documento()?.numeroCompleto }}
+                    </h3>
+                </div>
+
+            </div>
+
+            <span
+                class="inline-flex items-center gap-2 self-start rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-800 sm:self-center">
+                <i class="pi pi-check-circle"></i>
+                {{ documento()?.estadoDenominacion }}
+            </span>
+        </div>
+
+        <!-- DATOS DEL MEMORANDO -->
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div class="rounded-lg bg-indigo-50 p-3">
+                <p class="text-xs font-medium uppercase text-slate-500">
+                    N.º correlativo
+                </p>
+                <p class="mt-1 text-sm font-bold text-slate-900">
+                    {{ documento()?.numeroCorrelativo }}
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-indigo-50 p-3">
+                <p class="text-xs font-medium uppercase text-slate-500">
+                    Año fiscal
+                </p>
+                <p class="mt-1 text-sm font-bold text-slate-900">
+                    {{ documento()?.anioCorrelativo }}
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-indigo-50 p-3">
+                <p class="text-xs font-medium uppercase text-slate-500">
+                    Fecha de emisión
+                </p>
+                <p class="mt-1 text-sm font-bold text-slate-900">
+                    {{ documento()?.fechaEmision | date:'dd/MM/yyyy' }}
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-indigo-50 p-3">
+                <p class="text-xs font-medium uppercase text-slate-500">
+                    Resultado
+                </p>
+                <p class="mt-1 text-sm font-bold text-slate-900">
+                    {{ documento()?.resultadoDenominacion || 'Sin resultado' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- ARCHIVOS GENERADOS -->
+        <div class="my-5">
+            <div class="mb-3 flex items-center gap-2">
+                <i class="pi pi-paperclip text-slate-500"></i>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Archivos formales generados
+                </h4>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <!-- WORD -->
+                @if (documento()?.archivoWordUrl) {
+                <div class="rounded-xl border border-indigo-100 bg-indigo-50/70 p-3">
+                    <div class="flex items-start gap-3">
+                        <div
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700">
+                            <i class="pi pi-file-word" style="font-size: 1.5rem;"></i>
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-sm font-bold text-slate-800">
+                                MM N° {{ parseIntToString(documento()?.numeroCorrelativo) }}-{{
+                                documento()?.anioCorrelativo }}.docx
+                            </p>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Formato Office Open XML
+                                @if (documento()?.tamanioBytesWord != null) {
+                                • {{ ((documento()?.tamanioBytesWord ?? 0) / 1024) | number:'1.0-0' }} KB
+                                }
+                            </p>
+
+                            <span class="mt-1 inline-block text-xs font-medium text-blue-700">
+                                Editable / Puede reemplazar el archivo word.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <button type="button"
+                            class="rounded-md bg-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-800 hover:bg-indigo-200 hover:cursor-pointer"
+                            (click)="descargarWord(documento()?.archivoWordUrl, buildNombreArchivo(documento()!))">
+                            <i class="pi pi-download mr-1"></i>
+                            Descargar
+                        </button>
+                    </div>
+                </div>
+                }
+
+                <!-- PDF -->
+                @if (documento()?.archivoPdfUrl) {
+                <div class="rounded-xl border border-red-100 bg-indigo-50/70 p-3">
+                    <div class="flex items-start gap-3">
+                        <div
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600">
+                            <i class="pi pi-file-pdf" style="font-size: 1.5rem;"></i>
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-sm font-bold text-slate-800">
+                                MM N° {{
+                                parseIntToString(documento()?.numeroCorrelativo)}}-{{documento()?.anioCorrelativo}}.pdf
+                            </p>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                Documento PDF/A institucional
+                                @if (documento()?.tamanioBytesPdf != null) {
+                                • {{ ((documento()?.tamanioBytesPdf ?? 0) / 1024) | number:'1.0-0' }} KB
+                                }
+                            </p>
+
+                            <span class="mt-1 inline-block text-xs font-medium text-red-600">
+                                Versión oficial
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <button type="button"
+                            class="rounded-md bg-blue-900 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-950 hover:cursor-pointer"
+                            (click)="mostrarPdf(documento()?.archivoPdfUrl)">
+                            <i class="pi pi-eye mr-1"></i>
+                            Ver PDF
+                        </button>
+                    </div>
+                </div>
+                }
+
+            </div>
+
+            @if (!documento()?.archivoWordUrl && !documento()?.archivoPdfUrl) {
+            <p class="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                <i class="pi pi-exclamation-triangle mr-2"></i>
+                El memorando existe, pero todavía no tiene archivos disponibles.
+            </p>
+            }
+        </div>
+
+        <p-divider />
+
+        <!-- ACCIONES -->
+        <div class="mt-10 flex flex-col gap-2 sm:flex-row">
+            <app-button action="view" icon="pi-refresh" (onClick)="volverAGenerarMemo()">Volver a generar el
+                memorando</app-button>
+            <app-button action="delete" icon="pi-ban" (onClick)="eliminar()">Anular memorando</app-button>
+        </div>
+        }
+    </section>
+
+    <div
+        class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-lg flex flex-col sm:flex-row justify-between gap-4">
+        <app-button icon="pi-arrow-left" (onClick)="volverAtras()">Atras</app-button>
+        @if (documento()) {
+        <app-button icon="pi-arrow-right" iconDirection="right"
+            (onClick)="continuarSiguientePaso()">Siguiente</app-button>
+        }
+    </div>
+
+    @if (tesisId() && expedienteId()) {
+    <app-generar-memo-modal #modalMemo [tesisId]="tesisId()!" [expedienteId]="expedienteId()!"
+        (onSuccess)="onMemoGenerado()" />
+    }
+
+    @if (documento()) {
+    <app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />
+    }
+</div>

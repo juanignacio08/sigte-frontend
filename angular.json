@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "04987c52-ceff-48a3-b4d6-f233a5d98ce3"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -31,7 +32,12 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": [
+               "@fullcalendar/angular/skeleton.css", 
+               "@fullcalendar/angular/themes/monarch/theme.css", 
+               "@fullcalendar/angular/themes/monarch/palettes/purple.css",
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {

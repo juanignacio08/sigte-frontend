@@ -1,0 +1,240 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '95%', maxWidth: '850px' }" [draggable]="false"
+    [resizable]="false" (onHide)="cerrarModal()" [showHeader]="false"
+    contentStyleClass="p-0 rounded-2xl overflow-hidden">
+
+    <!-- Header Personalizado con Icono -->
+    <div class="bg-white px-6 pt-6 pb-4 border-b border-slate-100 flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-lg shrink-0">
+            <i class="pi pi-user-plus"></i>
+        </div>
+        <div>
+            <h2 class="text-xl font-bold text-slate-900 leading-tight">
+                Editar Registro de Docente
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Complete los datos oficiales del docente según padrón de la Facultad de Ciencias de la Salud.
+            </p>
+        </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="form-scroll p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+        <!-- SECCIÓN 2: Información Personal y Ficha Docente -->
+        <div class="space-y-4">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                <i class="pi pi-id-card text-slate-500"></i>
+                <span>Información Personal y Ficha Docente</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                <!-- Columna Izquierda: Fotografía -->
+                <div
+                    class="md:col-span-4 bg-slate-50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center text-center space-y-3">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        Fotografía Institucional
+                    </span>
+                    <div
+                        class="w-32 h-36 rounded-2xl bg-slate-200 overflow-hidden shadow-xs border border-slate-300 flex items-center justify-center relative">
+                        @if (photoPreviewUrl()) {
+                        <img [src]="photoPreviewUrl()" alt="Foto Docente" class="w-full h-full object-cover" />
+                        } @else {
+                        <i class="pi pi-user text-4xl text-slate-400"></i>
+                        }
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">
+                            {{ form.get('nombres')?.value || 'Nombre Docente' }}
+                        </p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Formatos: JPG, PNG. Max. 2MB</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full pt-1">
+                        <label
+                            class="flex-1 cursor-pointer bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs py-1.5 px-3 rounded-lg text-center shadow-xs transition-colors">
+                            <i class="pi pi-upload mr-1"></i> Subir Foto
+                            <input type="file" accept="image/png, image/jpeg" (change)="onPhotoSelected($event)"
+                                class="hidden" />
+                        </label>
+                        @if (photoPreviewUrl()) {
+                        <button type="button" (click)="removePhoto()"
+                            class="p-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors">
+                            <i class="pi pi-trash text-xs"></i>
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Formulario de Datos -->
+                <div class="md:col-span-8 space-y-3">
+                    <!-- Apellidos -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <!-- Tipo de Documento -->
+                        <div class="flex flex-col gap-1">
+                            <label for="tipoDocumentoCodigo" class="text-xs font-semibold text-slate-700">
+                                Tipo de Documento
+                            </label>
+                            <p-select inputId="tipoDocumentoCodigo" [options]="tiposDocumento()"
+                                formControlName="tipoDocumentoCodigo" optionLabel="denomination" optionValue="code"
+                                placeholder="Seleccione..." size="small" class="w-full" />
+                        </div>
+
+                        <!-- Número de Documento -->
+                        <div class="flex flex-col gap-1">
+                            <label for="numeroDocumento" class="text-xs font-semibold text-slate-700">
+                                Número de Documento
+                            </label>
+                            <div class="relative">
+                                <input pInputText id="numeroDocumento" formControlName="numeroDocumento"
+                                    placeholder="45892134" pSize="small" class="w-full"
+                                    [class.border-red-400]="campoInvalido('numeroDocumento')" />
+                            </div>
+
+                        </div>
+
+                        <!-- Código Docente -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs font-semibold text-slate-600">Código</label>
+                            <input pInputText formControlName="codigo" pSize="small" placeholder="14001010" />
+                        </div>
+                    </div>
+
+                    <!-- Nombres Completos -->
+                    <div class="flex flex-col gap-1">
+                        <label for="nombres" class="text-xs font-semibold text-slate-700">
+                            Nombres Completos <span class="text-red-500">*</span>
+                        </label>
+                        <input pInputText id="nombres" formControlName="nombres" placeholder="Manuel Alberto"
+                            pSize="small" [class.border-red-400]="campoInvalido('nombres')" />
+                    </div>
+
+                    <!-- Apellidos -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1">
+                            <label for="primerApellido" class="text-xs font-semibold text-slate-700">
+                                Primer Apellido (Paterno) <span class="text-red-500">*</span>
+                            </label>
+                            <input pInputText id="primerApellido" formControlName="primerApellido" placeholder="Huamán"
+                                pSize="small" [class.border-red-400]="campoInvalido('primerApellido')" />
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label for="segundoApellido" class="text-xs font-semibold text-slate-700">
+                                Segundo Apellido (Materno) <span class="text-red-500">*</span>
+                            </label>
+                            <input pInputText id="segundoApellido" formControlName="segundoApellido"
+                                placeholder="Cárdenas" pSize="small"
+                                [class.border-red-400]="campoInvalido('segundoApellido')" />
+                        </div>
+                    </div>
+
+                    <!-- Género y Teléfono -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs font-semibold text-slate-700">
+                                Género <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex items-center gap-2 pt-0.5">
+                                <label
+                                    class="flex-1 flex items-center justify-center gap-2 p-2 border border-slate-200 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors text-xs font-medium text-slate-700">
+                                    <input type="radio" [value]="genderMaleCode" formControlName="generoCodigo"
+                                        class="text-indigo-600 focus:ring-indigo-500" />
+                                    <span>Masculino</span>
+                                </label>
+                                <label
+                                    class="flex-1 flex items-center justify-center gap-2 p-2 border border-slate-200 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors text-xs font-medium text-slate-700">
+                                    <input type="radio" [value]="genderFemaleCode" formControlName="generoCodigo"
+                                        class="text-indigo-600 focus:ring-indigo-500" />
+                                    <span>Femenino</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label for="telefono" class="text-xs font-semibold text-slate-700">Teléfono / WhatsApp
+                                Móvil</label>
+                            <div class="relative">
+                                <input pInputText id="telefono" formControlName="telefono" placeholder="+51 966 845 120"
+                                    pSize="small" />
+                                <i class="pi pi-phone absolute right-2.5 top-2.5 text-xs text-slate-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Correo Institucional (Autogenerado / Validado) -->
+                    <div class="flex flex-col gap-1">
+                        <label for="correoInstitucional" class="text-xs font-semibold text-slate-700">
+                            Correo Electrónico Institucional UNSCH <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center">
+                            <div class="relative flex-1">
+                                <p-iconfield>
+                                    <p-inputicon class="pi pi-envelope" />
+                                    <input type="email" id="correoInstitucional" formControlName="correoInstitucional"
+                                        pInputText pSize="small" placeholder="mhuaman.cardenas@unsch.edu.pe"
+                                        [class.border-red-400]="campoInvalido('correoInstitucional')" fluid />
+                                </p-iconfield>
+                            </div>
+                        </div>
+                        @if (campoInvalido('correoInstitucional')) {
+                        <span class="text-[10px] text-red-500 mt-0.5">Ingrese una dirección de correo válida.</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: Afiliación Académica y Habilitación de Jurado -->
+        <div class="bg-slate-50/70 rounded-2xl p-4 border border-slate-200/80 space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800 font-bold text-xs uppercase tracking-wider">
+                    <i class="pi pi-building text-sm text-slate-600"></i>
+                    <span>Afiliación Académica y Habilitación de Jurado</span>
+                </div>
+                <span class="text-[10px] font-semibold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md">
+                    FCS - UNSCH
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Departamento Académico -->
+                <div class="flex flex-col gap-1">
+                    <label for="departamentoAcademicoId" class="text-xs font-semibold text-slate-700">
+                        Departamento Académico <span class="text-red-500">*</span>
+                    </label>
+                    <p-select inputId="departamentoAcademicoId" [options]="departamentos()"
+                        formControlName="departamentoAcademicoId" (onChange)="onDepartamentoChange($event.value)"
+                        optionLabel="denominacion" optionValue="id" placeholder="Seleccione D.A." size="small"
+                        class="w-full" />
+                </div>
+
+                <!-- Escuela Profesional Adscrita -->
+                <div class="flex flex-col gap-1">
+                    <label for="escuelaId" class="text-xs font-semibold text-slate-700">
+                        Escuela Profesional Adscrita <span class="text-red-500">*</span>
+                    </label>
+                    <p-select inputId="escuelaId" [options]="escuelasFiltradas()" formControlName="escuelaId"
+                        optionLabel="denominacion" optionValue="id" placeholder="Seleccione Escuela" size="small"
+                        class="w-full" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / Acciones del Modal -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+            <div class="flex items-center gap-1.5 text-xs text-slate-400">
+                <i class="pi pi-info-circle text-slate-400"></i>
+                <span>Los cambios se auditan bajo usuario del Administrador de Facultad.</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <app-button type="button" action="cancel" (onClick)="cerrarModal()">
+                    Cancelar
+                </app-button>
+
+                <app-button type="submit" [disabled]="form.invalid || loading()" [action]="'save'" [withIcon]="true"
+                    [loading]="loading()">
+                    <span>Actualizar Docente</span>
+                </app-button>
+            </div>
+        </div>
+
+    </form>
+</p-dialog>

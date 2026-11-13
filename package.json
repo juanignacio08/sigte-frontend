@@ -8,6 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
+  "allowScripts": {
+    "esbuild": true,
+    "@parcel/watcher": true,
+    "lmdb": true,
+    "msgpackr-extract": true
+  },
   "private": true,
   "packageManager": "npm@11.17.0",
   "dependencies": {
@@ -17,13 +23,16 @@
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
     "@angular/router": "^22.1.0",
+    "@fullcalendar/angular": "^7.1.5",
     "@openng/icons": "^1.0.0",
     "@openng/optimus-ui": "^2.0.2",
     "@openng/optimus-ui-themes": "^2.0.2",
     "@tailwindcss/postcss": "^4.3.3",
+    "fullcalendar": "^7.1.5",
     "postcss": "^8.5.28",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.3.3",
+    "temporal-polyfill": "^1.0.8",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

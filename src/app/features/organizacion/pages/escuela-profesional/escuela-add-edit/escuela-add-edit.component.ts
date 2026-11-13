@@ -37,14 +37,6 @@ export class EscuelaAddEditComponent {
   departamentos = signal<DepartamentoAcademico[]>([]); // Lista de departamentos para el select
   loadingDepartamentos = signal<boolean>(false);
 
-  // Nombres descriptivos de los archivos previamente guardados (para mostrar en modo edición)
-  fileNameMemo = signal<string | null>(null);
-  fileNameRes = signal<string | null>(null);
-
-  // Guardan la ruta del servidor para la descarga (solo existen en modo edición)
-  rutaMemo = signal<string | null>(null);
-  rutaRes = signal<string | null>(null);
-
   private currentId: number | null = null;
 
   // Formulario Reactivo
@@ -54,8 +46,6 @@ export class EscuelaAddEditComponent {
     codigo: [null, [Validators.required, Validators.min(1)]],
     denominacion: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
     abreviatura: ['', [Validators.required, Validators.maxLength(10)]],
-    plantillaMemo: [null],
-    plantillaRes: [null],
   });
 
   get tieneDepartamentoFijo(): boolean {
@@ -77,30 +67,6 @@ export class EscuelaAddEditComponent {
         this.loadingDepartamentos.set(false);
       }
     });
-  }
-
-  // Captura de archivos desde el input de la vista
-  onFileChange(event: Event, field: 'plantillaMemo' | 'plantillaRes'): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-
-      // Validar tipo de archivo (.doc, .docx)
-      const allowedExtensions = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (!allowedExtensions.includes(file.type) && !file.name.match(/\.(doc|docx)$/i)) {
-        this.notificationService.showWarn('Solo se permiten archivos Word (.doc, .docx)');
-        input.value = '';
-        return;
-      }
-
-      this.form.patchValue({ [field]: file });
-
-      if (field === 'plantillaMemo') {
-        this.fileNameMemo.set(file.name);
-      } else {
-        this.fileNameRes.set(file.name);
-      }
-    }
   }
 
   // Abre el modal para crear un registro nuevo
@@ -132,14 +98,6 @@ export class EscuelaAddEditComponent {
       this.cargarDepartamentos();
     }
 
-    // Rutas guardadas en backend
-    this.rutaMemo.set(escuela.plantillaMemo || null);
-    this.rutaRes.set(escuela.plantillaRes || null);
-
-    // Si la entidad escuela ya trae rutas/nombres de plantilla guardados:
-    this.fileNameMemo.set(escuela.plantillaMemo ? this.generarFileNamePlantilla(escuela, 'MEMO') : null);
-    this.fileNameRes.set(escuela.plantillaRes ? this.generarFileNamePlantilla(escuela, 'RES') : null);
-
     this.form.patchValue({
       id: this.currentId,
       departamentoId: targetDeptId,
@@ -151,43 +109,6 @@ export class EscuelaAddEditComponent {
     this.visible.set(true);
   }
 
-  generarFileNamePlantilla(escuela: EscuelaProfesional, tipoDoc: 'MEMO' | 'RES'): string {
-    if (tipoDoc === 'MEMO' && escuela.plantillaMemo) {
-      return 'Plantilla_Memorandum_' + escuela.abreviatura + '.docx';
-    }
-
-    if (tipoDoc === 'RES' && escuela.plantillaRes) {
-      return 'Plantilla_Resolucion_' + escuela.abreviatura + '.docx';
-    }
-
-    return 'Plantilla_Actual';
-  }
-
-  // Método para descargar la plantilla desde el Backend
-  descargarArchivo(ruta: string | null, nombrePorDefecto: string): void {
-    if (!ruta) return;
-
-    this.escuelaService.descargarPlantilla(ruta).subscribe({
-      next: (blob: Blob) => {
-        // Crear un objeto URL para forzar la descarga en el navegador
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = nombrePorDefecto;
-        document.body.appendChild(a);
-        a.click();
-
-        // Limpiar recurso de memoria
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error('Error al descargar la plantilla:', err);
-        this.notificationService.showError('No se pudo descargar el archivo.');
-      }
-    });
-  }
-
   cerrarModal(): void {
     this.resetState();
     this.visible.set(false);
@@ -196,10 +117,6 @@ export class EscuelaAddEditComponent {
   private resetState(): void {
     this.form.reset();
     this.loading.set(false);
-    this.fileNameMemo.set(null);
-    this.fileNameRes.set(null);
-    this.rutaMemo.set(null);
-    this.rutaRes.set(null);
   }
 
   campoInvalido(campo: string): boolean {

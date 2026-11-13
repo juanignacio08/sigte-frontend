@@ -12,6 +12,7 @@ import { NoConnectionComponent } from '../../../../shared/components/no-connecti
 import { TableModule } from '@openng/optimus-ui/table';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   imports: [TitleSubtitleComponent, ButtonComponent, TableSkeletonComponent, NoConnectionComponent, TableModule, BadgeComponent, CommonModule, EscuelaAddEditComponent, ConfirmDialogComponent],
@@ -43,6 +44,8 @@ export class EscuelaProfesionalComponent implements OnInit {
   private readonly escuelaService = inject(EscuelaService);
   private readonly notificationService = inject(NotificacionService);
 
+  private readonly router = inject(Router);
+
   ngOnInit(): void {
     this.cargarEscuelas(this.facultad.id);
   }
@@ -53,6 +56,15 @@ export class EscuelaProfesionalComponent implements OnInit {
 
   exportar() {
     console.log('Exportar lista');
+  }
+
+  verPlantillas(escuela: EscuelaProfesional): void {
+    this.router.navigate(
+      ['/organizacion', 'escuelas', escuela.id, 'plantillas'],
+      {
+        state: { escuela }
+      }
+    );
   }
 
   editar(escuela: EscuelaProfesional) {
@@ -100,6 +112,9 @@ export class EscuelaProfesionalComponent implements OnInit {
         break;
       case 'delete':
         request$ = this.escuelaService.delete(escuela.id);
+        break;
+      default:
+        request$ = this.escuelaService.active(escuela.id);
         break;
     }
 
