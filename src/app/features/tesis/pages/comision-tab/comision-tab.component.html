@@ -1,0 +1,207 @@
+<div class="space-y-5">
+
+    <!-- Encabezado -->
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+            <p class="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                <i class="pi pi-users text-indigo-500"></i>
+                Comité de Tesis
+            </p>
+            <p class="text-xs text-slate-500 mt-1">
+                Miembros que conforman el jurado evaluador de la etapa actual.
+            </p>
+        </div>
+
+        <app-button action="new" size="md" [withIcon]="true" [disabled]="loading() || !comisionId()"
+            (onClick)="abrirAgregarMiembro()">
+            Agregar miembro
+        </app-button>
+    </div>
+
+    <!-- Estados de carga, error y lista vacía -->
+    @if (loading()) {
+
+    <app-table-skeleton [rows]="3" [cols]="4" />
+
+    } @else if (connectionError()) {
+
+    <app-no-connection />
+
+    } @else if (miembros().length === 0) {
+
+    <!-- Estado vacío -->
+    <div class="text-center py-12 px-6 bg-gradient-to-b from-slate-50 to-white
+                    rounded-xl border border-dashed border-slate-200">
+
+        <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-indigo-50
+                        flex items-center justify-center">
+            <i class="pi pi-users text-2xl text-indigo-400"></i>
+        </div>
+
+        <p class="text-sm font-bold text-slate-800 mb-1">
+            Aún no hay miembros en el comité
+        </p>
+
+        <p class="text-xs text-slate-500 mb-4 max-w-sm mx-auto">
+            Agrega al presidente, secretario, vocales y asesores
+            que conformarán el jurado de esta etapa.
+        </p>
+    </div>
+
+    } @else {
+
+    <!-- Resumen del comité -->
+    <div class="flex items-center justify-between gap-3">
+
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+            <i class="pi pi-list text-indigo-500"></i>
+
+            <span>
+                <strong class="text-slate-700">
+                    {{ miembros().length }}
+                </strong>
+                {{ miembros().length === 1 ? 'miembro registrado' : 'miembros registrados' }}
+            </span>
+        </div>
+
+        <span class="text-[11px] text-slate-400">
+            <i class="pi pi-sort-amount-down mr-1"></i>
+            Orden jerárquico
+        </span>
+    </div>
+
+    <!-- Tabla de miembros -->
+    <div class="overflow-hidden border border-slate-200/70 rounded-xl bg-white">
+
+        <p-table [value]="miembros()" stripedRows [tableStyle]="{ 'min-width': '38rem' }">
+
+            <!-- Cabecera -->
+            <ng-template pTemplate="header">
+                <tr class="text-xs font-bold uppercase tracking-wider">
+
+                    <th class="py-3 px-4 text-center w-16">
+                        N.º
+                    </th>
+
+                    <th class="py-3 px-4 text-left">
+                        Docente
+                    </th>
+
+                    <th class="py-3 px-4 text-left">
+                        Rol en el comité
+                    </th>
+
+                    <th class="py-3 px-4 text-center w-28">
+                        Acciones
+                    </th>
+
+                </tr>
+            </ng-template>
+
+            <!-- Filas -->
+            <ng-template pTemplate="body" let-miembro let-i="rowIndex">
+
+                <tr class="border-b border-slate-100 hover:bg-slate-50/80
+                               transition-colors text-sm text-slate-700">
+
+                    <!-- Número -->
+                    <td class="py-3 px-4 text-center">
+                        <span class="text-xs font-semibold text-slate-400">
+                            {{ (i + 1) | number:'2.0' }}
+                        </span>
+                    </td>
+
+                    <!-- Docente -->
+                    <td class="py-3 px-4">
+
+                        <div class="flex items-center gap-3">
+
+                            <!-- Avatar compacto -->
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center
+                                           text-white text-xs font-bold shrink-0 shadow-sm"
+                                [class]="getAvatarClass(miembro.rolDenominacion)">
+
+                                {{ getInitials(miembro.docenteNombre) }}
+
+                            </div>
+
+                            <!-- Información -->
+                            <div class="min-w-0 flex flex-col">
+
+                                <span class="font-semibold text-slate-800 text-sm">
+                                    {{ miembro.docenteNombre || 'Docente sin nombre' }}
+                                </span>
+
+                                <span class="text-xs text-slate-400 mt-0.5">
+                                    @if (miembro.correoInstitucional) {
+                                    <i class="pi pi-envelope text-[10px] mr-1"></i>
+                                    {{ miembro.correoInstitucional }}
+                                    } @else {
+                                    Correo no registrado
+                                    }
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <!-- Rol -->
+                    <td class="py-3 px-4">
+
+                        <span class="inline-flex items-center gap-1.5 text-[10px]
+                                       font-bold uppercase tracking-wide px-2.5 py-1.5
+                                       rounded-lg border" [class]="getRolBadgeClass(miembro.rolDenominacion)">
+
+                            <i class="pi pi-users text-[10px]">
+                            </i>
+
+                            {{ miembro.rolDenominacion || 'Sin rol asignado' }}
+
+                        </span>
+
+                    </td>
+
+                    <!-- Acciones -->
+                    <td class="py-3 px-4">
+
+                        <div class="flex items-center justify-center gap-1">
+
+                            <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Cambiar rol"
+                                (onClick)="abrirCambiarRol(miembro)">
+                            </app-button>
+
+                            <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar miembro"
+                                (onClick)="eliminarMiembro(miembro)">
+                            </app-button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </ng-template>
+
+            <!-- Tabla vacía -->
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center py-8 text-slate-400 text-sm">
+                        No hay miembros registrados en el comité.
+                    </td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+
+    </div>
+    }
+
+</div>
+
+<!-- Modal para agregar miembros -->
+<app-agregar-miembro-comision #modalAgregarMiembro [miembrosActuales]="miembros()" (onSuccess)="onGuardadoExitoso()" />
+
+<!-- Modal de confirmación -->
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada($event)" />

@@ -9,28 +9,6 @@ export class EscuelaService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = `${environment.apiUrl}/escuelas`;
 
-    private buildFormData(request: EscuelaProfesionalRequest): FormData {
-        const formData = new FormData();
-
-        if (request.id) {
-            formData.append('id', request.id.toString());
-        }
-        formData.append('departamentoId', request.departamentoId.toString());
-        formData.append('codigo', request.codigo.toString());
-        formData.append('abreviatura', request.abreviatura);
-        formData.append('denominacion', request.denominacion);
-
-        // Solo se adjuntan si el usuario seleccionó un archivo nuevo
-        if (request.plantillaMemo instanceof File) {
-            formData.append('plantillaMemo', request.plantillaMemo);
-        }
-        if (request.plantillaRes instanceof File) {
-            formData.append('plantillaRes', request.plantillaRes);
-        }
-
-        return formData;
-    }
-
     /**
      * Obtiene la lista de escuelas pertenecientes a una facultad.
      * @param facultadId ID de la facultad
@@ -68,16 +46,14 @@ export class EscuelaService {
 
     /** Crear una nueva escuela */
     create(escuela: EscuelaProfesionalRequest): Observable<EscuelaResponse> {
-        const url = `${this.apiUrl}/guardar`;
-        const body = this.buildFormData(escuela);
-        return this.http.post<EscuelaResponse>(url, body);
+        const url = `${this.apiUrl}`;
+        return this.http.post<EscuelaResponse>(url, escuela);
     }
 
     /** Actualizar una escuela existente */
     update(escuela: EscuelaProfesionalRequest): Observable<EscuelaResponse> {
-        const url = `${this.apiUrl}/modificar`;
-        const body = this.buildFormData(escuela);
-        return this.http.put<EscuelaResponse>(url, body);
+        const url = `${this.apiUrl}`;
+        return this.http.put<EscuelaResponse>(url, escuela);
     }
 
     /** Activar un departamento existente */

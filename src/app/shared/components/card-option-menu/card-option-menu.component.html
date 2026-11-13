@@ -1,0 +1,24 @@
+<div (click)="navigateTo()" class="group flex flex-col items-center justify-center text-center 
+           bg-gray-200 rounded-xl p-3 py-5 shadow-sm border border-gray-100
+           w-full min-h-40          
+           transition-all duration-200
+           cursor-pointer 
+           hover:border-primary hover:-translate-y-0.5
+           active:scale-95" role="button" (keydown.enter)="navigateTo()" tabindex="0">
+
+    <div class="flex flex-col">
+        <div class="text-font group-hover:rotate-6">
+            <i class="pi {{item?.icon}}" style="font-size: 2rem"></i>
+        </div>
+        <span class="text-font text-lg leading-tight font-medium
+                 transition-colors duration-100 
+                 group-hover:font-semibold group-hover:text-primary-800">
+            {{item?.label}}
+        </span>
+    </div>
+
+    <div class="w-0 h-1 bg-primary-600 mt-3 rounded-full 
+                transition-all duration-300 
+                group-hover:w-1/3"></div>
+
+</div>

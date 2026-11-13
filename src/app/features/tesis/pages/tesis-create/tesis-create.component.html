@@ -1,0 +1,309 @@
+<app-title-subtitle title="Registrar Nuevo Proyecto de Tesis"
+    subtitle="Ingrese la información del proyecto de investigación, asigne los autores y adjunte el expediente documental."
+    icon="pi-folder-plus">
+</app-title-subtitle>
+
+<div class="mt-4 space-y-6 pb-12">
+
+    <!-- SECCIÓN 1: Información General -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+            <h2 class="font-bold text-base uppercase tracking-wider">
+                Sección 1: Información General y Escuela Profesional
+            </h2>
+        </div>
+
+        <form [formGroup]="form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm font-semibold">Escuela Profesional *</label>
+                    <p-select [options]="escuelas()" formControlName="escuelaId" optionLabel="denominacion"
+                        optionValue="id" placeholder="Seleccione Escuela" size="small" class="w-full" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm font-semibold ">Etapa Inicial de Tesis *</label>
+                    <p-select [options]="etapasTesis()" formControlName="etapaTesisCodigo" optionLabel="denomination"
+                        optionValue="code" placeholder="Seleccione Etapa" size="small" class="w-full" />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-semibold">Título Oficial del Proyecto de Tesis *</label>
+                <textarea pInputText formControlName="titulo" rows="3"
+                    placeholder="Ej. Factores de riesgo cardiovascular asociados a estilos de vida..."
+                    class="w-full text-sm border border-slate-200 rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- SECCIÓN 2: Asignación de Autores -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+                <h2 class="font-bold text-base uppercase tracking-wider">
+                    Sección 2: Asignación de Autores
+                </h2>
+            </div>
+            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md font-semibold">
+                Regla: 1 a 2 Estudiantes
+            </span>
+        </div>
+
+        <!-- Búsqueda / Agregar Autor con AutoComplete -->
+        <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p-autoComplete [ngModel]="busquedaEstudiante()" (ngModelChange)="busquedaEstudiante.set($event)"
+                    [suggestions]="sugerenciasEstudiante()" (completeMethod)="buscarEstudiante($event)"
+                    (onSelect)="onEstudianteSeleccionado($event)" [minLength]="1" [delay]="500" [dropdown]="false"
+                    [forceSelection]="false" placeholder="Buscar estudiante por Nombre o apellidos..."
+                    inputStyleClass="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    <!-- ✅ Plantilla SIMPLE para la lista de sugerencias -->
+                    <ng-template let-estudiante pTemplate="item">
+                        <div class="px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer">
+                            {{ estudiante.nombres }} {{ estudiante.primerApellido }} {{ estudiante.segundoApellido }}
+                        </div>
+                    </ng-template>
+
+                    <!-- Plantilla para estado vacío -->
+                    <ng-template pTemplate="empty">
+                        <div class="flex flex-col items-center text-sm text-slate-500">
+                            <p class="mb-2">No se encontraron estudiantes.</p>
+                            <app-button action="new" [withIcon]="true" (onClick)="abrirModalNuevoEstudiante()">
+                                Registrar Estudiante
+                            </app-button>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+            </div>
+
+            <!-- ✅ Lista de Autores Seleccionados (tarjeta elaborada) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                @for (autor of autoresSeleccionados(); track autor.id; let i = $index) {
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm">
+                            {{ autor.nombres.charAt(0) }}{{ autor.primerApellido.charAt(0) }}
+                        </div>
+
+                        <div class="flex flex-col text-sm gap-1">
+                            <span class="font-bold">
+                                {{ autor.nombres }} {{ autor.primerApellido }} {{ autor.segundoApellido }}
+                            </span>
+
+                            <div class="flex items-center gap-1 text-[11px] text-primary-700 font-semibold">
+                                <i class="pi pi-envelope"></i>
+                                <span>{{ autor.correoInstitucional }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">
+                                @if (autor.numeroDocumento) {
+                                <span class="text-[11px] text-slate-500">
+                                    DNI: {{ autor.numeroDocumento || '---' }}
+                                </span>
+                                }
+                                @if (autor.codigo) {
+                                <span class="text-[11px] text-slate-500">
+                                    • Cód: {{ autor.codigo || '---' }}
+                                </span>
+                                }
+                                @if (autor.generoDenominacion) {
+                                <span class="text-[11px] text-slate-500">
+                                    • {{ autor.generoDenominacion || '---' }}
+                                </span>
+                                }
+                            </div>
+
+                            @if (autor.escuela?.denominacion) {
+                            <span class="text-[11px] text-slate-500">
+                                <i class="pi pi-graduation-cap"></i>
+                                {{ autor.escuela?.denominacion || 'Escuela no asignada' }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+
+                    <app-button action="delete" [onlyIcon]="true" [size]="'sm'" (onClick)="removerAutor(autor.id)">
+                    </app-button>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: Datos del Expediente -->
+    <div [formGroup]="form" class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+            <h2 class="font-bold  text-base uppercase tracking-wider">
+                Sección 3: Datos del Expediente Administrativo
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-semibold ">N° de Expediente *</label>
+                <input pInputText formControlName="numeroExpediente" placeholder="EXP-2026-0142" pSize="small" />
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-semibold text-slate-700">Fecha de Registro</label>
+                <p-datepicker formControlName="fechaIngreso" dateFormat="yy-mm-dd" size="small" class="w-full" />
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-semibold" for="numeroRevision">N° de Revision</label>
+                <input pInputText formControlName="numeroRevision" placeholder="1, 2, 3..." pSize="small"
+                    pKeyFilter="int" />
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 4: Carga de Documentos PDFs (1 a 5) -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+                <h2 class="font-bold  text-base uppercase tracking-wider">
+                    Sección 4: Expediente Documental PDF
+                </h2>
+            </div>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-0.5 rounded-full">
+                {{ archivosPDF().length }} de 5 archivos
+            </span>
+        </div>
+
+        <!-- Input Dropzone -->
+        <label
+            class="border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/20 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all">
+            <i class="pi pi-cloud-upload text-indigo-500 mb-2" style="font-size: 2rem"></i>
+            <span class="text-base font-bold mt-2">Haz clic para subir los archivos PDF</span>
+            <span class="text-sm text-slate-400 mt-1">Mínimo 1, Máximo 5 archivos PDF (Hasta 20MB)</span>
+            <input type="file" accept="application/pdf" multiple (change)="onFilesSelected($event)" class="hidden" />
+        </label>
+
+        <!-- Lista de PDFs en Buffer -->
+        <div class="space-y-2">
+            @for (file of archivosPDF(); track file.name; let i = $index) {
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-file-pdf text-red-500" style="font-size: 1.5rem"></i>
+                    <div>
+                        <p class="font-bold ">{{ file.name }}</p>
+                        <p class="text-sm text-slate-400">{{ (file.size / 1024 / 1024) | number:'1.1-2' }} MB</p>
+                    </div>
+                </div>
+                <button (click)="removerPDF(i)" class="text-red-500 hover:text-red-700 hover:cursor-pointer">
+                    <i class="pi pi-trash" style="font-size: 1.25rem"></i>
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Botones Finales -->
+    <div class="flex items-center justify-end gap-3 pt-4">
+        <app-button action="cancel" (onClick)="cancelar()">Cancelar</app-button>
+        <app-button action="save" [loading]="controls.loading()"
+            [disabled]="form.invalid || archivosPDF().length === 0 || autoresSeleccionados().length === 0 || controls.loading()"
+            (onClick)="guardarTesis()">
+            Registrar Proyecto de Tesis
+        </app-button>
+    </div>
+
+</div>
+
+<!-- Modal Rápido de Registro de Estudiante -->
+<p-dialog [(visible)]="modalEstudianteVisible" [modal]="true" [style]="{ width: 'auto', maxWidth: '750px' }"
+    [draggable]="false" [resizable]="false" (onHide)="cerrarModalEstudiante()" [showHeader]="false"
+    contentStyleClass="p-0 rounded-2xl overflow-hidden">
+
+    <!-- Header Personalizado -->
+    <div class="bg-white px-6 pt-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-lg shrink-0">
+                <i class="pi pi-user-plus"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-xl font-bold text-slate-900 leading-tight">
+                        Registrar Nuevo Estudiante
+                    </h2>
+                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                        FCSA
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Formulario Oficial de Registro de Estudiantes - FCSA
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="modalEstudianteForm" (ngSubmit)="guardarEstudianteRapido()"
+        class="form-scroll p-2 space-y-2 max-h-[80vh] overflow-y-auto">
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold ">Escuela *</label>
+            <p-select [options]="escuelas()" formControlName="escuelaId" optionLabel="denominacion" optionValue="id"
+                placeholder="Seleccionar" size="small" class="w-full" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold ">Nombres *</label>
+            <input pInputText formControlName="nombres" pSize="small" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold ">Primer Apellido *</label>
+                <input pInputText formControlName="primerApellido" pSize="small" />
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold ">Segundo Apellido *</label>
+                <input pInputText formControlName="segundoApellido" pSize="small" />
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold ">Correo Institucional *</label>
+            <input pInputText formControlName="correoInstitucional" pSize="small" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-700">
+                Género <span class="text-red-500">*</span>
+            </label>
+            <div class="flex items-center gap-2 pt-0.5">
+                <label
+                    class="flex-1 flex items-center justify-center gap-2 p-1.5 border border-slate-200 rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700">
+                    <input type="radio" [value]="genderMaleCode" formControlName="generoCodigo"
+                        class="text-indigo-600 focus:ring-indigo-500" />
+                    <span>Masculino</span>
+                </label>
+                <label
+                    class="flex-1 flex items-center justify-center gap-2 p-1.5 border border-slate-200 rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700">
+                    <input type="radio" [value]="genderFemaleCode" formControlName="generoCodigo"
+                        class="text-indigo-600 focus:ring-indigo-500" />
+                    <span>Femenino</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Footer / Acciones -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100 mt-6">
+            <span class="text-[11px] text-slate-400">* Campos obligatorios</span>
+
+            <div class="flex items-center gap-2">
+                <app-button type="button" action="cancel" (onClick)="cerrarModalEstudiante()">Cancelar</app-button>
+                <app-button type="submit"
+                    [disabled]="modalEstudianteForm.invalid || controls.loadingEstudianteRegistro()" action="save"
+                    [withIcon]="true" [loading]="controls.loadingEstudianteRegistro()">
+                    Guardar Estudiante
+                </app-button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

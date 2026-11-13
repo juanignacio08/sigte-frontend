@@ -1,0 +1,234 @@
+<div class="space-y-5">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="flex items-start gap-3">
+                <button type="button" title="Regresar"
+                    class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100"
+                    (click)="volver()">
+                    <i class="pi pi-arrow-left"></i>
+                </button>
+
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                        <h1 class="text-lg font-bold text-slate-900">
+                            Plantillas documentales
+                        </h1>
+                    </div>
+
+                    <p class="mt-1 text-sm font-semibold text-blue-900">
+                        {{ escuelaNombre() }}
+                    </p>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Gestiona los formatos oficiales y plazos de los documentos de esta escuela.
+                    </p>
+                </div>
+            </div>
+
+            <app-button type="button" action="new" icon="pi-plus" [withIcon]="true" (onClick)="nuevaPlantilla()">
+                Nueva plantilla
+            </app-button>
+        </div>
+    </div>
+
+    <!-- INDICADORES -->
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-slate-500">
+                    Plantillas registradas
+                </p>
+
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
+                    <i class="pi pi-folder-open"></i>
+                </div>
+            </div>
+
+            <p class="mt-2 text-2xl font-bold text-slate-900">
+                {{ totalPlantillas().toString().padStart(2, '0') }}
+            </p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-slate-500">
+                    Plantillas activas
+                </p>
+
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                    <i class="pi pi-check-circle"></i>
+                </div>
+            </div>
+
+            <p class="mt-2 text-2xl font-bold text-emerald-700">
+                {{ plantillasActivas().toString().padStart(2, '0') }}
+            </p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-slate-500">
+                    Plantillas inactivas
+                </p>
+
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                    <i class="pi pi-ban"></i>
+                </div>
+            </div>
+
+            <p class="mt-2 text-2xl font-bold text-slate-600">
+                {{ plantillasInactivas().toString().padStart(2, '0') }}
+            </p>
+        </div>
+    </div>
+
+    <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4">
+            <div>
+                <h2 class="font-bold text-slate-800">
+                    Catálogo de plantillas
+                </h2>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Formatos documentales configurados para esta escuela.
+                </p>
+            </div>
+
+            <span class="rounded-lg bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-800">
+                {{ totalPlantillas() }} registros
+            </span>
+        </div>
+
+        @if (loading()) {
+        <div class="p-4">
+            <app-table-skeleton [rows]="4" [cols]="5" />
+        </div>
+        } @else if (connectionError()) {
+        <div class="p-6">
+            <app-no-connection />
+        </div>
+        } @else if (plantillas().length === 0) {
+        <div class="flex min-h-[300px] flex-col items-center justify-center p-8 text-center">
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                <i class="pi pi-file-word" style="font-size: 2rem;"></i>
+            </div>
+
+            <h3 class="mt-4 text-lg text-base font-bold text-slate-800">
+                No hay plantillas registradas
+            </h3>
+
+            <p class="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                Esta escuela todavía no tiene formatos documentales configurados.
+                Registra una plantilla para comenzar.
+            </p>
+
+            <div class="mt-5">
+                <app-button type="button" action="new" size="lg" icon="pi-plus" [withIcon]="true" (onClick)="nuevaPlantilla()">
+                    Registrar primera plantilla
+                </app-button>
+            </div>
+        </div>
+        } @else {
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[850px] text-left text-sm">
+                <thead class="bg-slate-50 text-sm uppercase tracking-wide text-slate-600">
+                    <tr>
+                        <th class="px-4 py-4 font-bold">
+                            Tipo de documento
+                        </th>
+
+                        <th class="px-4 py-4 font-bold">
+                            Archivo DOCX
+                        </th>
+
+                        <th class="px-4 py-4 font-bold">
+                            Plazo
+                        </th>
+
+                        <th class="px-4 py-4 font-bold text-center">
+                            Estado
+                        </th>
+
+                        <th class="px-4 py-4 font-bold text-center">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100">
+                    @for (plantilla of plantillas(); track plantilla.id) {
+                    <tr class="transition hover:bg-slate-50/70">
+                        <td class="px-4 py-4">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
+                                    <i class="pi pi-file-word" style="font-size: 1.5rem;"></i>
+                                </div>
+
+                                <div>
+                                    <p class="font-semibold text-slate-800">
+                                        {{ plantilla.tipoDocumentoDenominacion }}
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-4 py-4">
+                            <div class="flex max-w-[230px] items-center gap-2">
+                                <i class="pi pi-file-word text-blue-700" style="font-size: 1.5rem;"></i>
+                                <span class="truncate text-sm font-medium text-slate-700"
+                                    [title]="plantilla.nombreDocumento">
+                                    {{ plantilla.nombreDocumento }}
+                                </span>
+                            </div>
+                        </td>
+
+                        <td class="px-4 py-4">
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1.5 text-sm font-semibold text-slate-700">
+                                <i class="pi pi-clock text-slate-500"></i>
+                                {{ obtenerPlazo(plantilla) }}
+                            </span>
+                        </td>
+
+                        <td class="px-4 py-4 text-center">
+                            @if (plantilla.estado === 1) {
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
+                                Activo
+                            </span>
+                            } @else {
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                                <span class="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+                                Inactivo
+                            </span>
+                            }
+                        </td>
+
+                        <td class="px-4 py-4">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <app-button action="download-doc" [onlyIcon]="true" messageTootip="Descargar Plantilla" (onClick)="descargarPlantilla(plantilla)"></app-button>
+                                
+                                <app-button action="edit" [onlyIcon]="true" messageTootip="Editar Plantilla" (onClick)="editarPlantilla(plantilla)"></app-button>
+
+                                <app-button action="delete" [onlyIcon]="true" messageTootip="Eliminar Plantilla" (onClick)="eliminarPlantilla(plantilla)"></app-button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </section>
+</div>
+
+<!-- MODAL REGISTRO / EDICIÓN -->
+<app-plantilla-add-edit #modalPlantilla [escuelaId]="escuelaId()!" [tiposDocumento]="tiposDocumento()"
+    (onSuccess)="onGuardadoExitoso()" />
+
+<!-- MODAL CONFIRMACIÓN -->
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />

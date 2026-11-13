@@ -1,0 +1,277 @@
+<app-title-subtitle title="Gestión de Docentes"
+    subtitle="Padrón oficial de docentes ordinarios y contratados para asignación de jurados de tesis, dictaminadores y asesores de investigación."
+    icon="pi-users">
+    <div class="flex flex-col md:flex-row gap-2 items-end md:items-center justify-end">
+        <app-button action="new" [withIcon]="true" size="lg" (onClick)="crearNuevo()">Registrar Docente</app-button>
+    </div>
+</app-title-subtitle>
+
+
+<div class="mt-4 space-y-6">
+    <!-- 2. Filtros de Búsqueda Académica -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-6">
+        <p-panel [toggleable]="true">
+            <ng-template #header>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-filter text-slate-600"></i>
+                    <h2 class="text-base font-bold text-primary">Filtros de Búsqueda Académica</h2>
+                </div>
+            </ng-template>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                <!-- D.A. Académico -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroDept" class="text-xs font-semibold text-slate-600">D.A. ACADÉMICO</label>
+                    <p-select inputId="filtroDept" [options]="departamentosFiltro()" [ngModel]="filtroDepartamento()"
+                        (ngModelChange)="onDepartamentoChange($event)" optionLabel="denominacion" optionValue="id"
+                        placeholder="Todos los D.A." size="small" class="w-full"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Escuela Profesional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEsc" class="text-xs font-semibold text-slate-600">ESCUELA PROFESIONAL</label>
+                    <p-select inputId="filtroEsc" [options]="escuelasFiltro()" [ngModel]="filtroEscuela()"
+                        (ngModelChange)="filtroEscuela.set($event)" optionLabel="denominacion" optionValue="id"
+                        placeholder="Todas las Escuelas" size="small" class="w-full"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Estado -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEst" class="text-xs font-semibold text-slate-600">ESTADO </label>
+                    <p-select inputId="filtroEst" [options]="estadosFiltro" [ngModel]="filtroEstado()"
+                        (ngModelChange)="filtroEstado.set($event)" optionLabel="label" optionValue="value"
+                        placeholder="Todos" size="small" class="w-full" [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Género -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroGen" class="text-xs font-semibold text-slate-600">GÉNERO</label>
+                    <p-select inputId="filtroGen" [options]="generosFiltro()" [ngModel]="filtroGenero()"
+                        (ngModelChange)="filtroGenero.set($event)" optionLabel="denomination" optionValue="code"
+                        placeholder="Todos" size="small" class="w-full" [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- N° Documento / DNI -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroDni" class="text-xs font-semibold text-slate-600">N° DOCUMENTO / DNI</label>
+                    <input id="filtroDni" type="text" [ngModel]="filtroNumeroDocumento()"
+                        (ngModelChange)="filtroNumeroDocumento.set($event)" placeholder="Buscar DNI..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+
+                <!-- Correo Institucional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroMail" class="text-xs font-semibold text-slate-600">CORREO INSTITUCIONAL</label>
+                    <input id="filtroMail" type="text" [ngModel]="filtroCorreo()"
+                        (ngModelChange)="filtroCorreo.set($event)" placeholder="@ejemplo@unsch..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        [disabled]="controls.filters.loading()" />
+                </div>
+            </div>
+
+            <ng-template #footer>
+                <!-- Acciones de Filtro -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <app-button type="button" variant="outline" (onClick)="limpiarFiltros()"
+                        [disabled]="controls.filters.loading()" size="sm">
+                        Limpiar filtros
+                    </app-button>
+                    <app-button type="button" action="new" [withIcon]="false" size="sm" (onClick)="aplicarFiltros()"
+                        [disabled]="controls.filters.loading()">
+                        Aplicar Filtros
+                    </app-button>
+                </div>
+            </ng-template>
+        </p-panel>
+    </div>
+
+    <!-- Tarjeta Contenedora Principal (Filtros y Tabla) -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-6">
+        <!-- 3. Encabezado de la Tabla y Botones de Acción -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-secondary inline-block"></span>
+                    <h1 class="text-xl font-bold text-primary tracking-tight">
+                        Padrón de Docentes y Jurados Registrados
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Acciones de Registro y Exportación -->
+            <div class="flex items-center gap-2">
+                <app-badge variant="info" [withDot]="true" size="sm">
+                    <span class="text-xs font-semibold">Total: {{ totalItems() }} docentes</span>
+                </app-badge>
+            </div>
+        </div>
+
+        <!-- 4. Control de Estados: Carga, Error o Tabla de Datos -->
+        @if (controls.operation.loading()) {
+        <app-table-skeleton [rows]="5" [cols]="6" />
+        } @else if (controls.operation.connectionError()) {
+        <app-no-connection />
+        } @else {
+        <!-- Tabla PrimeNG Estilizada -->
+        <div class="overflow-hidden border border-slate-200/70 rounded-xl">
+            <p-table [value]="docentes()" stripedRows [scrollable]="true" scrollHeight="400px"
+                [tableStyle]="{ 'min-width': '65rem' }">
+
+                <!-- Encabezado de la Tabla -->
+                <ng-template pTemplate="header">
+                    <tr class="text-xs font-bold uppercase tracking-wider text-slate-600">
+                        <th scope="col" class="py-3 px-4 text-left" style="width: 25%">DOCENTE</th>
+                        <th scope="col" class="py-3 px-4 text-left" style="width: 15%">IDENTIFICACIÓN</th>
+                        <th scope="col" class="py-3 px-4 text-left" style="width: 20%">AFILIACIÓN ACADÉMICA</th>
+                        <th scope="col" class="py-3 px-4 text-left" style="width: 20%">CONTACTO OFICIAL</th>
+                        <th scope="col" class="py-3 px-4 text-center" style="width: 10%">ESTADO JURADO</th>
+                        <th scope="col" class="py-3 px-4 text-right" style="width: 10%">ACCIONES</th>
+                    </tr>
+                </ng-template>
+
+                <!-- Cuerpo de la Tabla -->
+                <ng-template pTemplate="body" let-docente>
+                    <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors text-sm text-slate-700">
+
+                        <!-- Columna Docente -->
+                        <td class="py-3 px-4">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-xs">
+                                    {{ docente.nombres?.charAt(0) }}{{ docente.primerApellido?.charAt(0) }}
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-semibold text-slate-900 text-sm">
+                                        {{ docente.nombres }} {{ docente.primerApellido }} {{ docente.segundoApellido }}
+                                    </span>
+                                    <span class="text-xs text-slate-400 font-mono">
+                                        CÓD: {{ docente.codigo || 'S/C' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Columna Identificación -->
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col">
+                                <span class="font-medium text-slate-800 text-xs">
+                                    <strong class="text-slate-900">{{ docente.tipoDocumentoDenominacion || 'DNI'
+                                        }}:</strong> {{ docente.numeroDocumento }}
+                                </span>
+                                <span class="text-xs text-slate-400">
+                                    {{ docente.generoDenominacion || 'No especificado' }}
+                                </span>
+                            </div>
+                        </td>
+
+                        <!-- Columna Afiliación Académica -->
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col text-xs">
+                                <span class="font-medium text-slate-800">
+                                    D.A. {{ docente.departamento?.denominacion || 'S/D' }}
+                                </span>
+                                <span class="text-slate-400">
+                                    E.P. {{ docente.escuela?.denominacion || 'S/E' }}
+                                </span>
+                            </div>
+                        </td>
+
+                        <!-- Columna Contacto Oficial -->
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col text-xs gap-0.5">
+                                <span class="text-slate-700 flex items-center gap-1">
+                                    <i class="pi pi-envelope text-slate-400 text-[10px]"></i>
+                                    {{ docente.correoInstitucional }}
+                                </span>
+                                @if (docente.telefono) {
+                                <span class="text-slate-400 flex items-center gap-1">
+                                    <i class="pi pi-phone text-slate-400 text-[10px]"></i>
+                                    {{ docente.telefono }}
+                                </span>
+                                }
+                            </div>
+                        </td>
+
+                        <!-- Columna Estado Jurado -->
+                        <td class="py-3 px-4 text-center">
+                            @if (docente.estado === 1) {
+                            <app-badge variant="active" [withDot]="true" size="sm"></app-badge>
+                            } @else {
+                            <app-badge variant="inactive" [withDot]="true" size="sm"></app-badge>
+                            }
+                        </td>
+
+                        <!-- Columna Acciones -->
+                        <td class="py-3 px-4">
+                            <div class="flex items-center justify-end gap-1">
+                                <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
+                                    (onClick)="editar(docente)">
+                                </app-button>
+
+                                @if (docente.estado === 1) {
+                                <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
+                                    (onClick)="desactivar(docente)">
+                                </app-button>
+                                } @else {
+                                <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
+                                    (onClick)="activar(docente)">
+                                </app-button>
+                                }
+
+                                <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
+                                    (onClick)="eliminar(docente)">
+                                </app-button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </ng-template>
+
+                <!-- Estado de Tabla Vacía -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-400 text-sm">
+                            No se encontraron docentes registrados con los filtros aplicados.
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-100 pt-4">
+            <p class="text-sm text-slate-600" aria-live="polite">
+                Página {{ totalPaginas() === 0 ? 0 : paginaActual() + 1 }} de {{ totalPaginas() }}
+                <span class="text-slate-400">· {{ totalItems() }} docentes</span>
+            </p>
+            <nav class="flex items-center gap-2" aria-label="Paginación de docentes">
+                <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    (click)="paginaAnterior()" [disabled]="paginaActual() === 0 || controls.operation.loading()"
+                    aria-label="Ir a la página anterior">
+                    <i class="pi pi-chevron-left" aria-hidden="true"></i>
+                    Anterior
+                </button>
+                <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    (click)="paginaSiguiente()"
+                    [disabled]="paginaActual() >= totalPaginas() - 1 || controls.operation.loading()"
+                    aria-label="Ir a la página siguiente">
+                    Siguiente
+                    <i class="pi pi-chevron-right" aria-hidden="true"></i>
+                </button>
+            </nav>
+        </div>
+        }
+
+    </div>
+</div>
+
+<app-docente-add-edit #docenteModal [facultadId]="facultad.id" (onSuccess)="onGuardadoExitoso()" />
+
+<app-docente-edit #docenteModalEdit [facultadId]="facultad.id" (onSuccess)="onGuardadoExitoso()" />
+
+<app-confirm-dialog #confirmModal (onConfirm)="ejecutarAccionConfirmada()" />

@@ -80,99 +80,6 @@
       }
     </div>
 
-    <!-- SECCIÓN DE ARCHIVOS (Word) -->
-    <div class="border-t border-slate-200 pt-3 space-y-3">
-      <span class="text-xs font-bold tracking-wider text-slate-500 uppercase block">
-        Plantillas de Documentos (Opcional)
-      </span>
-
-      <!-- Plantilla Memorandum -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-semibold text-primary flex items-center gap-1.5">
-          <i class="pi pi-file-word text-blue-600"></i>
-          Plantilla Memorándum (.doc, .docx)
-        </label>
-
-        <div class="flex items-center gap-2">
-          <input type="file" #fileMemoInput class="hidden"
-            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            (change)="onFileChange($event, 'plantillaMemo')" />
-
-          <!-- shrink-0 evita que el botón se deforme o cambie de tamaño -->
-          <button type="button"
-            class="shrink-0 px-3 py-1.5 text-xs font-medium border border-slate-300 rounded-md bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors"
-            (click)="fileMemoInput.click()">
-            <i class="pi pi-upload"></i>
-            {{ fileNameMemo() ? 'Cambiar Archivo' : 'Subir Archivo' }}
-          </button>
-
-          <!-- Nombre del archivo + Botón de Descarga -->
-          @if (fileNameMemo()) {
-          <!-- min-w-0 flex-1 le permite encogerse y adaptarse al espacio que queda libre -->
-          <div
-            class="flex min-w-0 flex-1 items-center gap-1.5 justify-between bg-slate-50 px-2 py-1 rounded border border-slate-200">
-            <span class="text-xs text-slate-700 font-medium truncate" [title]="fileNameMemo()">
-              {{ fileNameMemo() }}
-            </span>
-
-            <!-- Mostrar enlace de descarga solo si viene guardado del servidor -->
-            @if (rutaMemo()) {
-            <div class="shrink-0">
-              <app-button type="button" [action]="'download-doc'" size="sm" [onlyIcon]="true" messageTootip="Descargar"
-                (onClick)="descargarArchivo(rutaMemo(), fileNameMemo() || 'Plantilla_Memorandum.docx')"></app-button>
-            </div>
-            }
-          </div>
-          } @else {
-          <span class="text-xs text-slate-400 italic">Ningún archivo seleccionado</span>
-          }
-        </div>
-      </div>
-
-      <!-- Plantilla Resolución -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-semibold text-primary flex items-center gap-1.5">
-          <i class="pi pi-file-word text-blue-600"></i>
-          Plantilla Resolución (.doc, .docx)
-        </label>
-
-        <div class="flex items-center gap-2">
-          <input type="file" #fileResInput class="hidden"
-            accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            (change)="onFileChange($event, 'plantillaRes')" />
-
-          <!-- shrink-0 evita que el botón se deforme -->
-          <button type="button"
-            class="shrink-0 px-3 py-1.5 text-xs font-medium border border-slate-300 rounded-md bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors"
-            (click)="fileResInput.click()">
-            <i class="pi pi-upload"></i>
-            {{ fileNameRes() ? 'Cambiar Archivo' : 'Subir Archivo' }}
-          </button>
-
-          <!-- Nombre del archivo + Botón de Descarga -->
-          @if (fileNameRes()) {
-          <!-- min-w-0 flex-1 permite adaptar el ancho dinámicamente -->
-          <div
-            class="flex min-w-0 flex-1 items-center gap-1.5 justify-between bg-slate-50 px-2 py-1 rounded border border-slate-200">
-            <span class="text-xs text-slate-700 font-medium truncate" [title]="fileNameRes()">
-              {{ fileNameRes() }}
-            </span>
-
-            <!-- Mostrar enlace de descarga solo si viene guardado del servidor -->
-            @if (rutaRes()) {
-            <div class="shrink-0">
-              <app-button type="button" [action]="'download-doc'" size="sm" [onlyIcon]="true" messageTootip="Descargar"
-                (onClick)="descargarArchivo(rutaRes(), fileNameRes() || 'Plantilla_Resolucion.docx')"></app-button>
-            </div>
-            }
-          </div>
-          } @else {
-          <span class="text-xs text-slate-400 italic">Ningún archivo seleccionado</span>
-          }
-        </div>
-      </div>
-    </div>
-
     <!-- Footer / Acciones del Modal -->
     <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
       <app-button type="button" action="cancel" (onClick)="cerrarModal()">
@@ -184,6 +91,5 @@
         {{ loading() ? 'Guardando...' : 'Guardar' }}
       </app-button>
     </div>
-
   </form>
 </p-dialog>

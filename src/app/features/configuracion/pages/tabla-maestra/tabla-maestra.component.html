@@ -1,0 +1,141 @@
+<app-title-subtitle title="Datos Generales" subtitle="Puede configurar las valores prederteminados del sistema"
+    icon="pi-database">
+</app-title-subtitle>
+
+<div class="mt-4 space-y-4">
+    <!-- Tarjeta Contenedora Principal -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-6">
+
+        <!-- 1. Selector de Tablas Maestras y Botón Nuevo -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 w-full">
+
+            <!-- Contenedor de Filtros/Selects -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full md:w-auto md:min-w-lg">
+
+                <!-- Filtro: ¿Es Sistema? -->
+                <div class="flex flex-col gap-1.5 w-full">
+                    <label for="isSystemOption" class="text-sm font-semibold text-primary">
+                        ¿Es Sistema?
+                    </label>
+                    <p-select inputId="isSystemOption" [options]="isSystem" [(ngModel)]="selectedIsSystemOption"
+                        (ngModelChange)="onIsSystemOption($event)" optionLabel="label" optionValue="value"
+                        placeholder="Seleccione..." size="small" class="w-full" />
+                </div>
+
+                <!-- Filtro: Tabla Maestra -->
+                <div class="flex flex-col gap-1.5 w-full">
+                    <label for="masterTableSelect" class="text-sm font-semibold text-primary">
+                        Seleccione una Tabla Maestra
+                    </label>
+                    <p-select inputId="masterTableSelect" [options]="masterTablesList()"
+                        [(ngModel)]="selectedMasterTable" (ngModelChange)="onTableChange($event)"
+                        optionLabel="denomination" placeholder="Seleccione..." size="small" class="w-full"
+                        [disabled]="selectedIsSystemOption() == null" />
+                </div>
+
+            </div>
+
+            <!-- Acción: Agregar Nuevo Registro -->
+            @if (selectedMasterTable() && !controls.operation.error()) {
+            <div class="flex items-center justify-end w-full md:w-auto pt-2 md:pt-0">
+                <app-button action="new" [withIcon]="true" messageTootip="Agregar nuevo registro"
+                    (onClick)="crearNuevo()">
+                    Nuevo Registro
+                </app-button>
+            </div>
+            }
+
+        </div>
+
+        <!-- 2. Estados de Carga y Conexión -->
+        @if (controls.operation.loading() && selectedMasterTable()) {
+        <app-table-skeleton [rows]="5" [cols]="5" />
+        } @else if (controls.operation.connectionError() && selectedMasterTable()) {
+        <app-no-connection />
+        } @else if (selectedMasterTable()) {
+        <!-- 3. Tabla PrimeNG Estilizada -->
+        <div class="overflow-hidden border border-slate-200/70 rounded-xl">
+            <p-table [value]="itemsList()" stripedRows [scrollable]="true" scrollHeight="400px"
+                [tableStyle]="{ 'min-width': '50rem' }">
+                <!-- Table Header -->
+                <ng-template pTemplate="header">
+                    <tr class="text-sm font-bold uppercase tracking-wider">
+                        <th class="py-3 px-4 text-left">Nº</th>
+                        <th class="py-3 px-4 text-left">CÓDIGO</th>
+                        <th class="py-3 px-4 text-center">DENOMINACIÓN</th>
+                        <th class="py-3 px-4 text-center">ESTADO</th>
+                        <th class="py-3 px-4 text-right">ACCIONES</th>
+                    </tr>
+                </ng-template>
+
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-item let-i="rowIndex">
+                    <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors text-sm text-slate-700">
+
+                        <!-- Num -->
+                        <td class="py-3 px-4 font-semibold text-slate-600">
+                            {{i + 1 | number:'2.0'}}
+                        </td>
+
+                        <!-- Código -->
+                        <td class="py-3 px-4">
+                            {{item.code}}
+                        </td>
+
+                        <!-- Denominación -->
+                        <td class="py-3 px-4 text-center">
+                            {{item.denomination}}
+                        </td>
+
+                        <!-- Estado (Píldora Verde/Roja) -->
+                        <td class="py-3 px-4 text-center">
+                            @if (item.state === 1) {
+                            <app-badge variant="active" [withDot]="true" size="sm"></app-badge>
+                            } @else {
+                            <app-badge variant="inactive" [withDot]="true" size="sm"></app-badge>
+                            }
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="py-3 px-4">
+                            <div class="flex items-center justify-start gap-1.5">
+                                <app-button action="edit" [onlyIcon]="true" size="sm" messageTootip="Editar"
+                                    (onClick)="editar(item)"></app-button>
+                                @if (item.state == 1) {
+                                <app-button action="deactive" [onlyIcon]="true" size="sm" messageTootip="Desactivar"
+                                    (onClick)="desactivar(item)"></app-button>
+                                } @else() {
+                                <app-button action="active" [onlyIcon]="true" size="sm" messageTootip="Activar"
+                                    (onClick)="activar(item)"></app-button>
+                                }
+                                <app-button action="delete" [onlyIcon]="true" size="sm" messageTootip="Eliminar"
+                                    (onClick)="eliminar(item)"></app-button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </ng-template>
+
+                <!-- Mensaje de Tabla Vacía -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-400 text-sm">
+                            No se encontraron registros en esta tabla.
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+        }
+
+    </div>
+</div>
+
+@if (selectedMasterTable()) {
+<app-maestro-add-edit #maestroModal [tableCode]="selectedMasterTable()!.tableCode" (onSuccess)="onGuardadoExitoso()" />
+
+<app-confirm-dialog 
+  #confirmModal 
+  (onConfirm)="ejecutarAccionConfirmada()" />
+}

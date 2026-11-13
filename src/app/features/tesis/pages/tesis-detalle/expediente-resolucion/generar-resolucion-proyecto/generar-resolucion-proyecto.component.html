@@ -1,0 +1,105 @@
+<app-global-loading
+  [visible]="generandoResolucion()"
+  message="Generando la resolución..." />
+
+<!-- MODAL GENERAR MEMORANDO -->
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '92%', maxWidth: '500px' }" [draggable]="false"
+    [resizable]="false" header="Generar Resolución" (onHide)="cerrarModal()">
+
+    <form [formGroup]="formResolucion" (ngSubmit)="generarResolucion()">
+
+        <div class="space-y-5">
+            <div>
+                <p class="text-sm text-slate-500">
+                    Completa los datos para generar la resolución correspondiente al expediente.
+                </p>
+            </div>
+
+            <!-- NÚMERO CORRELATIVO -->
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-slate-700">
+                    Número correlativo
+                    <span class="text-red-500">*</span>
+                </label>
+                <input type="number" min="1" formControlName="numeroResolucion" placeholder="Ej. 316"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    [class.border-red-500]="formResolucion.controls.numeroResolucion.invalid && formResolucion.controls.numeroResolucion.touched">
+
+                @if (formResolucion.controls.numeroResolucion.hasError('required') &&
+                formResolucion.controls.numeroResolucion.touched) {
+                <p class="mt-1 text-xs text-red-600">
+                    El número correlativo es obligatorio.
+                </p>
+                }
+
+                @if (formResolucion.controls.numeroResolucion.hasError('min') && formResolucion.controls.numeroResolucion.touched)
+                {
+                <p class="mt-1 text-xs text-red-600">
+                    El número debe ser mayor a cero.
+                </p>
+                }
+            </div>
+
+            <!-- AÑO -->
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-slate-700">
+                    Año fiscal
+                    <span class="text-red-500">*</span>
+                </label>
+                <input type="number" min="2015" formControlName="anioResolucion"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                    [class.border-red-500]="formResolucion.controls.anioResolucion.invalid && formResolucion.controls.anioResolucion.touched">
+
+                @if (formResolucion.controls.anioResolucion.hasError('required') && formResolucion.controls.anioResolucion.touched) {
+                <p class="mt-1 text-xs text-red-600">
+                    El año fiscal es obligatorio.
+                </p>
+                }
+
+                @if (formResolucion.controls.anioResolucion.hasError('min') && formResolucion.controls.anioResolucion.touched) {
+                <p class="mt-1 text-xs text-red-600">
+                    El año debe ser igual o superior a 2015.
+                </p>
+                }
+            </div>
+
+            <!-- VISTA PREVIA -->
+            <div class="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                <div class="mb-2 flex items-center gap-2 text-blue-800">
+                    <i class="pi pi-eye"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider">
+                        Vista previa del documento
+                    </span>
+                </div>
+
+                <p class="break-words text-sm font-bold text-blue-950">
+                    {{ tituloResolucion() }}
+                </p>
+
+                <p class="mt-2 text-xs text-blue-700">
+                    Este será el título del memorando generado.
+                </p>
+
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="flex justify-end gap-3 border-t border-slate-100 pt-4">
+
+                <app-button type="button" size="lg" action="cancel" [disabled]="generandoResolucion()"
+                    (onClick)="cerrarModal()">
+                </app-button>
+
+                <app-button type="submit" size="lg" action="save" [withIcon]="true" [disabled]="formResolucion.invalid || generandoResolucion()">
+                    @if (generandoResolucion()) {
+                    Generando...
+                    } @else {
+                    Generar Resolución
+                    }
+                </app-button>
+
+            </div>
+
+        </div>
+
+    </form>
+</p-dialog>

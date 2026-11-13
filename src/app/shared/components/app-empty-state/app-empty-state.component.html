@@ -1,0 +1,25 @@
+<div class="bg-white rounded-2xl border border-slate-200/80 p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xs">
+      <!-- Icono Contenedor -->
+      <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl shadow-inner">
+        <i [class]="icon()" style="font-size: 2rem;"></i>
+      </div>
+
+      <!-- Textos -->
+      <div class="space-y-1 max-w-sm">
+        <h3 class="font-bold text-slate-800 text-base">
+          {{ title() }}
+        </h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          {{ description() }}
+        </p>
+      </div>
+
+      <!-- Botón de Acción -->
+      @if (showButton()) {
+        <div class="pt-2">
+          <app-button action="new" [withIcon]="true" (onClick)="onAdd.emit()">
+            {{ buttonText() }}
+          </app-button>
+        </div>
+      }
+    </div>

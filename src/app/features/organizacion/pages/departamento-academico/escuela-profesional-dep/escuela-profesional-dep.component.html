@@ -67,7 +67,6 @@ espere...
                         <th class="py-3 px-4 text-left">Nº</th>
                         <th class="py-3 px-4 text-left">DENOMINACIÓN</th>
                         <th class="py-3 px-4 text-left">CÓDIGO</th>
-                        <th class="py-3 px-4 text-center">PLANTILLAS</th>
                         <th class="py-3 px-4 text-center">ESTADO</th>
                         <th class="py-3 px-4 text-right">ACCIONES</th>
                     </tr>
@@ -97,27 +96,6 @@ espere...
                         <!-- Codigo -->
                         <td class="py-3 px-4 font-semibold text-slate-600">
                             {{item.codigo | number:'2.0'}}
-                        </td>
-
-                        <!-- Plantillas -->
-                        <td class="py-3 px-4 text-center">
-                            <div class="flex flex-col gap-3 items-center justify-start md:flex-row">
-                                @if (item.plantillaMemo) {
-                                <app-badge variant="primary" icon="pi-check-circle" size="sm">Memo
-                                    Configurado</app-badge>
-                                } @else {
-                                <app-badge variant="warning" icon="pi-exclamation-triangle" size="sm">Memo
-                                    Pendiente</app-badge>
-                                }
-                                |
-                                @if (item.plantillaRes) {
-                                <app-badge variant="secondary" icon="pi-check-circle" size="sm">Resolución
-                                    Configurado</app-badge>
-                                } @else {
-                                <app-badge variant="danger" icon="pi-exclamation-triangle" size="sm">Resolución
-                                    Pendiente</app-badge>
-                                }
-                            </div>
                         </td>
 
                         <!-- Estado (Píldora Verde/Roja) -->

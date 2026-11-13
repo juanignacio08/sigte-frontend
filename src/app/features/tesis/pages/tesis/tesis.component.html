@@ -1,0 +1,112 @@
+<app-title-subtitle title="Gestión de Tesis"
+    subtitle="Administra el proceso de revisión, expedientes y aprobación de proyectos de investigación."
+    icon="pi-book">
+    <div class="flex items-center justify-end gap-2">
+        <app-button action="new" [withIcon]="true" (onClick)="irANuevo()">
+            Registrar Tesis
+        </app-button>
+    </div>
+</app-title-subtitle>
+
+<div class="mt-4 space-y-6">
+    <!-- 1. Filtros de Búsqueda -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-4">
+        <p-panel [toggleable]="true">
+            <ng-template #header>
+                <div class="flex items-center gap-2">
+                    <i class="pi pi-filter text-slate-600"></i>
+                    <h2 class="text-base font-bold text-primary">Filtros de Búsqueda</h2>
+                </div>
+            </ng-template>
+
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Escuela Profesional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEsc" class="text-xs font-semibold text-slate-600">Escuela Profesional</label>
+                    <p-select inputId="filtroEsc" [options]="escuelasFiltro()" [ngModel]="filtroEscuela()"
+                        (ngModelChange)="filtroEscuela.set($event)" optionLabel="denominacion" optionValue="id"
+                        placeholder="Todas las Escuelas" size="small" class="w-full"
+                        [disabled]="controls.loadingCatalogos()" />
+                </div>
+
+                <!-- Select Estado -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroEstado" class="text-xs font-semibold text-slate-600">Estado</label>
+                    <p-select inputId="filtroEstado" [options]="estadosFiltro()" [ngModel]="filtroEstado()"
+                        (ngModelChange)="filtroEstado.set($event)" optionLabel="denomination" optionValue="code"
+                        placeholder="Todos los estados" size="small" class="w-full"
+                        [disabled]="controls.loadingCatalogos()" />
+                </div>
+
+                <!-- Correo Institucional -->
+                <div class="flex flex-col gap-1">
+                    <label for="filtroTexto" class="text-xs font-semibold text-slate-600">Título o Autor</label>
+                    <input id="filtroTexto" type="text" [ngModel]="textoBusqueda()"
+                        (ngModelChange)="textoBusqueda.set($event)"
+                        placeholder="Buscar por título, nombres del estudiante, dni..."
+                        class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        [disabled]="controls.loadingCatalogos()" (keyup.enter)="cargarTesis()" />
+                </div>
+            </div>
+
+            <ng-template #footer>
+                <!-- Acciones de Filtro -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <app-button type="button" variant="outline" (onClick)="limpiarFiltros()"
+                        [disabled]="controls.loadingCatalogos() || controls.loading()" size="sm">
+                        Limpiar filtros
+                    </app-button>
+                    <app-button type="button" action="new" [withIcon]="false" size="sm" (onClick)="cargarTesis()"
+                        [disabled]="controls.loadingCatalogos() || controls.loading()">
+                        Aplicar Filtros
+                    </app-button>
+                </div>
+            </ng-template>
+        </p-panel>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-4">
+        <!-- Indicador de Total de Resultados -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-lg font-bold text-slate-800">
+                Directorio de Proyectos de Grado
+            </h1>
+            <app-badge variant="info" [withDot]="true" size="sm">
+                <span class="text-xs font-semibold">{{ totalItems() }} resultados</span>
+            </app-badge>
+        </div>
+
+        <div class="space-y-3">
+            @if (controls.loading()) {
+            <app-table-skeleton [rows]="5" [cols]="8" />
+            } @else if (controls.connectionError()) {
+            <app-no-connection />
+            } @else {
+            @for (item of tesisList(); track item.id) {
+            <app-tesis-card [tesis]="item" (onClick)="verDetalle($event)" />
+            } @empty {
+            <app-app-empty-state title="No hay proyectos de tesis registrados"
+                description="Comienza registrando el primer proyecto de investigación de la facultad para habilitar su seguimiento y expedientes."
+                icon="pi pi-book" buttonText="Registrar Nueva Tesis" (onAdd)="irANuevo()"></app-app-empty-state>
+            }
+            }
+        </div>
+
+        <!-- 3. Paginación -->
+        <div class="flex items-center justify-between pt-2 text-xs text-slate-600">
+            <span>Página {{ totalPaginas() === 0 ? 0 : paginaActual() + 1 }} de {{ totalPaginas() }}</span>
+            <div class="flex items-center gap-2">
+                <button (click)="paginaAnterior()" [disabled]="paginaActual() === 0 || controls.loading()"
+                    class="px-3 py-1.5 border border-slate-300 rounded-lg disabled:opacity-50 hover:bg-slate-50">
+                    Anterior
+                </button>
+                <button (click)="paginaSiguiente()"
+                    [disabled]="paginaActual() >= totalPaginas() - 1 || controls.loading()"
+                    class="px-3 py-1.5 border border-slate-300 rounded-lg disabled:opacity-50 hover:bg-slate-50">
+                    Siguiente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

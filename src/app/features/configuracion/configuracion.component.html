@@ -1,0 +1,14 @@
+<app-title-subtitle title="Configuración"
+    subtitle="Puede configurar los diferentes valores para una mejor experiencia de usuario" icon="pi-cog">
+</app-title-subtitle>
+
+<div class="mt-4 space-y-4">
+    <!-- Tarjeta Contenedora Principal -->
+    <div class="bg-white rounded-2xl border border-info-50 shadow-xs p-6 space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-5">
+            @for (item of optionsList; track item.id) {
+            <app-card-option-menu [item]="item"></app-card-option-menu>
+            }
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-import { CommonModule, NgComponentOutlet } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, OnInit, signal, Type } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SidebarService } from './services/sidebar.service';
@@ -54,10 +54,43 @@ export class Sidebar implements OnInit {
         ],
         expanded: false
       },
-      { label: 'Gestión de Docentes', icon: 'pi-users', route: '/organizacion/docentes' },
-      { label: 'Tesis y Expedientes', icon: 'pi-file', route: '/tesis' },
-      { label: 'Comisiones y Jurados', icon: 'pi-slack', route: '/comisiones' },
-      { label: 'Trámites y Resoluciones', icon: 'pi-clipboard', route: '/tramites' },
+      { 
+        label: 'Docentes y Estudiantes', 
+        icon: 'pi-users', 
+        children: [
+          {
+            label: "Gestión de Docentes",
+            icon: "pi-address-book",
+            route: '/personal/docentes',
+          },
+          {
+            label: "Gestión de Estudiantes",
+            icon: "pi-address-book",
+            route: '/personal/estudiantes'
+          }
+        ],
+        expanded: false
+      },
+      { 
+        label: 'Gestión de Tesis', 
+        icon: 'pi-file', 
+        children: [
+          {
+            label: "Listar Tesis",
+            icon: "pi-address-book",
+            route: '/tesis/listar',
+          },
+          {
+            label: "Registrar Tesis",
+            icon: "pi-address-book",
+            route: '/tesis/registrar',
+          },
+        ],
+        expanded: false 
+      },
+      // { label: 'Comisiones y Jurados', icon: 'pi-slack', route: '/comisiones' },
+      // { label: 'Trámites y Resoluciones', icon: 'pi-clipboard', route: '/tramites' },
+      // { label: 'Configuración', icon: 'pi-cog', route: '/configuracion' },
     ];
   }
 

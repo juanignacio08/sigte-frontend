@@ -1,5 +1,13 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
+import { ExpedienteWizardComponent } from './features/tesis/pages/tesis-detalle/expediente-wizard/expediente-wizard.component';
+import { ExpedienteDetalleComponent } from './features/tesis/pages/tesis-detalle/expediente-detalle/expediente-detalle.component';
+import { ExpedienteComisionComponent } from './features/tesis/pages/tesis-detalle/expediente-comision/expediente-comision.component';
+import { ExpedienteMemorandoComponent } from './features/tesis/pages/tesis-detalle/expediente-memorando/expediente-memorando.component';
+import { ExpedienteEnviarMemorandoComponent } from './features/tesis/pages/tesis-detalle/expediente-enviar-memorando/expediente-enviar-memorando.component';
+import { ExpedienteDictamenComponent } from './features/tesis/pages/tesis-detalle/expediente-dictamen/expediente-dictamen.component';
+import { ExpedienteResolucionComponent } from './features/tesis/pages/tesis-detalle/expediente-resolucion/expediente-resolucion.component';
+import { ExpedienteFechaSustentacionComponent } from './features/tesis/pages/tesis-detalle/expediente-fecha-sustentacion/expediente-fecha-sustentacion.component';
 
 export const routes: Routes = [
     {
@@ -29,7 +37,7 @@ export const routes: Routes = [
                             ),
                     },
                     {
-                        path: 'departamentos/:id/ver-escuelas', 
+                        path: 'departamentos/:id/ver-escuelas',
                         loadComponent: () =>
                             import('./features/organizacion/pages/departamento-academico/escuela-profesional-dep/escuela-profesional-dep.component').then(
                                 (m) => m.EscuelaProfesionalDepComponent
@@ -42,9 +50,94 @@ export const routes: Routes = [
                                 (m) => m.EscuelaProfesionalComponent,
                             ),
                     },
+                    {
+                        path: 'escuelas/:escuelaId/plantillas',
+                        loadComponent: () => 
+                            import('./features/organizacion/pages/escuela-profesional/escuela-plantillas/escuela-plantillas.component').then(
+                                (m) => m.EscuelaPlantillasComponent,     
+                            ),
+                    },
+                    {
+                        path: 'docentes',
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/docentes/docentes.component').then(
+                                (m) => m.DocentesComponent,
+                            ),
+                    },
                 ]
             },
-
+            {
+                path: 'personal',
+                children: [
+                    {
+                        path: 'docentes',
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/docentes/docentes.component').then(
+                                (m) => m.DocentesComponent,
+                            ),
+                    },
+                    {
+                        path: 'estudiantes',
+                        loadComponent: () =>
+                            import('./features/organizacion/pages/estudiantes/estudiantes.component').then(
+                                (m) => m.EstudiantesComponent
+                            )
+                    },
+                ]
+            },
+            {
+                path: 'configuracion',
+                loadComponent: () =>
+                    import('./features/configuracion/configuracion.component').then(
+                        (m) => m.ConfiguracionComponent,
+                    ),
+            },
+            {
+                path: 'configuracion/tabla-maestra',
+                loadComponent: () =>
+                    import('./features/configuracion/pages/tabla-maestra/tabla-maestra.component').then(
+                        (m) => m.TablaMaestraComponent,
+                    ),
+            },
+            {
+                path: 'tesis',
+                children: [
+                    {
+                        path: 'listar',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis/tesis.component').then(
+                                (m) => m.TesisComponent,
+                            ),
+                    },
+                    {
+                        path: 'registrar',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-create/tesis-create.component').then(
+                                (m) => m.TesisCreateComponent,
+                            ),
+                    },
+                    {
+                        path: 'detalle/:id',
+                        loadComponent: () =>
+                            import('./features/tesis/pages/tesis-detalle/tesis-detalle.component').then(
+                                (m) => m.TesisDetalleComponent,
+                            ),
+                    },
+                    {
+                        path: 'detalle/:tesisId/expediente/:expedienteId',
+                        component: ExpedienteWizardComponent,
+                        children: [
+                            { path: '', component: ExpedienteDetalleComponent, pathMatch: 'full' },
+                            { path: 'comision', component: ExpedienteComisionComponent },
+                            { path: 'memorando', component: ExpedienteMemorandoComponent },
+                            { path: 'envio', component: ExpedienteEnviarMemorandoComponent },
+                            { path: 'dictamen', component: ExpedienteDictamenComponent },
+                            { path: 'fecha-sustentacion', component: ExpedienteFechaSustentacionComponent },
+                            { path: 'resolucion', component: ExpedienteResolucionComponent },
+                        ],
+                    },
+                ]
+            },
             //   {
             //     path: '',
             //     redirectTo: 'organizacion/departamentos',

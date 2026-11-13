@@ -1,0 +1,93 @@
+<div class="space-y-4">
+    <!-- Filtros -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- Escuela -->
+        <div>
+            <label class="block text-sm font-medium mb-1">
+                Escuela profesional
+            </label>
+
+            <select [(ngModel)]="escuelaSeleccionada" (change)="aplicarFiltros()"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+
+                <option value="TODAS">Todas las escuelas</option>
+
+                @for (escuela of escuelas; track escuela.codigo) {
+                <option [value]="escuela.codigo">
+                    {{ escuela.nombre }}
+                </option>
+                }
+            </select>
+        </div>
+
+        <!-- Ambiente -->
+        <div>
+            <label class="block text-sm font-medium mb-1">
+                Ambiente
+            </label>
+
+            <select [(ngModel)]="ambienteSeleccionado" (change)="aplicarFiltros()"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+
+                <option value="TODOS">Todos los ambientes</option>
+
+                @for (ambiente of ambientes; track ambiente.id) {
+                <option [value]="ambiente.id">
+                    {{ ambiente.nombre }}
+                </option>
+                }
+            </select>
+        </div>
+
+        <!-- Modalidad -->
+        <div>
+            <label class="block text-sm font-medium mb-1">
+                Modalidad
+            </label>
+
+            <select [(ngModel)]="modalidadSeleccionada" (change)="aplicarFiltros()"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+
+                <option value="TODAS">Todas</option>
+                <option value="PRESENCIAL">Presencial</option>
+                <option value="VIRTUAL">Virtual</option>
+            </select>
+        </div>
+
+        <!-- Estado -->
+        <div>
+            <label class="block text-sm font-medium mb-1">
+                Estado
+            </label>
+
+            <select [(ngModel)]="estadoSeleccionado" (change)="aplicarFiltros()"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+
+                <option value="TODOS">Todos los estados</option>
+                <option value="PROGRAMADA">Programada</option>
+                <option value="REALIZADA">Realizada</option>
+                <option value="CANCELADA">Cancelada</option>
+                <option value="REPROGRAMADA">Reprogramada</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Leyenda de escuelas -->
+    <div class="flex flex-wrap items-center gap-4 text-xs text-slate-600">
+
+        @for (escuela of escuelas; track escuela.codigo) {
+        <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full" [style.backgroundColor]="escuela.color">
+            </span>
+
+            {{ escuela.nombre }}
+        </div>
+        }
+
+    </div>
+
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <full-calendar #calendar [options]="calendarOptions">
+        </full-calendar>
+    </section>
+</div>

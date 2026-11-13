@@ -14,10 +14,12 @@ export type ButtonAction =
   | 'download-pdf' 
   | 'download-xlsx' 
   | 'download-doc' 
+  | 'search'
   | 'default';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'warning' | 'info' | 'pdf' | 'word' | 'excel' | 'active' | 'deactive' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
+export type IconDirection = 'left' | 'right'
 
 interface ActionConfig {
   variant: ButtonVariant;
@@ -38,6 +40,7 @@ const ACTION_CONFIGS: Record<ButtonAction, ActionConfig | null> = {
   'download-pdf': { variant: 'pdf', icon: 'pi-file-pdf', defaultText: 'Exportar PDF' },
   'download-xlsx': { variant: 'excel', icon: 'pi-file-excel', defaultText: 'Exportar Excel' },
   'download-doc': { variant: 'word', icon: 'pi-file-word', defaultText: 'Exportar Word' },
+  'search': { variant: 'primary', icon: 'pi-search', defaultText: 'Buscar' },
   'default': null
 };
 
@@ -59,6 +62,7 @@ export class ButtonComponent {
   @Input() withIcon: boolean = false;
   @Input() onlyIcon: boolean = false;
   @Input() messageTootip ?: string;
+  @Input() iconDirection ?: IconDirection = 'left';
 
   @Output() onClick = new EventEmitter<MouseEvent>();
 
