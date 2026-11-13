@@ -8,6 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
+  "allowScripts": {
+    "esbuild": true,
+    "@parcel/watcher": true,
+    "lmdb": true,
+    "msgpackr-extract": true
+  },
   "private": true,
   "packageManager": "npm@11.17.0",
   "dependencies": {
