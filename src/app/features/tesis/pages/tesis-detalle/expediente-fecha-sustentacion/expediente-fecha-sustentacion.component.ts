@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FullCalendarModule, CalendarOptions, FullCalendarComponent } from "@fullcalendar/angular";
 import themePlugin from "@fullcalendar/angular/themes/monarch"; // YOUR THEME
 import dayGridPlugin from "@fullcalendar/angular/daygrid";
@@ -6,12 +6,11 @@ import timeGridPlugin from '@fullcalendar/angular/timegrid';
 import interactionPlugin from '@fullcalendar/angular/interaction';
 import esLocale from "fullcalendar/locales/es";
 import { FormsModule } from '@angular/forms';
-
-interface Escuela {
-  codigo: string;
-  nombre: string;
-  color: string;
-}
+import { SelectModule } from '@openng/optimus-ui/select';
+import { EscuelaProfesional } from '../../../../../shared/models/master/escuela_profesional.model';
+import { forkJoin } from 'rxjs';
+import { EscuelaService } from '../../../../organizacion/service/escuela.service';
+import { Facultad, FACULTY_MOCK } from '../../../../../shared/models/master/facultad.model';
 
 interface Ambiente {
   id: number;
@@ -21,7 +20,7 @@ interface Ambiente {
 interface SustentacionMock {
   id: number;
   titulo: string;
-  escuela: string;
+  escuelaId: number;
   ambienteId: number;
   modalidad: 'PRESENCIAL' | 'VIRTUAL';
   estado: 'PROGRAMADA' | 'REALIZADA' | 'CANCELADA' | 'REPROGRAMADA';
@@ -30,22 +29,26 @@ interface SustentacionMock {
 }
 
 @Component({
-  imports: [FullCalendarModule, FormsModule],
+  imports: [FullCalendarModule, FormsModule, SelectModule],
   selector: 'app-expediente-fecha-sustentacion',
   styleUrl: './expediente-fecha-sustentacion.component.css',
   templateUrl: './expediente-fecha-sustentacion.component.html',
 })
-export class ExpedienteFechaSustentacionComponent {
+export class ExpedienteFechaSustentacionComponent implements OnInit {
 
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
-  escuelas: Escuela[] = [
-    { codigo: 'MED', nombre: 'Medicina Humana', color: '#3B82F6' },
-    { codigo: 'ENF', nombre: 'Enfermería', color: '#16A34A' },
-    { codigo: 'OBS', nombre: 'Obstetricia', color: '#9333EA' },
-    { codigo: 'FAR', nombre: 'Farmacia y Bioquímica', color: '#EA580C' },
-    { codigo: 'PSI', nombre: 'Psicología', color: '#DB2777' },
-  ];
+  private readonly escuelaService = inject(EscuelaService);
+
+  facultad: Facultad = FACULTY_MOCK;
+
+  escuelasFiltro = signal<EscuelaProfesional[]>([]);
+
+  controls = {
+    loading: signal<boolean>(false),
+    loadingCatalogos: signal<boolean>(false),
+    connectionError: signal<boolean>(false)
+  };
 
   ambientes: Ambiente[] = [
     { id: 1, nombre: 'Auditorio de Medicina' },
@@ -56,111 +59,38 @@ export class ExpedienteFechaSustentacionComponent {
 
   // Filtros
   alcance = 'FACULTAD';
-  escuelaSeleccionada = 'TODAS';
+  escuelaSeleccionada = signal<number | null>(null);
   ambienteSeleccionado = 'TODOS';
-  modalidadSeleccionada = 'TODAS';
-  estadoSeleccionado = 'TODOS';
+
+  ngOnInit(): void {
+    this.cargarCatalogos();
+  }
+
+  cargarCatalogos(): void {
+    this.controls.loadingCatalogos.set(true);
+    forkJoin({
+      escuelas: this.escuelaService.getActivesByFacultad(this.facultad.id),
+      //estados: this.tablaMaestraService.getItemsActives(TablaMaestraService.stateThesisTableCode) // Código tabla estados tesis
+    }).subscribe({
+      next: ({ escuelas, /*estados*/}) => {
+        this.escuelasFiltro.set(escuelas.data || []);
+        //this.estadosFiltro.set(estados.data || []);
+        this.controls.loadingCatalogos.set(false);
+      },
+      error: () => this.controls.loadingCatalogos.set(false)
+    });
+  }
 
   sustentaciones: SustentacionMock[] = [
     {
       id: 1,
       titulo: 'Factores asociados a la anemia',
-      escuela: 'ENF',
+      escuelaId: 1,
       ambienteId: 1,
       modalidad: 'PRESENCIAL',
       estado: 'PROGRAMADA',
       inicio: '2026-11-13T08:00:00',
       fin: '2026-11-13T09:30:00'
-    },
-    {
-      id: 2,
-      titulo: 'Calidad de atención materna',
-      escuela: 'OBS',
-      ambienteId: 3,
-      modalidad: 'PRESENCIAL',
-      estado: 'PROGRAMADA',
-      inicio: '2026-11-13T09:00:00',
-      fin: '2026-11-13T10:30:00'
-    },
-    {
-      id: 3,
-      titulo: 'Salud mental en estudiantes',
-      escuela: 'PSI',
-      ambienteId: 2,
-      modalidad: 'VIRTUAL',
-      estado: 'PROGRAMADA',
-      inicio: '2026-11-14T10:00:00',
-      fin: '2026-11-14T11:30:00'
-    },
-    {
-      id: 4,
-      titulo: 'Adherencia al tratamiento',
-      escuela: 'MED',
-      ambienteId: 1,
-      modalidad: 'PRESENCIAL',
-      estado: 'PROGRAMADA',
-      inicio: '2026-11-16T14:00:00',
-      fin: '2026-11-16T15:30:00'
-    },
-    {
-      id: 5,
-      titulo: 'Uso racional de medicamentos',
-      escuela: 'FAR',
-      ambienteId: 3,
-      modalidad: 'PRESENCIAL',
-      estado: 'PROGRAMADA',
-      inicio: '2026-11-16T15:00:00',
-      fin: '2026-11-16T16:30:00'
-    },
-    {
-      id: 6,
-      titulo: 'Intervención en salud comunitaria',
-      escuela: 'ENF',
-      ambienteId: 2,
-      modalidad: 'PRESENCIAL',
-      estado: 'REALIZADA',
-      inicio: '2026-11-10T08:00:00',
-      fin: '2026-11-10T09:30:00'
-    },
-    {
-      id: 7,
-      titulo: 'Complicaciones obstétricas',
-      escuela: 'OBS',
-      ambienteId: 3,
-      modalidad: 'PRESENCIAL',
-      estado: 'REPROGRAMADA',
-      inicio: '2026-11-19T11:00:00',
-      fin: '2026-11-19T12:30:00'
-    },
-    {
-      id: 8,
-      titulo: 'Evaluación psicológica',
-      escuela: 'PSI',
-      ambienteId: 4,
-      modalidad: 'VIRTUAL',
-      estado: 'CANCELADA',
-      inicio: '2026-11-20T09:00:00',
-      fin: '2026-11-20T10:30:00'
-    },
-    {
-      id: 9,
-      titulo: 'Investigación clínica',
-      escuela: 'MED',
-      ambienteId: 1,
-      modalidad: 'PRESENCIAL',
-      estado: 'PROGRAMADA',
-      inicio: '2026-11-23T08:00:00',
-      fin: '2026-11-23T10:00:00'
-    },
-    {
-      id: 10,
-      titulo: 'Farmacovigilancia en pacientes',
-      escuela: 'FAR',
-      ambienteId: 4,
-      modalidad: 'PRESENCIAL',
-      estado: 'PROGRAMADA',
-      inicio: '2026-11-23T10:00:00',
-      fin: '2026-11-23T11:30:00'
     }
   ];
 
@@ -202,29 +132,21 @@ export class ExpedienteFechaSustentacionComponent {
     return this.sustentaciones
       .filter(evento => {
         const escuelaOk =
-          this.escuelaSeleccionada === 'TODAS' ||
-          evento.escuela === this.escuelaSeleccionada;
+          this.escuelaSeleccionada() === 0 ||
+          evento.escuelaId === this.escuelaSeleccionada();
 
         const ambienteOk =
           this.ambienteSeleccionado === 'TODOS' ||
           evento.ambienteId.toString() === this.ambienteSeleccionado;
 
-        const modalidadOk =
-          this.modalidadSeleccionada === 'TODAS' ||
-          evento.modalidad === this.modalidadSeleccionada;
-
-        const estadoOk =
-          this.estadoSeleccionado === 'TODOS' ||
-          evento.estado === this.estadoSeleccionado;
-
-        return escuelaOk && ambienteOk && modalidadOk && estadoOk;
+        return escuelaOk && ambienteOk;
       })
       .map(evento => {
-        const escuela = this.escuelas.find(
-          e => e.codigo === evento.escuela
+        const escuela = this.escuelasFiltro().find(
+          e => e.codigo === evento.escuelaId
         );
 
-        const color = escuela?.color ?? '#64748b';
+        const color = '#64748b';
 
         return {
           id: evento.id.toString(),
@@ -238,7 +160,7 @@ export class ExpedienteFechaSustentacionComponent {
           //borderColor: escuela?.color,
 
           extendedProps: {
-            escuela: escuela?.nombre,
+            escuela: escuela?.denominacion,
             ambiente: this.ambientes.find(
               a => a.id === evento.ambienteId
             )?.nombre,
